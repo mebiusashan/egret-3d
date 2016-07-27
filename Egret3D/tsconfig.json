@@ -1,0 +1,273 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "noImplicitAny": false,
+        "sourceMap": false,
+        "declaration": true,
+        "out": "./egret3d.js"
+    },
+    "files": [
+        
+        "Egret3DState.ts",
+        "config/TextureMethodType.ts",
+
+        "geom/UV.ts",
+        "geom/Point.ts",
+        "geom/Vector3D.ts",
+        "geom/Rectangle.ts",
+        "geom/Quaternion.ts",
+        "geom/Orientation3D.ts",
+        "geom/Plane3D.ts",
+        "geom/Matrix4_4.ts",
+        "geom/EyesMatrix.ts",
+        "geom/PlaneClassification.ts",
+        "geom/MathUtil.ts",
+        "geom/Ray.ts",
+        "geom/Color.ts",
+        "geom/ColorGradients.ts",
+        "geom/Bound.ts",
+        "data/HashMap.ts",
+        "geom/BoundBox.ts",
+        "geom/BezierCurve.ts",
+        "geom/ColorTransform.ts",
+        "events/PickResult.ts",
+        "events/Event3D.ts",
+        "events/PropertyAnimEvent3D.ts",
+        "events/SkeletonAnimationEvent3D.ts",
+        "events/MouseEvent3D.ts",
+        "events/TouchEvent3D.ts",
+        "events/PickEvent3D.ts",
+        "events/KeyEvent3D.ts",
+        "events/OrientationEvent3D.ts",
+        "events/LoaderEvent3D.ts",
+        "events/ParserEvent3D.ts",
+        "events/ParticleEvent3D.ts",
+        "events/EventDispatcher.ts",
+        "events/EventManager.ts",
+
+        "shader/register/ShaderBase.ts",
+        "shader/register/VarRegister.ts",
+        "shader/register/Attribute.ts",
+        "shader/register/AttributeType.ts",
+        "shader/register/ConstVar.ts",
+        "shader/register/Sampler2D.ts",
+        "shader/register/Sampler3D.ts",
+        "shader/register/TmpVar.ts",
+        "shader/register/Uniform.ts",
+        "shader/register/UniformType.ts",
+        "shader/register/VarConfig.ts",
+        "shader/register/Varying.ts",
+        "shader/register/Extension.ts",
+        "shader/register/VaryingType.ts",
+
+        "shader/ShaderLib.ts",
+        "shader/ShaderPool.ts",
+        "shader/ShaderContent.ts",
+        "shader/ShaderUtil.ts",
+
+        "shadow/ShadowCast.ts",
+        
+        "anim/AnimationNode.ts",
+        "anim/AnimationCurve.ts",
+        "anim/IAnimationState.ts",
+        "anim/IAnimation.ts",
+        "anim/TimerAxis.ts",
+
+        "anim/PropertyAnimation/AnimCurve.ts",
+        "anim/PropertyAnimation/PropertyAnim.ts",
+
+        "anim/SkeletonAnimation/Joint.ts",
+        "anim/SkeletonAnimation/Skeleton.ts",
+        "anim/SkeletonAnimation/SkeletonPose.ts",
+        "anim/SkeletonAnimation/SkeletonAnimationClip.ts",
+        "anim/SkeletonAnimation/SkeletonAnimationState.ts",
+        "anim/SkeletonAnimation/SkeletonAnimation.ts",
+
+        "audio/Channel.ts",
+        "audio/Channel3d.ts",
+        "audio/Sound.ts",
+        "audio/AudioManager.ts",
+
+
+
+        "controller/ControllerBase.ts",
+        "controller/LookAtController.ts",
+        "controller/HoverController.ts",
+
+        "core/context/ContextConfig.ts",
+        "core/context/Context3DProxy.ts",
+        "core/context/FrameBuffer.ts",
+        "core/context/IndexBuffer3D.ts",
+        "core/context/VertexBuffer3D.ts",
+        "core/context/MipmapData.ts",
+        "core/context/Program3D.ts",
+        "core/context/Texture2D.ts",
+        "core/context/Shader.ts",
+        "core/context/Texture3D.ts",
+
+        "core/node/Object3D.ts",
+        "render/IRender.ts",
+        "core/node/Entity.ts",
+        "core/node/Mesh.ts",
+        "core/node/BillBoard.ts",
+        "core/node/Sky.ts",
+        "core/node/Wireframe.ts",
+
+        "lights/LightBase.ts",
+        "lights/PointLight.ts",
+        "lights/SpotLight.ts",
+        "lights/DirectLight.ts",
+        "lights/LightGroup.ts",
+
+        "core/traverse/CollectBase.ts",
+        "core/traverse/EntityCollect.ts",
+        "core/traverse/Frustum.ts",
+        "core/traverse/Layer.ts",
+        "core/traverse/Tag.ts",
+        "core/traverse/Picker.ts",
+
+
+
+        "geometry/Geometry.ts",
+        "geometry/GeometryData.ts",
+        "geometry/SubGeometry.ts",
+        "geometry/CubeGeometry.ts",
+        "geometry/CylinderGeometry.ts",
+        "geometry/PlaneGeometry.ts",
+        "geometry/SphereGeometry.ts",
+        "geometry/GeometryUtil.ts",
+        "geometry/ElevationGeometry.ts",
+        
+
+        "input/input.ts",
+        "input/OrientationController.ts",
+
+        "loader/URLLoader.ts",
+        "loader/AssetManager.ts",
+
+        "loader/parser/DDSParser.ts",
+        "loader/parser/PVR.ts",
+        "loader/parser/PVRParser.ts",
+        "loader/parser/TGAParser.ts",
+        "loader/parser/HDRParser.ts",
+
+        "loader/parser/EAM/EAMParser.ts",
+        "loader/parser/EAM/EAMVersion.ts",
+        "loader/parser/ECA/ECAParser.ts",
+        "loader/parser/ECA/ECAVersion.ts",
+        "loader/parser/ESM/ESMParser.ts",
+        "loader/parser/ESM/ESMVersion.ts",
+        "loader/parser/EPA/EPAParser.ts",
+        "loader/parser/EPA/EPAVersion.ts",
+        "loader/parser/XML/XMLParser.ts",
+
+        "loader/parser/map/MapLoader.ts",
+        "loader/parser/map/MapNodeData.ts",
+        "loader/parser/map/MapXmlParser.ts",
+        "loader/parser/map/MatMethodData.ts",
+        "loader/parser/map/MatSphereData.ts",
+        "loader/parser/map/MapLightData.ts",
+        "loader/parser/map/HUDData.ts",
+
+        "loader/parser/ParserUtils.ts",
+
+
+        "material/pass/MethodData.ts",
+        "material/method/MethodBase.ts",
+        "material/method/TerrainARGBMethod.ts",
+        "material/method/FogMethod.ts",
+        "material/method/LineFogMethod.ts",
+        "material/method/UVRollMethod.ts",
+        "material/method/MulUVRollMethod.ts",
+        "material/method/UVSpriteSheetMethod.ts",
+        "material/method/LightMapMethod.ts",
+        "material/method/PlantDistortedMethod.ts",
+        "material/method/AlphaMaskMethod.ts",
+        "material/method/AOMapMethod.ts",
+        "material/method/ColorTransformMethod.ts",
+        "material/method/ColorGradientsMethod.ts",
+        "material/method/StreamerMethod.ts",
+        "material/method/ShadowMethod.ts",
+        "material/method/CubeMethod.ts",
+        "material/method/ColorMethod.ts",
+        "material/method/EnvironmentMethod.ts",
+
+        "material/pass/PassUsage.ts",
+        "material/MaterialData.ts",
+
+        "material/pass/MaterialPass.ts",
+        "material/pass/ColorPass.ts",
+        "material/pass/DiffusePass.ts",
+        "material/pass/ShadowPass.ts",
+        "material/pass/CubePass.ts",
+        "material/pass/MatCapPass.ts",
+        
+        "material/pass/PassUtil.ts",
+        
+
+        "material/MaterialBase.ts",
+
+        "material/ColorMaterial.ts",
+        "material/TextureMaterial.ts",
+        "material/CubeTextureMaterial.ts",
+
+        "render/RenderBase.ts",
+        "render/MultiRender.ts",
+        "render/PostRender.ts",
+
+        "scene/Scene3D.ts",
+        "scene/TreeBase.ts",
+
+        "texture/ITexture.ts",
+        "texture/ImageTexture.ts",
+        "texture/PVRTexture.ts",
+        "texture/MimapTexture.ts",
+        "texture/CubeTexture.ts",
+        "texture/CheckerboardTexture.ts",
+        "texture/VideoTexture.ts",
+        "texture/RenderTexture.ts",
+
+        "Util/ByteArray.ts",
+        "Util/Debug.ts",
+        "Util/StringUtil.ts",
+
+        "utils/AxisMesh.ts",
+
+        "camera/CameraAnimationController.ts",
+        "camera/CameraManager.ts",
+        "camera/Camera3D.ts",
+
+        "core/partition/quad/IQuadNode.ts",
+        "core/partition/quad/QuadAABB.ts",
+        "core/partition/quad/QuadTree.ts",
+        "core/partition/quad/QuadRoot.ts",
+        "core/partition/quad/QuadTreeCell.ts",
+
+        "Util/DoubleArray.ts",
+        "Util/navigation/Navi3DAstar.ts",
+        "Util/navigation/Navi3DEdge.ts",
+        "Util/navigation/Navi3DMaskType.ts",
+        "Util/navigation/Navi3DPoint2D.ts",
+        "Util/navigation/Navi3DPoint.ts",
+        "Util/navigation/Navi3DPointFat.ts",
+        "Util/navigation/Navi3DTriangle.ts",
+        "Util/navigation/Navi3DMesh.ts",
+        "Util/navigation/Navi3DFunnel.ts",
+        "Util/navigation/Navi3DRouter.ts",
+
+        "hud/HUD.ts",
+
+        "View3D.ts",
+        "VRView3D.ts",
+        "Egret3DCanvas.ts",
+        "Egret3DEngine.ts",
+        
+        "post/IPost.ts",
+        "post/postPass/MainPass.ts",
+        "post/postPass/BloomPass.ts",
+        "post/postPass/GaussPass.ts",
+        
+        "post/PostProcessing.ts"       
+
+]      
+}	
