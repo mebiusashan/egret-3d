@@ -76,7 +76,7 @@ class SampleSky extends SampleBase {
             <HTMLImageElement>document.getElementById("d")
         );
         ///创建天空盒
-        var sky: egret3d.Sky = new egret3d.Sky(new egret3d.CubeTextureMaterial(cubeTexture),this._view3D.camera3D);
+        var sky: egret3d.Sky = new egret3d.Sky(new egret3d.CubeGeometry(10000, 10000, 10000), new egret3d.CubeTextureMaterial(cubeTexture),this._view3D.camera3D);
         ///将天空盒子插入view3D
         this._view3D.addChild3D(sky);
         ///启动Canvas。
