@@ -1,0 +1,92 @@
+/**
+ * @language zh_CN
+ * @classdesc
+ * 天空盒使用示例
+ * @version Egret 3.0
+ * @platform Web,Native
+ */
+var SampleSky = (function (_super) {
+    __extends(SampleSky, _super);
+    function SampleSky() {
+        _super.call(this);
+        ///创建Canvas对象。
+        this._egret3DCanvas = new egret3d.Egret3DCanvas();
+        ///Canvas的起始坐标，页面左上角为起始坐标(0,0)。
+        this._egret3DCanvas.x = 0;
+        this._egret3DCanvas.y = 0;
+        ///设置Canvas页面尺寸。
+        this._egret3DCanvas.width = window.innerWidth;
+        this._egret3DCanvas.height = window.innerHeight;
+        ///创建View3D对象,页面左上角为起始坐标(0,0),其参数依次为:
+        ///@param x: number 起始坐标x,
+        ///@param y: number 起始坐标y
+        ///@param  width: number 显示区域的宽
+        ///@param  height: number 显示区域的高
+        this._view3D = new egret3d.View3D(0, 0, window.innerWidth, window.innerHeight);
+        ///当前对象对视位置,其参数依次为:
+        ///@param pos 对象的位置
+        ///@param target 目标的位置
+        this._view3D.camera3D.lookAt(new egret3d.Vector3D(0, 500, -500), new egret3d.Vector3D(0, 0, 0));
+        ///View3D的背景色设置
+        this._view3D.backColor = 0xff000000;
+        ///将View3D添加进Canvas中
+        this._egret3DCanvas.addView3D(this._view3D);
+        this.InitCameraCtl();
+        ///天空贴图用于Sky类使用，其内部是将6张HTMLImageElement（网页图片元素）封装到CubeTexture对象，CubeTexture为引擎内部使用对象
+        //* 需要在html中已有 < /p>
+        //  < pre >
+        //      <img id="t1" src= "image_front.png" />
+        //      <img id="t2" src= "image_back.png" />
+        //      <img id="t3" src= "image_left.png" />
+        //      <img id="t4" src= "image_right.png" />
+        //      <img id="t5" src= "image_up.png" />
+        //      <img id="t6" src= "image_down.png" />
+        //  </pre>
+        var cubeTexture = egret3d.CubeTexture.createCubeTexture(document.getElementById("f"), document.getElementById("b"), document.getElementById("l"), document.getElementById("r"), document.getElementById("u"), document.getElementById("d"));
+        ///创建天空盒
+        //var sky: egret3d.Sky = new egret3d.Sky(new egret3d.CubeGeometry(10000, 10000, 10000),new egret3d.CubeTextureMaterial(cubeTexture),this._view3D.camera3D);
+        ///将天空盒子插入view3D
+        //this._view3D.addChild3D(sky);
+        ///启动Canvas。
+        this._egret3DCanvas.start();
+        ///注册每帧更新，用于更新用户操作
+        this._egret3DCanvas.addEventListener(egret3d.Event3D.ENTER_FRAME, this.update, this);
+        this.CloseLoadingView();
+        ///设置window resize事件
+        egret3d.Input.addEventListener(egret3d.Event3D.RESIZE, this.OnWindowResize, this);
+        var cube = new egret3d.CubeGeometry();
+        this._view3D.addChild3D(new egret3d.Mesh(cube, new egret3d.TextureMaterial()));
+    }
+    var d = __define,c=SampleSky,p=c.prototype;
+    /**
+    * @language zh_CN
+    * 窗口尺寸变化事件
+    * @version Egret 3.0
+    * @platform Web,Native
+    */
+    p.OnWindowResize = function (e) {
+        ///重置ui大小
+        this._egret3DCanvas.width = window.innerWidth;
+        this._egret3DCanvas.height = window.innerHeight;
+        this._view3D.width = window.innerWidth;
+        this._view3D.height = window.innerHeight;
+    };
+    /**
+   * @language zh_CN
+   * 初始化相机控制
+   * @version Egret 3.0
+   * @platform Web,Native
+   */
+    p.InitCameraCtl = function () {
+        ///摄像机控制类
+        this.cameraCtl = new egret3d.LookAtController(this._view3D.camera3D, new egret3d.Object3D());
+        ///设置目标和相机的距离
+        this.cameraCtl.distance = 1000;
+    };
+    p.update = function (e) {
+        this.cameraCtl.update();
+    };
+    return SampleSky;
+}(SampleBase));
+egret.registerClass(SampleSky,'SampleSky');
+//# sourceMappingURL=SampleSky.js.map
