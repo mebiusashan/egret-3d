@@ -21,6 +21,14 @@
         */
         skeletonAnimationController?: SkeletonAnimation;
 
+        /**
+        * @language zh_CN
+        * 粒子动画控制器对象。
+        * 只有粒子动画对象才有此接口
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        particleAnimationController?: ParticleAnimation;
 
         /**
         * @language zh_CN

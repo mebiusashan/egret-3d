@@ -63,6 +63,12 @@
         /**
         * @private
         */
+        public initNode(data: ParticleDataNode, arg:any): void {
+
+        }
+        /**
+        * @private
+        */
         public update(animTime: number, delay: number, geometry:Geometry) {
         }
 

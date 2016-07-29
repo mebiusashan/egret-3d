@@ -214,6 +214,24 @@
                             }
                         }
                         break;
+                    case "ParticleEmitter":
+                        if (mapNodeData.path) {
+                            var path: string = this._pathRoot + mapNodeData.path;
+                            var load: URLLoader = MapLoader._assetMgr.dispatchTask(path);
+                            if (load.data) {
+                                var particleData: ParticleData = load["ParticleData"];
+                                if (particleData) {
+                                    this.processParticle(particleData, mapNodeData);
+                                }
+
+                                this.taskCurrent++;
+                            }
+                            else {
+                                this.addTask(heightImgload);
+                                MapLoader._assetMgr.dispatchEvent(load, this.onParticleXML, this, mapNodeData);
+                            }
+                        }
+                        break;
                 }
             }
 
@@ -270,6 +288,63 @@
                     MapLoader._assetMgr.dispatchEvent(hudLoad, this.onHudTexture, this, hudData);
                 }
             }
+        }
+
+        private onParticleXML(load: URLLoader, mapNodeData: MapNodeData) {
+            var particleData: ParticleData = load["ParticleData"];
+            if (!particleData) {
+                particleData = new ParticleXmlParser().parse(load.data);
+                load["ParticleData"] = particleData;
+                particleData.fileUrl = load.url;
+                particleData.fileName = load.fileName;
+            }
+
+            this.processParticle(particleData, mapNodeData);
+
+            this.processTask(load);
+        }
+
+        private processParticle(particleData: ParticleData, nodeData: MapNodeData): ParticleEmitter {
+            if (!particleData.shape.meshFile) {
+                if (nodeData.geometry) {
+                    particleData.shape.geometry = GeometryUtil.createGemetryForType(nodeData.geometry.type, nodeData.geometry);
+                }
+                this.processParticleGeometry(particleData, nodeData);
+            }
+            else {
+
+                var path: string = this._pathRoot + particleData.shape.meshFile;
+                var load: URLLoader = MapLoader._assetMgr.dispatchTask(path);
+                if (load.data) {
+                    particleData.shape.geometry = load.data;
+                    this.processParticleGeometry(particleData, nodeData);
+                }
+                else {
+                    var parData: any = {};
+                    parData.particle = particleData;
+                    parData.nodeData = nodeData;
+
+                    this.addTask(load);
+                    MapLoader._assetMgr.dispatchEvent(load, this.onParticleEsmLoad, this, parData);
+                }
+            }
+
+            return null;
+        }
+
+        private processParticleGeometry(particleData: ParticleData, nodeData: MapNodeData) {
+            particleData.materialData = this._mapXmlParser.matDict[nodeData.materialIDs[0]];
+            var particleNode: ParticleEmitter = new ParticleEmitter(particleData, new TextureMaterial());
+
+            nodeData.x *= ParticleData.SCALE_VALUE;
+            nodeData.y *= ParticleData.SCALE_VALUE;
+            nodeData.z *= ParticleData.SCALE_VALUE;
+            nodeData.object3d.position.scaleBy(ParticleData.SCALE_VALUE);
+
+            this.processObject3d(nodeData, particleNode);
+
+            particleNode.play();
+            this.processMat(nodeData);
         }
 
         private processObject3d(nodeData: MapNodeData, object3d: Object3D) {
@@ -399,6 +474,14 @@
             this.processTask(load);
         }
 
+        private onParticleEsmLoad(load: URLLoader, parData: any) {
+            var particle: ParticleData = parData.particle;
+            var nodeData: MapNodeData = parData.nodeData;
+            particle.shape.geometry = load.data;
+            this.processParticleGeometry(particle, nodeData);
+            this.processTask(load);
+        }
+
         private onEamLoad(load: URLLoader, loadData: any) {
             var clip: SkeletonAnimationClip = load.data;
             clip.animationName = loadData.eamData.name;
@@ -447,6 +530,32 @@
 
             //console.log("---" + load.url + "---" + this._taskCount);
             if (this._taskCount <= 0) {
+
+                var subEmitters: ParticleEmitter[] = [];
+                for (var i: number = 0; i < this._mapXmlParser.nodeList.length; i++) {
+                    var mapNodeData: MapNodeData = this._mapXmlParser.nodeList[i];
+                    
+                    if (mapNodeData.object3d instanceof ParticleEmitter) {
+                        var patEmitter: ParticleEmitter = <ParticleEmitter>mapNodeData.object3d;
+                        for (var j: number = 0; j < mapNodeData.childs.length; ++j) {
+                            var childData: any = mapNodeData.childs[j];
+                            var childPatEmitter: Object3D = this.container.findObject3D(childData.name);
+                            subEmitters.push(<ParticleEmitter>childPatEmitter);
+                            if (childPatEmitter instanceof ParticleEmitter) {
+                                patEmitter.addSubEmitter(Number(ParticleDataSubEmitterPhase[childData.phase]), <ParticleEmitter>childPatEmitter);
+                            }
+                        }
+                    }
+
+                }
+
+                var tempEmitter: ParticleEmitter;
+                for (var i: number = 0; i < subEmitters.length; i++) {
+                    tempEmitter = subEmitters[i];
+                    if (tempEmitter && tempEmitter.parent) {
+                        tempEmitter.parent.removeChild(tempEmitter);
+                    }
+                }
 
 
 
@@ -667,40 +776,40 @@
                     }
 
                 }
-                //else if (method.type == MatMethodData.methodType.waterWaveMethod) {
-                //    var waterWaveMethod: WaterWaveMethod = new WaterWaveMethod();
-                //    material.diffusePass.addMethod(waterWaveMethod);
-                //    if (method["deepWaterColor"]) {
-                //        waterWaveMethod.deepWaterColor = Number( method["deepWaterColor"]);
-                //    }
+                else if (method.type == MatMethodData.methodType.waterWaveMethod) {
+                    var waterWaveMethod: WaterWaveMethod = new WaterWaveMethod();
+                    material.diffusePass.addMethod(waterWaveMethod);
+                    if (method["deepWaterColor"]) {
+                        waterWaveMethod.deepWaterColor = Number( method["deepWaterColor"]);
+                    }
 
-                //    if (method["shallowWaterColor"]) {
-                //        waterWaveMethod.shallowWaterColor = Number( method["shallowWaterColor"]);
-                //    }
+                    if (method["shallowWaterColor"]) {
+                        waterWaveMethod.shallowWaterColor = Number( method["shallowWaterColor"]);
+                    }
 
-                //    material.repeat = true;
-                //}
-                //else if (method.type == MatMethodData.methodType.waterNormalMethod) {
+                    material.repeat = true;
+                }
+                else if (method.type == MatMethodData.methodType.waterNormalMethod) {
 
-                //    var waterNormalMethod: WaterNormalMethod = new WaterNormalMethod();
-                //    material.diffusePass.addMethod(waterNormalMethod);
-                //    waterNormalMethod.normalTextureA = defaultTexture;
-                //    waterNormalMethod.normalTextureB = defaultTexture;
+                    var waterNormalMethod: WaterNormalMethod = new WaterNormalMethod();
+                    material.diffusePass.addMethod(waterNormalMethod);
+                    waterNormalMethod.normalTextureA = defaultTexture;
+                    waterNormalMethod.normalTextureB = defaultTexture;
 
-                //    if (method["uScale"] && method["vScale"]) {
-                //        waterNormalMethod.setUvScale(Number(method["uScale"]), Number( method["vScale"]));
-                //    }
+                    if (method["uScale"] && method["vScale"]) {
+                        waterNormalMethod.setUvScale(Number(method["uScale"]), Number( method["vScale"]));
+                    }
 
 
-                //    var textureData: any = null;
-                //    for (var i: number = 0; i < method.texturesData.length; ++i) {
-                //        textureData = method.texturesData[i];
+                    var textureData: any = null;
+                    for (var i: number = 0; i < method.texturesData.length; ++i) {
+                        textureData = method.texturesData[i];
 
-                //        waterNormalMethod.setUvSpeed(i, Number(textureData.uSpeed), Number(textureData.vSpeed));
-                //        load = this.addMethodImgTask(textureData.path, waterNormalMethod, textureData.attributeName);
-                //    }
+                        waterNormalMethod.setUvSpeed(i, Number(textureData.uSpeed), Number(textureData.vSpeed));
+                        load = this.addMethodImgTask(textureData.path, waterNormalMethod, textureData.attributeName);
+                    }
 
-                //}
+                }
             }
         }
         //灯光

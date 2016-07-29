@@ -96,28 +96,6 @@ module egret3d {
         */
         public addAnimationClip(animationClip: SkeletonAnimationClip): void {
 
-            //Test;
-            var BonezeroIndex: number = animationClip.findJointIndex("Bonezero");
-            var Bip001Index: number = animationClip.findJointIndex("Bip001");
-            if (BonezeroIndex != -1 && Bip001Index != -1) {
-                for (var i: number = 0; i < animationClip.poseArray.length; ++i) {
-
-                    var Bip001: Joint = animationClip.poseArray[i].joints[Bip001Index];
-                    var Bonezero: Joint = animationClip.poseArray[i].joints[BonezeroIndex];
-
-                    //Bonezero.translation.x = Bip001.translation.x;
-                    Bonezero.translation.z = Bip001.translation.z;
-                    //Bip001.translation.x = 0;
-                    Bip001.translation.z = 0;
-
-                    Bip001.buildLocalMatrix(Bip001.scale, Bip001.orientation, Bip001.translation);
-                    Bonezero.buildLocalMatrix(Bonezero.scale, Bonezero.orientation, Bonezero.translation);
-
-                    animationClip.poseArray[i].calculateJointWorldMatrix();
-                }
-            }
-
-
             if (animationClip.sourceData) {
                 this._skeletonAnimationClip = animationClip;
 

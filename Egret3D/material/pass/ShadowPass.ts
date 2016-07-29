@@ -34,6 +34,13 @@
                     this._vs_shader_methods[ShaderPhaseType.start_vertex] = [];
                     this._vs_shader_methods[ShaderPhaseType.start_vertex].push("skeletonShadowPass_vs");
                 }
+                else if (animation.particleAnimationController) {
+                    //this._vs_shader_methods[ShaderPhaseType.start_vertex] = [];
+                    //this._vs_shader_methods[ShaderPhaseType.start_vertex].push("particle_vs");
+                    ////to change importent
+                    //this.addShaderPhase(animation.particleAnimationController.particleAnimationState.vertex_shaders, this._vs_shader_methods);
+                    //this.addShaderPhase(animation.particleAnimationController.particleAnimationState.fragment_shaders, this._fs_shader_methods);
+                }
             }
             else {
                 this._vs_shader_methods[ShaderPhaseType.start_vertex] = [];

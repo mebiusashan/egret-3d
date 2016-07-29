@@ -229,6 +229,14 @@
                     this._vs_shader_methods[ShaderPhaseType.start_vertex] = [];
                     this._vs_shader_methods[ShaderPhaseType.start_vertex].push("skeleton_vs");
                 }
+                else if (animation.particleAnimationController) {
+                    this._vs_shader_methods[ShaderPhaseType.start_vertex] = [];
+                    this._vs_shader_methods[ShaderPhaseType.start_vertex].push("particle_vs");
+
+                    //to change importent
+                    this.addShaderPhase( this._passID , animation.particleAnimationController.particleAnimationState.vertex_shaders, this._vs_shader_methods);
+                    this.addShaderPhase( this._passID , animation.particleAnimationController.particleAnimationState.fragment_shaders, this._fs_shader_methods);
+                }
             }
 
             if (this._materialData.acceptShadow) {
@@ -366,7 +374,7 @@
             if (shaderList && shaderList.length > 0)
                 this.addMethodShaders(this._passUsage.fragmentShader, shaderList);
             else {
-                if (animation && false) {
+                if (animation && animation.particleAnimationController) {
                     this.addMethodShaders(this._passUsage.fragmentShader, ["particle_end_fs"]);
                 } else {
                     this.addMethodShaders(this._passUsage.fragmentShader, ["end_fs"]);

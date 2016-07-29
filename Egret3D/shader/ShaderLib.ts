@@ -808,6 +808,162 @@ module egret3d {
 			"normal.xyz = tbn( normalTex.xyz , normal.xyz , varying_mvPose.xyz , uv_0 ) ; \n" +
 			"} \n",
 
+			"particle_bezier":
+			"",
+
+			"particle_color_fs":
+			"//##FilterEnd## \n",
+
+			"particle_color_vs":
+			"//##FilterEnd## \n",
+
+			"particle_diffuse_fragment":
+			"",
+
+			"particle_end":
+			"//##FilterEnd## \n",
+
+			"particle_end_fs":
+			"",
+
+			"particle_end_vs":
+			"//##FilterEnd## \n",
+
+			"particle_follow_vs":
+			"//##FilterEnd## \n",
+
+			"particle_fs":
+			"",
+
+			"particle_rm_billboard":
+			"",
+
+			"particle_rm_mesh":
+			"",
+
+			"particle_rm_stretched":
+			"",
+
+			"particle_rotationConst":
+			"",
+
+			"particle_rotationOneBezier":
+			"",
+
+			"particle_rotationTwoBezier":
+			"",
+
+			"particle_size_vs":
+			"",
+
+			"particle_textureSheetConst":
+			"",
+
+			"particle_textureSheetOneBezier":
+			"",
+
+			"particle_textureSheetTwoBezier":
+			"",
+
+			"particle_textureSheet_vs":
+			"",
+
+			"particle_time_fs":
+			"",
+
+			"particle_time_vs":
+			"",
+
+			"particle_uv_roll_fs":
+			"",
+
+			"particle_velocity":
+			"",
+
+			"particle_velocityForceConst":
+			"",
+
+			"particle_velocityForceOneBezier":
+			"",
+
+			"particle_velocityForceOneBezierX":
+			"",
+
+			"particle_velocityForceOneBezierY":
+			"",
+
+			"particle_velocityForceOneBezierZ":
+			"",
+
+			"particle_velocityForceTwoBezier":
+			"",
+
+			"particle_velocityForceTwoBezierX1":
+			"",
+
+			"particle_velocityForceTwoBezierX2":
+			"",
+
+			"particle_velocityForceTwoBezierY1":
+			"",
+
+			"particle_velocityForceTwoBezierY2":
+			"",
+
+			"particle_velocityForceTwoBezierZ1":
+			"",
+
+			"particle_velocityForceTwoBezierZ2":
+			"",
+
+			"particle_velocityLimitConst":
+			"",
+
+			"particle_velocityLimitOneBezier":
+			"",
+
+			"particle_velocityLimitTwoBezier":
+			"",
+
+			"particle_velocityOverConst":
+			"",
+
+			"particle_velocityOverOneBezier":
+			"",
+
+			"particle_velocityOverOneBezierX":
+			"",
+
+			"particle_velocityOverOneBezierY":
+			"",
+
+			"particle_velocityOverOneBezierZ":
+			"",
+
+			"particle_velocityOverTwoBezier":
+			"",
+
+			"particle_velocityOverTwoBezierX1":
+			"",
+
+			"particle_velocityOverTwoBezierX2":
+			"",
+
+			"particle_velocityOverTwoBezierY1":
+			"",
+
+			"particle_velocityOverTwoBezierY2":
+			"",
+
+			"particle_velocityOverTwoBezierZ1":
+			"",
+
+			"particle_velocityOverTwoBezierZ2":
+			"",
+
+			"particle_vs":
+			"",
+
 			"pointLight_fragment":
 			"const int max_pointLight = 0 ; \n" +
 			"uniform float uniform_pointLightSource[12*max_pointLight] ; \n" +
@@ -1072,6 +1228,114 @@ module egret3d {
 			"varying_pos = uniform_modelMatrix * uniform_viewMatrix * vec4(e_position, 1.0) ; \n" +
 			"} \n" +
 			"                       \n",
+
+			"waterDiffuse_fs":
+			"uniform sampler2D diffuseTexture; \n" +
+			"vec4 diffuseColor ; \n" +
+			"void main() { \n" +
+			"diffuseColor.xyz *= diffuseColor.w ; \n" +
+			"} \n",
+
+			"waterNormal_fs":
+			"uniform vec2 waterNormalData[4]; \n" +
+			"uniform float time ; \n" +
+			"uniform sampler2D normalTextureA; \n" +
+			"uniform sampler2D normalTextureB; \n" +
+			"varying vec2 varying_uv0        ; \n" +
+			"mat3 TBN ; \n" +
+			"mat3 cotangentFrame(vec3 N, vec3 p, vec2 uv) { \n" +
+			"vec3 dp1 = dFdx(p); \n" +
+			"vec3 dp2 = dFdy(p); \n" +
+			"vec2 duv1 = dFdx(uv); \n" +
+			"vec2 duv2 = dFdy(uv); \n" +
+			"vec3 dp2perp = cross(dp2, N); \n" +
+			"vec3 dp1perp = cross(N, dp1); \n" +
+			"vec3 T = dp2perp * duv1.x + dp1perp * duv2.x; \n" +
+			"vec3 B = dp2perp * duv1.y + dp1perp * duv2.y; \n" +
+			"float invmax = 1.0 / sqrt(max(dot(T,T), dot(B,B))); \n" +
+			"return mat3(T * invmax, B * invmax, N); \n" +
+			"} \n" +
+			"vec3 tbn(vec3 map, vec3 N, vec3 V, vec2 texcoord) { \n" +
+			"mat3 TBN = cotangentFrame(N, -V, texcoord); \n" +
+			"return normalize(TBN * map); \n" +
+			"} \n" +
+			"void main(void){ \n" +
+			"float tempTime = mod(time,100000.0); \n" +
+			"vec2 uvA = uv_0 * waterNormalData[3].x + waterNormalData[0] * tempTime ; \n" +
+			"vec2 uvB = uv_0 * waterNormalData[3].y + waterNormalData[1] * tempTime  ; \n" +
+			"normal = flatNormals(varying_mvPose.xyz) ; \n" +
+			"TBN = cotangentFrame(normal, -varying_mvPose.xyz, uv_0 ); \n" +
+			"vec3 bump1 = texture2D( normalTextureA, uvA ).rgb; \n" +
+			"vec3 bump2 = texture2D( normalTextureB, uvB ).rgb; \n" +
+			"vec3 bump = bump1 + bump2 - 1.0; \n" +
+			"normal = normalize(TBN * bump) ; \n" +
+			"normal.y *= -1.0; \n" +
+			"}  \n",
+
+			"wave_fs":
+			"uniform sampler2D diffuseTexture; \n" +
+			"uniform vec3 uniform_eyepos; \n" +
+			"uniform vec4 waveFSData[2]; \n" +
+			"varying vec4 varying_mvPose; \n" +
+			"vec4 diffuseColor ; \n" +
+			"void main(void){ \n" +
+			"vec3 viewDir = normalize(varying_mvPose.xyz/varying_mvPose.w); \n" +
+			"diffuseColor.xyz = vec3(1.0,1.0,1.0) ; \n" +
+			"vec3 shallowWaterColor = waveFSData[0].xyz * waveFSData[0].w ; \n" +
+			"vec3 deepWaterColor = waveFSData[1].xyz * waveFSData[1].w; \n" +
+			"float facing = clamp(dot( -normalize(viewDir),normal),0.0,1.0); \n" +
+			"vec3 waterColor = mix(shallowWaterColor,deepWaterColor,facing); \n" +
+			"diffuseColor.xyz *= waterColor ; \n" +
+			"}  \n",
+
+			"wave_vs":
+			"#define VERTEX_TEXTURES \n" +
+			"attribute vec3 attribute_normal; \n" +
+			"attribute vec4 attribute_color; \n" +
+			"uniform mat4 uniform_modelMatrix; \n" +
+			"uniform mat4 uniform_viewMatrix; \n" +
+			"varying vec4 varying_mvPose; \n" +
+			"uniform vec3 waveVSData[4]; \n" +
+			"uniform float time ; \n" +
+			"struct wave{ \n" +
+			"vec3 wave_xyz_intensity_0 ; \n" +
+			"vec3 wave_xyz_intensity_1 ; \n" +
+			"vec3 wave_xyz_speed_0 ; \n" +
+			"vec3 wave_xyz_speed_1 ; \n" +
+			"}; \n" +
+			"const float pi = 3.14 ; \n" +
+			"vec3 calcWave2( float t , vec3 x, float amplitude, float waveLength ,float angularVelocity ,  vec3 waveDir ){ \n" +
+			"angularVelocity = angularVelocity * 0.1; \n" +
+			"vec3 waveVector = waveDir ; \n" +
+			"float waveNumber = pi / waveLength; \n" +
+			"waveVector *= waveNumber ; \n" +
+			"vec3 temp ; \n" +
+			"float kDotX0SubWt = dot(waveVector , x ) - angularVelocity * t  * 0.001; \n" +
+			"float A = amplitude * sin(kDotX0SubWt) ; \n" +
+			"temp.xz = waveDir.xz * A ; \n" +
+			"temp.y += amplitude * cos(kDotX0SubWt); \n" +
+			"temp = x - temp ; \n" +
+			"return temp ; \n" +
+			"} \n" +
+			"void main(void){ \n" +
+			"wave wa ; \n" +
+			"wa.wave_xyz_intensity_0 = vec3(waveVSData[0]) ; \n" +
+			"wa.wave_xyz_intensity_1 = vec3(waveVSData[1]) ; \n" +
+			"wa.wave_xyz_speed_0 = vec3(waveVSData[2]) ; \n" +
+			"wa.wave_xyz_speed_1 = vec3(waveVSData[3]) ; \n" +
+			"float tempTime = mod( time , 1000000.0 ); \n" +
+			"vec3 newPose1 = calcWave2(tempTime,e_position,60.0, 500.0, 20.0,vec3(1.0,0.0,1.0)); \n" +
+			"newPose1 += calcWave2(tempTime,e_position,130.0, 50.0, 20.0,vec3(1.0,0.0,-0.5)); \n" +
+			"newPose1 += calcWave2(tempTime,e_position,90.0, 80.0, 20.0,vec3(1.0,0.0,-1.5)); \n" +
+			"e_position = newPose1 ; \n" +
+			"mat4 mvMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); \n" +
+			"varying_mvPose = mvMatrix * vec4( e_position , 1.0 )  ; \n" +
+			"mat4 normalMatrix = inverse(mvMatrix) ; \n" +
+			"normalMatrix = transpose(normalMatrix); \n" +
+			"varying_eyeNormal = mat3(normalMatrix) * -attribute_normal ; \n" +
+			"outPosition = varying_mvPose ; \n" +
+			"varying_color = attribute_color; \n" +
+			"}  \n",
 
 
 		};

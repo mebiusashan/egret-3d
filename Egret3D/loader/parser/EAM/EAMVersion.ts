@@ -114,7 +114,7 @@
             var nCount: number = bytes.readInt();
 
             //流数据;
-            if (boneCount * frameCount >= 10000 || true) {
+            if (boneCount * frameCount >= 10000 && false) {
                 skeletonAnimationClip.sampling = sampling;
                 skeletonAnimationClip.boneCount = boneCount;
                 skeletonAnimationClip.frameDataOffset = bytes.position;
