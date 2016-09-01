@@ -19,6 +19,13 @@
         constructor() {
             super();
             //##FilterBegin## ##Particle##
+            this.name = "ParticleRotationTwoBezierNode";
+
+
+            this.attribute_randomSeed = new GLSL.VarRegister();
+            this.attribute_randomSeed.name = "attribute_rotationRandomSeed";
+            this.attribute_randomSeed.size = 1;
+            this.attributes.push(this.attribute_randomSeed);
             //##FilterEnd##
         }
 
@@ -31,6 +38,13 @@
         */
         public initNode(data: ParticleDataNode): void {
             //##FilterBegin## ##Particle##
+            this._node = <ParticleDataRotationSpeed>data;
+            this._floatCompressData = this._node.bezier1.sampler();
+            this._floatCompressData2 = this._node.bezier2.sampler();
+
+
+            this.vertex_ShaderName[ShaderPhaseType.global_vertex] = this.vertex_ShaderName[ShaderPhaseType.global_vertex] || [];
+            this.vertex_ShaderName[ShaderPhaseType.global_vertex].push("particle_rotationTwoBezier");
             //##FilterEnd##
         }
         /**
@@ -43,6 +57,18 @@
         */
         public build(geometry: Geometry, count: number) {
             //##FilterBegin## ##Particle##
+            this._animationState = <ParticleAnimationState>this.state;
+
+            var vertices: number = geometry.vertexCount / count;
+            var index: number = 0;
+            for (var i: number = 0; i < count; ++i) {
+                var random: number = Math.random();
+                for (var j: number = 0; j < vertices; ++j) {
+                    index = i * vertices + j;
+                    index = index * geometry.vertexAttLength + this.attribute_randomSeed.offsetIndex;
+                    geometry.vertexArray[index + 0] = random;
+                }
+            }
             //##FilterEnd##
         }
 
@@ -53,6 +79,8 @@
         */
         public activeState(time: number, animTime: number, delay: number, animDelay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy) {
             //##FilterBegin## ##Particle##
+            context3DProxy.uniform1fv(usage["uniform_rotationBezier"].uniformIndex, this._floatCompressData);
+            context3DProxy.uniform1fv(usage["uniform_rotationBezier2"].uniformIndex, this._floatCompressData2);
             //##FilterEnd##
         }
 

@@ -105,7 +105,6 @@
         private buildGeometry(aixs: Vector3D): void {
 
             this.vertexFormat = VertexFormat.VF_POSITION | VertexFormat.VF_NORMAL | VertexFormat.VF_TANGENT | VertexFormat.VF_COLOR | VertexFormat.VF_UV0;
-
             var x: number, y: number;
             var numIndices: number;
             var base: number;
@@ -116,8 +115,9 @@
 
             numIndices = this._segmentsH * this._segmentsW * 6;
 
-            this.verticesData = new Array<number>(numVertices * stride);
-            this.indexData = new Array<number>(numIndices);
+            this.vertexCount = numVertices;
+            this.indexCount = numIndices;
+
 
             numIndices = 0;
             var point: Vector3D = new Vector3D();
@@ -134,55 +134,55 @@
                     }
                     switch (aixs) {
                         case Vector3D.Y_AXIS:
-                            this.verticesData[index++] = x;
-                            this.verticesData[index++] = 0;
-                            this.verticesData[index++] = y;
+                            this.vertexArray[index++] = x;
+                            this.vertexArray[index++] = 0;
+                            this.vertexArray[index++] = y;
 
-                            this.verticesData[index++] = 0;
-                            this.verticesData[index++] = 1;
-                            this.verticesData[index++] = 0;
+                            this.vertexArray[index++] = 0;
+                            this.vertexArray[index++] = 1;
+                            this.vertexArray[index++] = 0;
                             break;
                         case Vector3D.Z_AXIS:
-                            this.verticesData[index++] = x;
-                            this.verticesData[index++] = y;
-                            this.verticesData[index++] = 0;
+                            this.vertexArray[index++] = x;
+                            this.vertexArray[index++] = y;
+                            this.vertexArray[index++] = 0;
 
-                            this.verticesData[index++] = 0;
-                            this.verticesData[index++] = 0;
-                            this.verticesData[index++] = -1;
+                            this.vertexArray[index++] = 0;
+                            this.vertexArray[index++] = 0;
+                            this.vertexArray[index++] = -1;
                             break;
                         case Vector3D.X_AXIS:
-                            this.verticesData[index++] = 0;
-                            this.verticesData[index++] = x;
-                            this.verticesData[index++] = y;
+                            this.vertexArray[index++] = 0;
+                            this.vertexArray[index++] = x;
+                            this.vertexArray[index++] = y;
 
-                            this.verticesData[index++] = 1;
-                            this.verticesData[index++] = 0;
-                            this.verticesData[index++] = 0;
+                            this.vertexArray[index++] = 1;
+                            this.vertexArray[index++] = 0;
+                            this.vertexArray[index++] = 0;
                             break;
                         default:
-                            this.verticesData[index++] = x;
-                            this.verticesData[index++] = 0;
-                            this.verticesData[index++] = y;
+                            this.vertexArray[index++] = x;
+                            this.vertexArray[index++] = 0;
+                            this.vertexArray[index++] = y;
 
-                            this.verticesData[index++] = 0;
-                            this.verticesData[index++] = 1;
-                            this.verticesData[index++] = 0;
+                            this.vertexArray[index++] = 0;
+                            this.vertexArray[index++] = 1;
+                            this.vertexArray[index++] = 0;
                             break;
                     }
 
 
-                    this.verticesData[index++] = 1;
-                    this.verticesData[index++] = 0;
-                    this.verticesData[index++] = 0;
+                    this.vertexArray[index++] = 1;
+                    this.vertexArray[index++] = 0;
+                    this.vertexArray[index++] = 0;
 
-                    this.verticesData[index++] = 1;
-                    this.verticesData[index++] = 1;
-                    this.verticesData[index++] = 1;
-                    this.verticesData[index++] = 1;
+                    this.vertexArray[index++] = 1;
+                    this.vertexArray[index++] = 1;
+                    this.vertexArray[index++] = 1;
+                    this.vertexArray[index++] = 1;
 
-                    this.verticesData[index++] = (xi / this._segmentsW) * this._scaleU;
-                    this.verticesData[index++] = (1 - yi / this._segmentsH) * this._scaleV;
+                    this.vertexArray[index++] = (xi / this._segmentsW) * this._scaleU;
+                    this.vertexArray[index++] = (1 - yi / this._segmentsH) * this._scaleV;
 
                     index += skip;
 
@@ -190,13 +190,13 @@
                         base = xi + yi * tw;
                         var mult: number = 1;
 
-                        this.indexData[numIndices++] = base * mult;
-                        this.indexData[numIndices++] = (base + tw + 1) * mult;
-                        this.indexData[numIndices++] = (base + tw) * mult;
+                        this.indexArray[numIndices++] = base * mult;
+                        this.indexArray[numIndices++] = (base + tw + 1) * mult;
+                        this.indexArray[numIndices++] = (base + tw) * mult;
 
-                        this.indexData[numIndices++] = base * mult;
-                        this.indexData[numIndices++] = (base + 1) * mult;
-                        this.indexData[numIndices++] = (base + tw + 1) * mult;
+                        this.indexArray[numIndices++] = base * mult;
+                        this.indexArray[numIndices++] = (base + 1) * mult;
+                        this.indexArray[numIndices++] = (base + tw + 1) * mult;
 
                     }
                 }
@@ -205,7 +205,7 @@
             var subGeometry: SubGeometry = new SubGeometry();
             subGeometry.geometry = this;
             subGeometry.start = 0;
-            subGeometry.count = this.indexData.length;
+            subGeometry.count = this.indexCount;
             this.subGeometrys.push(subGeometry);
         }
     }

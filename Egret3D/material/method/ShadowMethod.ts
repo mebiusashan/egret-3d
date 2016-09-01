@@ -51,7 +51,10 @@
         * @private
         */
         public upload(time: number, delay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D) {
-            //usage["uniform_ShadowMatrix"] = context3DProxy.getUniformLocation(usage.program3D, "uniform_ShadowMatrix");
+
+            if (usage.uniform_ShadowMatrix) {
+                usage.uniform_ShadowMatrix.uniformIndex = context3DProxy.getUniformLocation(usage.program3D, "uniform_ShadowMatrix");
+            }
         }
 
         /**
@@ -59,11 +62,14 @@
         */
 
         public activeState(time: number, delay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D) {
-            if (ShadowCast.instance.shadowCamera) {
-                context3DProxy.uniformMatrix4fv(usage.uniform_ShadowMatrix.uniformIndex, false, ShadowCast.instance.shadowCamera.viewProjectionMatrix.rawData);
+            var camera: Camera3D = ShadowCast.instance.shadowCamera;
+            if (camera) {
+                if (usage.uniform_ShadowMatrix && usage.uniform_ShadowMatrix.uniformIndex) {
+                    context3DProxy.uniformMatrix4fv(usage.uniform_ShadowMatrix.uniformIndex, false, camera.viewProjectionMatrix.rawData);
+                }
             }
 
-            context3DProxy.uniform3fv(usage.uniform_ShadowColor.uniformIndex, this.materialData.shadowColor);
+            context3DProxy.uniform4fv(usage.uniform_ShadowColor.uniformIndex, this.materialData.shadowColor);
         }
     }
 }

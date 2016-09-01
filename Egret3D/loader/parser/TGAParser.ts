@@ -20,7 +20,7 @@
          * @param buffer 二进制流
          * @returns MimapTexture
          */
-        public static parse(buffer: ArrayBuffer): MimapTexture {
+        public static parse(buffer: ArrayBuffer): Texture {
             var TGA_TYPE_NO_DATA = 0,
                 TGA_TYPE_INDEXED = 1,
                 TGA_TYPE_RGB = 2,
@@ -423,7 +423,7 @@
             var result = tgaParse(use_rle, use_pal, header, offset, content);
             var rgbaData = getTgaRGBA(header.width, header.height, result.pixel_data, result.palettes);
 
-            var texture: MimapTexture = new MimapTexture();
+            var texture: Texture = new Texture();
             texture.width = header.width;
             texture.height = header.height;
             texture.internalFormat = InternalFormat.PixelArray;

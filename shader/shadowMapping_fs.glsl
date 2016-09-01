@@ -1,5 +1,5 @@
 uniform sampler2D shadowMapTexture;
-uniform vec3 uniform_ShadowColor;
+uniform vec4 uniform_ShadowColor;
 
 varying vec4 varying_ShadowCoord;
 
@@ -10,17 +10,32 @@ float unpackDepth(vec4 rgbaDepth){
 }
 
 void main() {
-	vec3 shadowColor = vec3(1.0,1.0,1.0);
 
-	float shadow = 0.0;
-	if (varying_ShadowCoord.w > 0.0) {
-		vec3 shadowDepth = varying_ShadowCoord.xyz / varying_ShadowCoord.w * 0.5 + 0.5;
-		vec2 sample = clamp(shadowDepth.xy,0.0,1.0);
-		//float sampleDepth = unpackDepth(texture2D(shadowMapTexture, sample));
-		float sampleDepth = texture2D(shadowMapTexture, sample).z;
-		if(sampleDepth > shadowDepth.z)
-			shadowColor = uniform_ShadowColor; // 后面赋值的颜色是 阴影的颜色
+	vec3 shadowColor = vec3(1.0,1.0,1.0); 
+	float offset = uniform_ShadowColor.w; 
+	vec3 shadowDepth = varying_ShadowCoord.xyz / varying_ShadowCoord.w * 0.5 + 0.5; 
+	vec2 sample = clamp(shadowDepth.xy,0.0,1.0); 
+	vec4 sampleDepth = texture2D(shadowMapTexture, sample).xyzw; 
+	float depth = varying_ShadowCoord.z;
+
+	if( shadowDepth.y > 1.0){ 
+		sampleDepth.z = depth ; 
+	} 
+
+	if( shadowDepth.z > 1.0 - offset){ 
+		sampleDepth.z = depth ; 
 	}
 
-	diffuseColor.xyz = diffuseColor.xyz * shadowColor;
+	if( shadowDepth.x < 0.0 ){ 
+		sampleDepth.z = depth ; 
+	} 
+	  
+	if( shadowDepth.x >1.0 ){ 
+		sampleDepth.z = depth ; 
+	}
+
+	if( sampleDepth.z < depth - offset) { 
+		shadowColor = uniform_ShadowColor.xyz; 
+	} 
+	diffuseColor.xyz = diffuseColor.xyz * shadowColor; 
 }

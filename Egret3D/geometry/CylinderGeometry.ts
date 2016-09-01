@@ -61,8 +61,11 @@
         public buildGeomtry() {
             this.vertexFormat = VertexFormat.VF_POSITION | VertexFormat.VF_NORMAL | VertexFormat.VF_TANGENT | VertexFormat.VF_COLOR | VertexFormat.VF_UV0 | VertexFormat.VF_UV1;
 
-            this.verticesData = new Array<number>();
-            this.indexData = new Array<number>();
+            var vertexBuffer: number[] = [];
+            var indexBuffer: number[] = [];
+
+            //this.vertexCount = m_nSegments * 2 + 2;
+            //this.indexCount = 
 
             var m_nSegments: number = 20;
 
@@ -76,24 +79,22 @@
 
                 var z0: number = this._radius * Math.cos(nCurrentSegment * rDeltaSegAngle);
 
-
-                this.verticesData.push(
+                vertexBuffer.push(
                     x0, 0.0 + (this._height / 2.0), z0, x0, 0.0, z0, 1.0, 0.0, 0.0, 1, 1, 1, 1, 1.0, 0.0, 0, 0,
                     x0, 0.0 - (this._height / 2.0), z0, x0, 0.0, z0, 1.0, 0.0, 0.0, 1, 1, 1, 1, 1.0, 0.0, 0, 0);
             }
 
-            var len_base = this.verticesData.length / 17;
+            var len_base = vertexBuffer.length / this.vertexAttLength;
 
             var topCenter = len_base;
-            this.verticesData.push(0.0, 0.0 - (this._height / 2.0), 0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 0.0, 1, 1, 1, 1, 1.0, 0.0, 0, 0);
+            vertexBuffer.push(0.0, 0.0 - (this._height / 2.0), 0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 0.0, 1, 1, 1, 1, 1.0, 0.0, 0, 0);
 
             var buttomCenter = len_base + 1;
-            this.verticesData.push(0.0, 0.0 + (this._height / 2.0), 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1, 1, 1, 1, 1.0, 0.0, 0, 0);
-
+            vertexBuffer.push(0.0, 0.0 + (this._height / 2.0), 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1, 1, 1, 1, 1.0, 0.0, 0, 0);
 
             for (var i = 0; i < len_base; i++) {
                 if ((i & 1) != 0) {
-                    this.indexData.push(
+                    indexBuffer.push(
 
                         i,
                         i + 1 >= len_base ? i + 1 - len_base : i + 1,
@@ -105,7 +106,7 @@
 
                     );
                 } else {
-                    this.indexData.push(
+                    indexBuffer.push(
 
                         i + 1 >= len_base ? i + 1 - len_base : i + 1,
                         i,
@@ -119,10 +120,14 @@
                     );
                 }
             }
+
+            this.setVerticesForIndex(0, this.vertexFormat, vertexBuffer, vertexBuffer.length / this.vertexAttLength);
+            this.setVertexIndices(0, indexBuffer);
+
             var subGeometry: SubGeometry = new SubGeometry();
             subGeometry.geometry = this;
             subGeometry.start = 0;
-            subGeometry.count = this.indexData.length;
+            subGeometry.count = this.indexCount;
             this.subGeometrys.push(subGeometry);
         }
     }

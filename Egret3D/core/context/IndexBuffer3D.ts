@@ -29,7 +29,7 @@
          * @language zh_CN
          * @private
          */
-        public arrayBuffer: ArrayBuffer;
+        public arrayBuffer: Uint16Array;
                
         /**
         * @language zh_CN

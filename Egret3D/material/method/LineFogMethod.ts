@@ -91,11 +91,25 @@
             return this._fogStartDistance;
         }
 
+        /**
+        * @language zh_CN
+        * 设置雾的结束距离
+        * @param value 雾的结束距离
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set fogFarDistance(value: number) {
             this._fogFarDistance = value;
             this.uniform_globalFog[5] = value;
         }
 
+        /**
+        * @language zh_CN
+        * 获取雾的结束距离
+        * @returns number 雾的结束距离
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public get fogFarDistance(): number {
             return this._fogFarDistance;
         }

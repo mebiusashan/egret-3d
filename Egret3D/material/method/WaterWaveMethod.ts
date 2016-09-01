@@ -29,6 +29,44 @@
             super();
 
             //##FilterBegin## ##Water##
+
+            this.vsShaderList[ShaderPhaseType.start_vertex] = this.vsShaderList[ShaderPhaseType.start_vertex] || [];
+            this.vsShaderList[ShaderPhaseType.start_vertex].push("wave_vs");
+
+            this.fsShaderList[ShaderPhaseType.multi_end_fragment] = this.fsShaderList[ShaderPhaseType.multi_end_fragment] || [];
+            this.fsShaderList[ShaderPhaseType.multi_end_fragment].push("wave_fs");
+
+            this.start();
+
+            //---------------
+            this._waveVSData[0] = this._wave_xyz_intensity_0.x;
+            this._waveVSData[1] = this._wave_xyz_intensity_0.y;
+            this._waveVSData[2] = this._wave_xyz_intensity_0.z;
+                      
+            this._waveVSData[3] = this._wave_xyz_intensity_1.x;
+            this._waveVSData[4] = this._wave_xyz_intensity_1.y;
+            this._waveVSData[5] = this._wave_xyz_intensity_1.z;
+                      
+            this._waveVSData[6] = this._wave_xyz_speed_0.x;
+            this._waveVSData[7] = this._wave_xyz_speed_0.y;
+            this._waveVSData[8] = this._wave_xyz_speed_0.z;
+                      
+            this._waveVSData[9] = this._wave_xyz_speed_1.x;
+            this._waveVSData[10] = this._wave_xyz_speed_1.y;
+            this._waveVSData[11] = this._wave_xyz_speed_1.z;
+
+            //0.0/255.0,63.0/255.0,77.0/255.0
+            //71.0/255.0,118.0/255.0,138.0/255.0
+            this._waveFSData[0] = 0.0 / 255.0; 
+            this._waveFSData[1] = 63.0 / 255.0; 
+            this._waveFSData[2] = 77.0 / 255.0; 
+            this._waveFSData[3] = 1.0; 
+
+            this._waveFSData[4] = 71.0 / 255.0;
+            this._waveFSData[5] = 118.0 / 255.0;
+            this._waveFSData[6] = 138.0 / 255.0;
+            this._waveFSData[7] = 1.0; 
+
 	        //##FilterEnd##
         }
 
@@ -39,6 +77,16 @@
         */
         public set deepWaterColor(color: number) {
             //##FilterBegin## ##Water##
+
+            var a = color >> 24 & 0xff;
+            var r = color >> 16 & 0xff;
+            var g = color >> 8 & 0xff;
+            var b = color & 0xff;
+            this._waveFSData[0] = r / 255.0;
+            this._waveFSData[1] = g / 255.0;
+            this._waveFSData[2] = b / 255.0;
+            this._waveFSData[3] = a / 255.0; 
+
             //##FilterEnd##
         }
 
@@ -63,6 +111,16 @@
         */
         public set shallowWaterColor(color: number) {
             //##FilterBegin## ##Water##
+
+            var a = color >> 24 & 0xff;
+            var r = color >> 16 & 0xff;
+            var g = color >> 8 & 0xff;
+            var b = color & 0xff;
+            this._waveFSData[4] = r / 255.0;
+            this._waveFSData[5] = g / 255.0;
+            this._waveFSData[6] = b / 255.0;
+            this._waveFSData[7] = a / 255.0; 
+
             //##FilterEnd##
         }
 
@@ -86,6 +144,15 @@
         */
         public set waveTexture(texture: ITexture) {
             //##FilterBegin## ##Water##
+
+            this._waveTexture = texture;
+            if (texture) {
+                if (this.materialData["waveTexture"] != this._waveTexture) {
+                    this.materialData["waveTexture"] = texture;
+                    this.materialData.textureChange = true;
+                }
+            }
+
             //##FilterEnd##
         }
 
@@ -98,6 +165,11 @@
         */
         public start(rest: boolean = false) {
             //##FilterBegin## ##Water##
+
+            if (rest)
+                this._time = 0;
+            this._start = true;
+
             //##FilterEnd##
         }
                 
@@ -109,6 +181,9 @@
         */
         public stop() {
             //##FilterBegin## ##Water##
+
+            this._start = false;
+
             //##FilterEnd##
         }
 
@@ -127,6 +202,11 @@
         */
         public upload(time: number, delay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D) {
             //##FilterBegin## ##Water##
+
+            usage["waveVSData"] = context3DProxy.getUniformLocation(usage.program3D, "waveVSData");
+            usage["waveFSData"] = context3DProxy.getUniformLocation(usage.program3D, "waveFSData");
+            usage["time"] = context3DProxy.getUniformLocation(usage.program3D, "time");
+
             //##FilterEnd##
         }
         
@@ -136,6 +216,15 @@
         */
         public activeState(time: number, delay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D) {
             //##FilterBegin## ##Water##
+
+            if (this._start) {
+                this._time += delay;
+            }
+
+            context3DProxy.uniform3fv(usage["waveVSData"], this._waveVSData);
+            context3DProxy.uniform4fv(usage["waveFSData"], this._waveFSData);
+            context3DProxy.uniform1f(usage["time"], this._time);
+
             //##FilterEnd##
         }
     }

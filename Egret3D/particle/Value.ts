@@ -433,51 +433,6 @@
         }
     }
     
-    /**
-    * @private
-    * 球表面分布
-    */
-    class BallSurfaceValueShape extends ValueShape {
-        public valueType: ValueType = ValueType.vec3;
-
-        //parameters = [R]
-        public calculate(num: number, ...parameters): any {
-            var values: Vector3D[] = [];
-            var r: number = parameters[0][0];
-            values = this.getPoints1(num, r);
-            return values;
-        }
-
-        private getPoints1(num: number, r: number): Vector3D[] {
-            var values: Vector3D[] = [];
-            var x: number;
-            var y: number;
-            var z: number;
-            var s: number;
-            var n: number;
-            for (var i: number = 0; i < num; i++) {
-                x = Math.random() * 2 - 1;
-                y = Math.random() * 2 - 1;
-                z = Math.random() * 2 - 1;
-                s = x * x + y * y + z * z;
-                if (s > 1) {
-                    i--;
-                } else {
-                    n = Math.sqrt(s);
-                    values.push(new Vector3D(x / n * r, y / n * r, z / n * r));
-                }
-            }
-            return values;
-        }
-
-        private getPoints2(num: number, r: number): Vector3D[] {
-            var values: Vector3D[] = [];
-            for (var i: number = 0; i < num; i++) {
-
-            }
-            return values;
-        }
-    }
         
     /**
     * @private
@@ -487,7 +442,7 @@
         public valueType: ValueType = ValueType.vec3;
 
         public r: number = 10;
-
+        public fromShell: boolean = false;
         //parameters = [R]
         public calculate(num: number): any {
             var values: Vector3D[] = [];
@@ -507,6 +462,11 @@
                 y = Math.random() * 2 * r - r;
                 z = Math.random() * 2 * r - r;
                 pos = new Vector3D(x, y, z);
+                //表面发射
+                if (this.fromShell) {
+                    pos.normalize(this.r);
+                }
+
                 if (Vector3D.distance(radio, pos) > r) {
                     i--;
                 } else {
@@ -526,15 +486,15 @@
         public valueType: ValueType = ValueType.vec3;
 
         public r: number = 10;
-
+        public fromShell: boolean = false;
         //parameters = [R]
         public calculate(num: number): any {
             var values: Vector3D[] = [];
-            values = this.getPoints1(num, this.r);
+            values = this.getPoints(num, this.r);
             return values;
         }
 
-        private getPoints1(num: number, r: number): Vector3D[] {
+        private getPoints(num: number, r: number): Vector3D[] {
             var values: Vector3D[] = [];
             var x: number;
             var y: number;
@@ -546,6 +506,10 @@
                 y = Math.random() * 2 * r - r;
                 z = Math.abs(Math.random() * 2 * r - r);
                 pos = new Vector3D(x, y, z);
+                //表面发射
+                if (this.fromShell) {
+                    pos.normalize(this.r);
+                }
                 if (Vector3D.distance(radio, pos) > r) {
                     i--;
                 } else {
@@ -648,7 +612,7 @@
         private edgePosition(values:Vector3D[], num:number): void {
             var val: Vector3D;
             var normal: Vector3D;
-            var triangleCount: number = this.geometry.indexData.length / 3;
+            var triangleCount: number = this.geometry.faceCount;
             var vc1: Vector3D;
             var vc2: Vector3D;
             var random: number;
@@ -702,7 +666,7 @@
             var val: Vector3D;
             var normal: Vector3D;
 
-            var triangleCount: number = this.geometry.indexData.length / 3;
+            var triangleCount: number = this.geometry.faceCount;
             var vc1: Vector3D = new Vector3D();
             var vc2: Vector3D = new Vector3D();
             var random: number;
@@ -745,7 +709,7 @@
             var val: Vector3D;
             var normal: Vector3D;
 
-            var triangleCount: number = this.geometry.indexData.length / 3;
+            var triangleCount: number = this.geometry.faceCount;
             var random: number;
 
             var xyz: number[] = [];

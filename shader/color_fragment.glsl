@@ -6,7 +6,7 @@ void main() {
 
 	diffuseColor = vec4(1.0, 1.0, 1.0, 1.0);
     
-    if( diffuseColor.w <= materialSource.cutAlpha ){
+    if( diffuseColor.w < materialSource.cutAlpha ){
 		discard;
 	}else
 		diffuseColor.xyz *= diffuseColor.w ;

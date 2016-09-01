@@ -21,6 +21,10 @@
         constructor() {
             super();
             //##FilterBegin## ##Particle##
+            this.name = "ParticleUVRollNode";
+            //需要在之前进行设置UV
+            this.fragment_ShaderName[ShaderPhaseType.start_fragment] = this.fragment_ShaderName[ShaderPhaseType.start_fragment] || [];
+            this.fragment_ShaderName[ShaderPhaseType.start_fragment].push("particle_uv_roll_fs");
             //##FilterEnd##
         }
 
@@ -33,6 +37,9 @@
         */
         public initNode(data: ParticleDataNode, args: any): void {
             //##FilterBegin## ##Particle##
+            this._methodData = args;
+            this._uvRollData[0] = this._methodData.uSpeed;
+            this._uvRollData[1] = this._methodData.vSpeed;
             //##FilterEnd##
         }
 
@@ -53,6 +60,7 @@
         */
         public activeState(time: number, animTime: number, delay: number, animDelay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy) {
             //##FilterBegin## ##Particle##
+            context3DProxy.uniform1fv(usage["uniform_particleUVRoll"].uniformIndex, this._uvRollData);
             //##FilterEnd##
         }
 

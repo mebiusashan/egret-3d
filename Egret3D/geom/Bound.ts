@@ -17,7 +17,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public vexData: Array<number> = new Array<number>();
+        public vexData: Float32Array;
                         
         /**
         * @language zh_CN
@@ -25,7 +25,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public indexData: Array<number> = new Array<number>();
+        public indexData: Uint16Array;
 
         /**
         * @language zh_CN

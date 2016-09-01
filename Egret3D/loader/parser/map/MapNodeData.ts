@@ -26,6 +26,7 @@
 
         public clipFar: number = 0.0;
 
+        public tagName: string = "";
         /**
          * @language zh_CN
          * 对应的材质球id
@@ -49,14 +50,6 @@
          * @platform Web,Native
          */
         public propertyAnims: Array<any> = [];
-
-        /**
-         * @language zh_CN
-         * 材质球的id，全局唯一
-         * @version Egret 3.0
-         * @platform Web,Native
-         */
-        public lightIds: Array<any>;
 
         /**
          * @language zh_CN

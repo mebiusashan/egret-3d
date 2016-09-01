@@ -171,6 +171,15 @@
 
         private addShaderPhase(sourcePhase: { [shaderPhase: number]: string[] }, targetPhase: { [shaderPhase: number]: string[] }) {
             //##FilterBegin## ##Particle##
+            var names: string[];
+            var phase: any;
+            for (phase in sourcePhase) {
+                names = <string[]>sourcePhase[phase];
+                for (var i: number = 0; i < names.length; i++) {
+                    targetPhase[phase] = targetPhase[phase] || [];
+                    targetPhase[phase].push(names[i]);
+                }
+            }
             //##FilterEnd##
         }
 
@@ -181,6 +190,21 @@
         */
         public calculate(geometry: Geometry) {
             //##FilterBegin## ##Particle##
+            for (var i: number = 0; i < this.animNodes.length; i++) {
+                this.addShaderPhase(this.animNodes[i].vertex_ShaderName, this.vertex_shaders);
+                this.addShaderPhase(this.animNodes[i].fragment_ShaderName, this.fragment_shaders);
+
+                var offsetIndex: number = geometry.vertexAttLength;
+                for (var j: number = 0; j < this.animNodes[i].attributes.length; ++j) {
+                    if (this.animNodes[i].attributes[j].size > 0) {
+                        this.animNodes[i].attributes[j].offsetIndex = offsetIndex;
+                        geometry.vertexAttLength += this.animNodes[i].attributes[j].size;
+                        geometry.vertexSizeInBytes += this.animNodes[i].attributes[j].size * 4;
+                        geometry.subGeometrys[0].preAttList.push(this.animNodes[i].attributes[j]);
+                    }
+                    offsetIndex = geometry.vertexAttLength;
+                }
+            }
             //##FilterEnd##
         }
 
@@ -190,6 +214,12 @@
         */
         public fill(geometry: Geometry, maxParticle: number) {
             //##FilterBegin## ##Particle##
+            for (var i: number = 0; i < this.animNodes.length; i++) {
+                this.animNodes[i].build(geometry, maxParticle);
+            }
+            for (var i: number = 0; i < this.animNodes.length; i++) {
+                this.animNodes[i].afterBuild();
+            }
             //##FilterEnd##
         }
 
@@ -199,12 +229,15 @@
         */
         public update(animTime: number, delay: number, geometry: Geometry) {
             //##FilterBegin## ##Particle##
+            for (var i: number = 0; i < this.animNodes.length; i++) {
+                this.animNodes[i].update(animTime, delay, geometry);
+            }
             //##FilterEnd##
         }
 
 
 
-        private _particleProperty: Float32Array = new Float32Array(22);
+        private _particleProperty: Float32Array = new Float32Array(23);
         private _particleFsData: Float32Array = new Float32Array(3);
         /**
         * @language zh_CN
@@ -212,6 +245,62 @@
         */
         public activeState(time: number, animTime: number, delay: number, animDelay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy, camera3D: Camera3D) {
             //##FilterBegin## ##Particle##
+            //var scaleData: Vector3D;
+            var rotateData: Quaternion;
+            var positionData: Vector3D;
+
+            var data: ParticleData = this._emitter.data;
+
+            if (data.followTarget && this._emitter.followTarget) {
+                //scaleData = this._emitter.followTarget.globalScale;
+                rotateData = this._emitter.followTarget.globalOrientation;
+                positionData = this._emitter.followTarget.globalPosition;
+            }
+            else {
+                //scaleData = this._emitter.globalScale;
+                rotateData = this._emitter.globalOrientation;
+                positionData = this._emitter.globalPosition;
+            }
+
+            //
+            this._particleProperty[0] = animTime * 0.001;
+            this._particleProperty[1] = data.life.loop ? 1 : 0;
+            this._particleProperty[2] = data.followTarget ? 1 : 0;
+
+            this._particleProperty[3] = 1;//scaleData.x;
+            this._particleProperty[4] = 1;//scaleData.y;
+            this._particleProperty[5] = 1;//scaleData.z;
+            this._particleProperty[6] = rotateData.x;
+            this._particleProperty[7] = rotateData.y;
+            this._particleProperty[8] = rotateData.z;
+            this._particleProperty[9] = rotateData.w;
+            this._particleProperty[10] = positionData.x;
+            this._particleProperty[11] = positionData.y;
+            this._particleProperty[12] = positionData.z;
+
+            this._particleProperty[13] = this.loopTime;
+            this._particleProperty[14] = data.life.delay;
+            this._particleProperty[15] = data.life.duration;
+            this._particleProperty[16] = data.property.gravity;
+            this._particleProperty[17] = (data.moveSpeed.velocityOver && data.moveSpeed.velocityOver.worldSpace) ? 1 : 0;
+            this._particleProperty[18] = (data.moveSpeed.velocityForce && data.moveSpeed.velocityForce.worldSpace) ? 1 : 0;
+            this._particleProperty[19] = data.property.cameraScale;
+            this._particleProperty[20] = data.property.speedScale;
+            this._particleProperty[21] = data.property.lengthScale;
+            this._particleProperty[22] = data.property.renderMode;
+
+            context3DProxy.uniform1fv(usage["uniform_particleState"].uniformIndex, this._particleProperty);
+
+            if (usage["uniform_particleFsData"]) {
+                this._particleFsData[0] = camera3D.far;
+                this._particleFsData[1] = camera3D.near;
+                this._particleFsData[2] = this._emitter.material.materialData.blendMode;
+                context3DProxy.uniform1fv(usage["uniform_particleFsData"].uniformIndex, this._particleFsData);
+            }
+
+            for (var i: number = 0; i < this.animNodes.length; i++) {
+                this.animNodes[i].activeState(time, animTime, delay, animDelay, usage, geometry, context3DProxy);
+            }
             //##FilterEnd##
         }
 

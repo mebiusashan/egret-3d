@@ -15,11 +15,13 @@
     * @private
     */
     export enum ShaderPhaseType {
+        base_vertex,
         start_vertex,
         local_vertex,
         global_vertex,
         end_vertex,
 
+        base_fragment,
         start_fragment,
         materialsource_fragment,
         diffuse_fragment,

@@ -6,8 +6,9 @@ struct Fog{
    float fogFarDistance ;
    float fogAlpha ;
 };
-varying vec4 varying_pos;
+
 uniform float uniform_globalFog[7];
+varying vec4 varying_mvPose;
 void main(void){
     Fog fog; 
     fog.fogColor = vec3(uniform_globalFog[0],uniform_globalFog[1],uniform_globalFog[2]); 

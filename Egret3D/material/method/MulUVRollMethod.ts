@@ -149,11 +149,12 @@
         public activeState(time: number, delay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D) {
             if (this._start) {
                 this._time += delay;
-                for (var i: number = 0; i < 4; ++i) {
-                    this._uvRoll[i] = this._time * this._uvSpeed[i];
-                }
-                context3DProxy.uniform1fv(usage["mulUvRoll"], this._uvRoll);
             }
+
+            for (var i: number = 0; i < 4; ++i) {
+                this._uvRoll[i] = this._time * this._uvSpeed[i];
+            }
+            context3DProxy.uniform1fv(usage["mulUvRoll"], this._uvRoll);
         }
     }
 }

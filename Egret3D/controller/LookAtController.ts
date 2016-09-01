@@ -133,7 +133,34 @@
         }
 
         private mouseWheel(m: MouseEvent3D) {
-            this.distance = this._eyesLength - Input.wheelDelta * 0.1;
+            if (!this._target) {
+                return;
+            }
+            var camera: Camera3D = <Camera3D>this._target;
+            if (!camera) {
+                return;
+            }
+            var value: number = Input.wheelDelta * 0.1;
+
+            var viewPort: Rectangle = camera.viewPort;
+            switch (camera.cameraType) {
+                case CameraType.orthogonal:
+                    var w: number = viewPort.width - value;
+                    var h: number = viewPort.height - value;
+                    camera.updateViewport(0, 0, w, h);
+                    break;
+                case CameraType.orthogonalToCenter:
+                    var x: number = viewPort.x - value;
+                    var y: number = viewPort.y - value;
+                    var w: number = viewPort.width - value;
+                    var h: number = viewPort.height - value;
+
+                    camera.updateViewport(x, y, w, h);
+                    break;
+                case CameraType.perspective:
+                    this.distance = this._eyesLength - value;
+                    break;
+            }
         }
 
         private mouseUp(m: MouseEvent3D) {
@@ -405,6 +432,10 @@
                     return;
                 }
 
+                this._quaRot.fromEulerAngles(this._rotaAngle.x, this._rotaAngle.y, 0);
+                this._rotaEyesLine.copyFrom(this._quaRot.transformVector(Vector3D.Z_AXIS));
+                this._rotaEyesLine.normalize();
+
                 if (this._keyArray[0]) {
                     this._tempVec.copyFrom(this._rotaEyesLine);
                     this._tempVec.y = 0;
@@ -451,7 +482,6 @@
                 }
 
 
-
                 if (this._keyArray[4]) {
 
                     this._quaRot.fromEulerAngles(this._rotaAngle.x, this._rotaAngle.y, 0);
@@ -473,11 +503,7 @@
                     this._lookAtObject.position = this._tempVec;
                 }
 
-
-
-                this._quaRot.fromEulerAngles(this._rotaAngle.x, this._rotaAngle.y, 0);
-                this._rotaEyesLine.copyFrom(this._quaRot.transformVector(Vector3D.Z_AXIS));
-                this._rotaEyesLine.normalize();
+                this._lookAtPosition.copyFrom(this._lookAtObject.position);
 
                 this._tempVec.copyFrom(this._rotaEyesLine);
                 this._tempVec.scaleBy(this._eyesLength);

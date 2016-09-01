@@ -35,6 +35,22 @@
             super();
 
             //##FilterBegin## ##Water##
+
+            this.fsShaderList[ShaderPhaseType.normal_fragment] = this.fsShaderList[ShaderPhaseType.normal_fragment] || [];
+            this.fsShaderList[ShaderPhaseType.normal_fragment].push("waterNormal_fs");
+
+            this.start();
+
+            //---------------
+            this._uvData[0] = this._speedU_0.x * 2.5 ;
+            this._uvData[1] = this._speedU_0.y * 2.5 ;
+            this._uvData[2] = this._speedU_1.x * 2.5 ;
+            this._uvData[3] = this._speedU_1.y * 2.5 ;
+            this._uvData[4] = this._distion_intensity.x;
+            this._uvData[5] = this._distion_intensity.y;
+            this._uvData[6] = this._normal_0_UVScale ;
+            this._uvData[7] = this._normal_1_UVScale;
+
             //##FilterEnd##
         }
 
@@ -47,6 +63,11 @@
         */
         public start(rest: boolean = false) {
             //##FilterBegin## ##Water##
+
+            if (rest)
+                this._time = 0;
+            this._start = true;
+
             //##FilterEnd##
         }
 
@@ -58,6 +79,9 @@
         */
         public stop() {
             //##FilterBegin## ##Water##
+
+            this._start = false;
+
             //##FilterEnd##
         }
 
@@ -72,6 +96,22 @@
         */
         public setUvSpeed(index: number, u: number, v: number) {
             //##FilterBegin## ##Water##
+
+            switch (index) {
+                case 0:
+                    this._speedU_0.x = u;
+                    this._speedU_0.y = v;
+                    this._uvData[0] = this._speedU_0.x * 2.5;
+                    this._uvData[1] = this._speedU_0.y * 2.5;
+                    break;
+                case 1:
+                    this._speedU_1.x = u;
+                    this._speedU_1.y = v;
+                    this._uvData[2] = this._speedU_1.x * 2.5;
+                    this._uvData[3] = this._speedU_1.y * 2.5;
+                    break;
+            }
+
             //##FilterEnd##
         }
 
@@ -85,6 +125,12 @@
         */
         public setUvScale(first: number, second: number) {
             //##FilterBegin## ##Water##
+
+            this._normal_0_UVScale = first;
+            this._normal_1_UVScale = second;
+            this._uvData[6] = this._normal_0_UVScale;
+            this._uvData[7] = this._normal_1_UVScale;
+
             //##FilterEnd##
         }
 
@@ -97,6 +143,13 @@
          */
         public set normalTextureA(texture: ITexture) {
             //##FilterBegin## ##Water##
+
+            this._normalTexture_0 = texture;
+            if (this.materialData["normalTextureA"] != this._normalTexture_0) {
+                this.materialData["normalTextureA"] = this._normalTexture_0;
+                this.materialData.textureChange = true;
+            }
+
             //##FilterEnd##
         }
 
@@ -109,6 +162,13 @@
          */
         public set normalTextureB(texture: ITexture) {
             //##FilterBegin## ##Water##
+
+            this._normalTexture_1 = texture;
+            if (this.materialData["normalTextureB"] != this._normalTexture_1) {
+                this.materialData["normalTextureB"] = this._normalTexture_1;
+                this.materialData.textureChange = true;
+            }
+
             //##FilterEnd##
         }
 
@@ -127,6 +187,10 @@
         */
         public upload(time: number, delay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D) {
             //##FilterBegin## ##Water##
+
+            usage["waterNormalData"] = context3DProxy.getUniformLocation(usage.program3D, "waterNormalData");
+            usage["time"] = context3DProxy.getUniformLocation(usage.program3D, "time");
+
             //##FilterEnd##
         }
 
@@ -136,6 +200,14 @@
         */
         public activeState(time: number, delay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D) {
             //##FilterBegin## ##Water##
+
+            if (this._start) {
+                this._time += delay;
+            }
+
+            context3DProxy.uniform2fv(usage["waterNormalData"], this._uvData);
+            context3DProxy.uniform1f(usage["time"], this._time);
+
             //##FilterEnd##
         }
     }

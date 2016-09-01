@@ -123,7 +123,7 @@
         * @platform Web,Native
         */
         public IntersectMeshEx(renderItem: IRender, uv_offset: number, result:PickResult): boolean {
-            return this.IntersectMesh(renderItem.geometry.verticesData, renderItem.geometry.indexData, renderItem.geometry.vertexAttLength, renderItem.geometry.indexData.length / 3, uv_offset, renderItem.modelMatrix, result);
+            return this.IntersectMesh(renderItem.geometry.vertexArray, renderItem.geometry.indexArray, renderItem.geometry.vertexAttLength, renderItem.geometry.faceCount, uv_offset, renderItem.modelMatrix, result);
         }
                         
         /**
@@ -140,7 +140,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public IntersectMesh(verticesData: Array<number>, indexData: Array<number>, offset: number, faces: number, uv_offset: number, mMat: Matrix4_4, result: PickResult): boolean {
+        public IntersectMesh(verticesData: Float32Array, indexData: Uint16Array, offset: number, faces: number, uv_offset: number, mMat: Matrix4_4, result: PickResult): boolean {
 
             var modletriangle: Array<Vector3D> = new Array<Vector3D>();
             modletriangle.push(new Vector3D());
@@ -212,6 +212,11 @@
                     triangle[i].y = pos.y;
                     triangle[i].z = pos.z;
                 }
+                result.faceIndex = face;
+                result.v0 = indexData[3 * face + 0];
+                result.v1 = indexData[3 * face + 1];
+                result.v2 = indexData[3 * face + 2];
+
                 var tmp0: Vector3D = v1.subtract(v0);
                 tmp0.scaleBy(u);
                 var tmp1: Vector3D = v2.subtract(v0);

@@ -25,7 +25,7 @@
         private _currentFrame: number = 0;
 
         private frameList: Array<Rectangle> = [] ;
-        private _change: boolean = false;
+        private _change: boolean = true;
 
         /**
         * @language zh_CN
@@ -49,7 +49,7 @@
         }
 
         private caculate() {
-
+            this._change = false;
             this._speed = (this._numTime*1000) / this._frameNum ;
 
             this._uvRectangle.x = 0.0;
@@ -185,9 +185,6 @@
             if (rest)
                 this._time = 0;
             this._start = true;
-
-            if (this._change)
-                this.caculate();
         }
                         
         /**
@@ -221,23 +218,27 @@
         * @private
         */
         public activeState(time: number, delay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D) {
+
+            if (this._change)
+                this.caculate();
+
             if (this._start) {
 
                 this._time += delay;
 
                 if (this._time / this._speed > 1.0) {
-                    this._currentFrame ++ ;
-                    this._currentFrame = this._currentFrame % this._frameNum;
+                    this._currentFrame++;
                     this._time = 0;
-
-                    this._uvSpriteSheet[0] = this.frameList[this._currentFrame].x;
-                    this._uvSpriteSheet[1] = this.frameList[this._currentFrame].y;
-                    this._uvSpriteSheet[2] = this.frameList[this._currentFrame].width;
-                    this._uvSpriteSheet[3] = this.frameList[this._currentFrame].height;
-                    context3DProxy.uniform1fv(usage["uvSpriteSheet"], this._uvSpriteSheet);
                 }
-                
             }
+
+            this._currentFrame = this._currentFrame % this._frameNum;
+
+            this._uvSpriteSheet[0] = this.frameList[this._currentFrame].x;
+            this._uvSpriteSheet[1] = this.frameList[this._currentFrame].y;
+            this._uvSpriteSheet[2] = this.frameList[this._currentFrame].width;
+            this._uvSpriteSheet[3] = this.frameList[this._currentFrame].height;
+            context3DProxy.uniform1fv(usage["uvSpriteSheet"], this._uvSpriteSheet);
         }
     }
 }

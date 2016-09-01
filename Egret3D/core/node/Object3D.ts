@@ -55,7 +55,6 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public static renderListChange: boolean = true;
         protected static s_id: number = 0;
 
         protected _modelMatrix3D: Matrix4_4 = new Matrix4_4();
@@ -262,7 +261,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public enableCulling: boolean = true;
+        public enableCulling: boolean = false;
 
         /**
         * @language zh_CN
@@ -800,9 +799,9 @@
                 this._globalRot.copyFrom(this._rot);
             }
             this.onMakeTransform();
+            this._transformChange = false;
 
             this.onUpdateTransform();
-            this._transformChange = false;
         }
 
         protected onUpdateTransform() {
@@ -1159,15 +1158,16 @@
         */
         public addChild(child: Object3D): Object3D {
             if (child.parent) {
-                throw Error("This object is already the other child object.");
+                child.parent.removeChild(child);
+                //throw Error("This object is already the other child object.");
             }
 
             if (this.childs.indexOf(child) >= 0) {
-                throw Error("The same child object has been added.");
+                this.removeChild(child);
+                //throw Error("The same child object has been added.");
             }
 
             this.childs.push(child);
-            Object3D.renderListChange = true;
 
             child.parent = this;
             child._isRoot = false;
@@ -1252,21 +1252,15 @@
         */
         public removeChild(child: Object3D): Object3D {
 
-            for (var index = 0; index < this.childs.length; ++index) {
-
-                if (this.childs[index] != child) {
-                    continue;
-                }
-
-                child.parent = null;
-
-                this.childs.splice(index, 1);
-
-                return child;
+            var index: number = this.childs.indexOf(child);
+            if (index < 0) {
+                return null;
             }
 
+            child.parent = null;
+            this.childs.splice(index, 1);
             child.updateTransformChange(true);
-            return null;
+            return child;
         }
                                         
         /**
@@ -1595,6 +1589,13 @@
             for (var i: number = 0; i < this.childs.length; i++) {
                 this.childs[i].dispose();
             }
+        }
+
+        public get root(): Object3D {
+            if (!this.parent) {
+                return this;
+            }
+            return this.parent.root;
         }
     }
 } 

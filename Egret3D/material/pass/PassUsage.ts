@@ -81,6 +81,31 @@
          */
         public attribute_boneWeight: GLSL.Attribute;
 
+        /**
+       * @language zh_CN
+       */
+        public attribute_shapePosition: GLSL.Attribute;
+        /**
+          * @language zh_CN
+          */
+        public attribute_uvRec: GLSL.Attribute;
+        /**
+          * @language zh_CN
+          */
+        //public attribute_rotation: GLSL.Attribute;
+        /**
+          * @language zh_CN
+          */
+        public attribute_size: GLSL.Attribute;
+             /**
+          * @language zh_CN
+          */
+        public attribute_quad_color: GLSL.Attribute;
+        ///**
+        //* @language zh_CN
+        //*/
+        //public attribute_scale: GLSL.Attribute;
+
         //---------------------------------------------
         //---------------[particle]--------------------
         /**
@@ -113,7 +138,7 @@
         /**
          * @language zh_CN
          */
-        public attribute_scale: GLSL.Attribute;
+        public attribute_maskRectangle: GLSL.Attribute;
         /**
          * @language zh_CN
          */
@@ -191,11 +216,12 @@
         /**
          * @language zh_CN
          */
-        public uniform_NormalMatrix: GLSL.Uniform;
+        public uniform_orthProectMatrix: GLSL.Uniform;
         /**
          * @language zh_CN
          */
         public uniform_ShadowMatrix: GLSL.Uniform;
+
         /**
          * @language zh_CN
          */

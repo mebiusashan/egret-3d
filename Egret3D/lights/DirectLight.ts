@@ -33,13 +33,19 @@
         */
         constructor(dir: Vector3D) {
             super();
-            dir.normalize();
+            this._dir.copyFrom(dir);
+            this._dir.normalize();
+
+            Quaternion.fromToRotation(Vector3D.Z_AXIS, this._dir, Quaternion.HELP_0);
+            this.orientation = Quaternion.HELP_0;
+
+            var v: Vector3D = new Vector3D();
+            this.orientation.transformVector(Vector3D.Z_AXIS, v);
+
             this.lightType = LightType.directlight;
-            this._rot.x = dir.x;
-            this._rot.y = dir.y;
-            this._rot.z = dir.z;
         }
 
+        private _dir: Vector3D = new Vector3D(0, 0, 1);
         /**
         * @language zh_CN
         *  
@@ -55,6 +61,34 @@
             this._ambient.y = (color >> 8 & 0xff) / 255;
             this._ambient.z = (color & 0xff) / 255;
             this._change = false;
+        }
+
+        public set dir(dir: Vector3D) {
+            this._dir.copyFrom(dir);
+            this._dir.normalize();
+
+            Quaternion.fromToRotation(Vector3D.Z_AXIS, this._dir, Quaternion.HELP_0);
+            this.orientation = Quaternion.HELP_0;
+        }
+
+        public get dir(): Vector3D {
+            if (this._transformChange) {
+                this.modelMatrix;
+            }
+            return this._dir;
+        }
+
+        protected onUpdateTransform() {
+            super.onUpdateTransform();
+
+            this.orientation.transformVector(Vector3D.Z_AXIS, this._dir);
+            this._dir.normalize();
+
+            if (this.parent) {
+                this.parent.globalOrientation.transformVector(this._dir, this._dir);
+                this._dir.normalize();
+            }
+
         }
 
        /**
@@ -84,9 +118,9 @@
           
             //camera.viewMatrix.mat3TransformVector(this._rot, this.lightViewPos);
 
-            lightData[index * DirectLight.stride + 0] = this._rot.x;
-            lightData[index * DirectLight.stride + 1] = this._rot.y;
-            lightData[index * DirectLight.stride + 2] = this._rot.z;
+            lightData[index * DirectLight.stride + 0] = this._dir.x;
+            lightData[index * DirectLight.stride + 1] = this._dir.y;
+            lightData[index * DirectLight.stride + 2] = this._dir.z;
             
             lightData[index * DirectLight.stride + 3] = this._diffuse.x * this._intensity ;
             lightData[index * DirectLight.stride + 4] = this._diffuse.y * this._intensity ;

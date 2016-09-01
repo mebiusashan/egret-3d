@@ -27,7 +27,7 @@
          * @param loadMipmaps 是否加载mipmaps
          * @returns DDSTexture
          */
-        public static parse(buffer: ArrayBuffer, loadMipmaps:boolean = true):MimapTexture {
+        public static parse(buffer: ArrayBuffer, loadMipmaps:boolean = true):Texture {
             var headerLengthInt = 31; // The header length in 32 bit ints
             var off_magic = 0;
             var DDS_MAGIC = 0x20534444;
@@ -161,7 +161,7 @@
             else if (format == DDSFormat.RGBA_S3TC_DXT5_FORMAT && ContextConfig.ColorFormat_DXT5_RGBA == 0)
                 useSoftwareSolution = true;
 
-            var texture: MimapTexture = new MimapTexture();
+            var texture: Texture = new Texture();
             texture.width = width;
             texture.height = height;
 

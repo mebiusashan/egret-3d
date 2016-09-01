@@ -16,6 +16,15 @@
         constructor() {
             super();
             //##FilterBegin## ##Particle##
+            this.name = "ParticleVelocityOverConstNode";
+
+            this.vertex_ShaderName[ShaderPhaseType.global_vertex] = this.vertex_ShaderName[ShaderPhaseType.global_vertex] || [];
+            this.vertex_ShaderName[ShaderPhaseType.global_vertex].push("particle_velocityOverConst");
+
+            this.attribute_velocityOver = new GLSL.VarRegister();
+            this.attribute_velocityOver.name = "attribute_velocityOverConst";
+            this.attribute_velocityOver.size = 3;
+            this.attributes.push(this.attribute_velocityOver);
             //##FilterEnd##
 
         }
@@ -29,6 +38,16 @@
         */
         public initNode(data: ParticleDataNode): void {
             //##FilterBegin## ##Particle##
+            var node: ParticleDataMoveSpeed = <ParticleDataMoveSpeed>data;
+            this._overValue = new Vec3ConstRandomValueShape();
+            this._overValue.maxX = node.velocityOver.max.x;
+            this._overValue.maxY = node.velocityOver.max.y;
+            this._overValue.maxZ = node.velocityOver.max.z;
+
+            this._overValue.minX = node.velocityOver.min.x;
+            this._overValue.minY = node.velocityOver.min.y;
+            this._overValue.minZ = node.velocityOver.min.z;
+
             //##FilterEnd##
         }
         /**
@@ -41,10 +60,42 @@
         */
         public build(geometry: Geometry, count: number) {
             //##FilterBegin## ##Particle##
+            this.particleAnimationState = <ParticleAnimationState>this.state;
+
+            var vertices: number = geometry.vertexCount / count;
+            var index: number = 0;
+
+            var data: Array<Vector3D> = this._overValue.calculate(count);
+            for (var i: number = 0; i < count; ++i) {
+                var over: Vector3D = data[i];
+
+                for (var j: number = 0; j < vertices; ++j) {
+                    index = i * vertices + j;
+                    index = index * geometry.vertexAttLength + this.attribute_velocityOver.offsetIndex;
+
+                    geometry.vertexArray[index + 0] = over.x;
+                    geometry.vertexArray[index + 1] = over.y;
+                    geometry.vertexArray[index + 2] = over.z;
+                }
+            }
+
             //##FilterEnd##
 
 
         }
+
+
+        /**
+        * @private
+        * 构建结束后需要清理掉临时数据
+        */
+        public afterBuild(): void {
+            //##FilterBegin## ##Particle##
+            this._overValue.dispose();
+            this._overValue = null;
+            //##FilterEnd##
+        }
+
 
 
     }

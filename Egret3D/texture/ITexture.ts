@@ -55,7 +55,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public texture2D: Texture2D;
+        public texture2D: ContextTexture2D;
 
         /**
         * @language zh_CN
@@ -63,7 +63,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public texture3D: Texture3D;
+        public texture3D: ContextTexture3D;
 
         /**
          * @language zh_CN
@@ -104,6 +104,11 @@
          */
         public wrap_u_filter: number;
 
+        /**
+         * gl.filp_y
+         * @language zh_CN
+         * 是否需要颠倒uv
+         */
         public filp_y: number = 0;
 
         /**
@@ -114,6 +119,22 @@
          * 是否预乘alpha
          */
         public wrap_v_filter: number;
+
+        public guiIndex: number;
+        public uvRectangle: Rectangle;
+        public parentTexture: ITexture;
+        public copyFromTexture(texture: ITexture, x: number, y: number, width: number, height: number) {
+            this.parentTexture = texture;
+            texture.width = width; 
+            texture.height = height; 
+            this.guiIndex = texture.guiIndex;
+            this.texture2D = texture.texture2D;
+            this.uvRectangle = this.uvRectangle || new Rectangle();
+            this.uvRectangle.x = x;
+            this.uvRectangle.y = y;
+            this.uvRectangle.width = width;
+            this.uvRectangle.height = height;
+        }
 
         /**
         * @language zh_CN
@@ -134,6 +155,30 @@
         * @platform Web,Native
         */
         public hasMipmap: boolean = false;
+
+        /**
+        * @language zh_CN
+        * @private
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public internalFormat: InternalFormat;
+
+        /**
+        * @language zh_CN
+        * 贴图颜色格式
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public colorFormat: number;
+
+        /**
+        * @language zh_CN
+        * 贴图mipmap data
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public mimapData: Array<MipmapData>;
 
         /**
         * @language zh_CN

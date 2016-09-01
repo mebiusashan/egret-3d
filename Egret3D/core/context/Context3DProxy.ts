@@ -220,15 +220,14 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public creatIndexBuffer(indexData: Array<number>): IndexBuffer3D {
-            var indexDataArray = new Int16Array(indexData);
+        public creatIndexBuffer(indexData: Int16Array): IndexBuffer3D {
 
             var indexBuffer: WebGLBuffer = Context3DProxy.gl.createBuffer();
             Context3DProxy.gl.bindBuffer(Context3DProxy.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-            Context3DProxy.gl.bufferData(Context3DProxy.gl.ELEMENT_ARRAY_BUFFER, indexDataArray, Context3DProxy.gl.STATIC_DRAW);
+            Context3DProxy.gl.bufferData(Context3DProxy.gl.ELEMENT_ARRAY_BUFFER, indexData, Context3DProxy.gl.STATIC_DRAW);
 
             var ib: IndexBuffer3D = new IndexBuffer3D(indexBuffer);
-            ib.arrayBuffer = indexDataArray;
+            ib.arrayBuffer = indexData;
 
             return ib;
         }
@@ -252,15 +251,14 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public creatVertexBuffer(vertexData: Array<number>, dawType: number = Context3DProxy.gl.STATIC_DRAW ): VertexBuffer3D {
-            var vertexDataArray: Float32Array = new Float32Array(vertexData);
+        public creatVertexBuffer(vertexData: Float32Array, dawType: number = Context3DProxy.gl.STATIC_DRAW ): VertexBuffer3D {
 
             var vertexBuffer: WebGLBuffer = Context3DProxy.gl.createBuffer();
             Context3DProxy.gl.bindBuffer(Context3DProxy.gl.ARRAY_BUFFER, vertexBuffer);
-            Context3DProxy.gl.bufferData(Context3DProxy.gl.ARRAY_BUFFER, vertexDataArray, dawType );
+            Context3DProxy.gl.bufferData(Context3DProxy.gl.ARRAY_BUFFER, vertexData, dawType );
 
             var vb: VertexBuffer3D = new VertexBuffer3D(vertexBuffer);
-            vb.arrayBuffer = vertexDataArray;
+            vb.arrayBuffer = vertexData;
 
            // vertexData.splice(0, vertexData.length);
             //vertexData.splice(0, vertexData.length);
@@ -329,7 +327,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public upLoadCompressedTexture2D(mipLevel: number, texture: Texture2D) {
+        public upLoadCompressedTexture2D(mipLevel: number, texture: ContextTexture2D) {
             Context3DProxy.gl.compressedTexImage2D(Context3DProxy.gl.TEXTURE_2D, mipLevel, texture.colorFormat, texture.mimapData[mipLevel].width, texture.mimapData[mipLevel].height, texture.border, texture.mimapData[mipLevel].data);
         }
 
@@ -339,8 +337,8 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public creatTexture2D(): Texture2D {
-            var texture: Texture2D = new Texture2D();
+        public creatTexture2D(): ContextTexture2D {
+            var texture: ContextTexture2D = new ContextTexture2D();
             texture.textureBuffer = Context3DProxy.gl.createTexture();
             return texture;
         }
@@ -351,8 +349,8 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public creatCubeTexture(): Texture3D {
-            var texture: Texture3D = new Texture3D();
+        public creatCubeTexture(): ContextTexture3D {
+            var texture: ContextTexture3D = new ContextTexture3D();
             texture.texture = Context3DProxy.gl.createTexture();
             return texture;
         }
@@ -364,7 +362,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public uploadCubetexture(tex: Texture3D) {
+        public uploadCubetexture(tex: ContextTexture3D) {
             /// 创建纹理并绑定纹理数据
             Context3DProxy.gl.bindTexture(Context3DProxy.gl.TEXTURE_CUBE_MAP, tex.texture);
 
@@ -426,11 +424,10 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public createFramebuffer(width: number, height: number, format: FrameBufferFormat): Texture2D {
+        public createFramebuffer(width: number, height: number, format: FrameBufferFormat): ContextTexture2D {
             var rttframeBuffer = Context3DProxy.gl.createFramebuffer();
-            var texture2D: Texture2D = this.creatTexture2D();
+            var texture2D: ContextTexture2D = this.creatTexture2D();
             var depthRenderbuffer = Context3DProxy.gl.createRenderbuffer();
-
 
             Context3DProxy.gl.bindTexture(Context3DProxy.gl.TEXTURE_2D, texture2D.textureBuffer);
 
@@ -490,7 +487,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public setRenderToTexture(texture: Texture2D, enableDepthAndStencil: Boolean = false, surfaceSelector: number = 0) {
+        public setRenderToTexture(texture: ContextTexture2D, enableDepthAndStencil: Boolean = false, surfaceSelector: number = 0) {
             if (enableDepthAndStencil) {
                 //Context3DProxy.gl.bindRenderbuffer(Context3DProxy.gl.RENDERBUFFER, texture.renderbuffer);
                 //Context3DProxy.gl.renderbufferStorage(Context3DProxy.gl.RENDERBUFFER, Context3DProxy.gl.DEPTH_COMPONENT16, texture.width, texture.height);
@@ -1141,7 +1138,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public setTexture2DAt(samplerIndex: number, uniLocation: number, index: number, texture: Texture2D) {
+        public setTexture2DAt(samplerIndex: number, uniLocation: any, index: number, texture: ContextTexture2D) {
             Context3DProxy.gl.activeTexture(samplerIndex);
             Context3DProxy.gl.bindTexture(Context3DProxy.gl.TEXTURE_2D, texture.textureBuffer);
             Context3DProxy.gl.uniform1i(uniLocation, index);
@@ -1164,7 +1161,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public setCubeTextureAt(samplerIndex: number, uniLocation: number, index: number, texture: Texture3D) {
+        public setCubeTextureAt(samplerIndex: number, uniLocation: number, index: number, texture: ContextTexture3D) {
             if (!texture) {
                 return;
             }

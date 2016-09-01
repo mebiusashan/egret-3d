@@ -98,6 +98,12 @@
             if (!Context3DProxy.gl)
                 Context3DProxy.gl = <WebGLRenderingContext>this.canvas.getContext("webgl");
 
+            var ext = Context3DProxy.gl.getExtension('WEBGL_draw_buffers');
+            if (!ext) {
+                // ...
+                //alert("you drivers not suport WEBGL_draw_buffers");
+            }
+
             if (!Context3DProxy.gl)
                 alert("you drivers not suport webgl");
 
@@ -255,8 +261,6 @@
             Egret3DCanvas.context3DProxy.enableCullFace();
             Context3DProxy.gl.enable(Context3DProxy.gl.SCISSOR_TEST);
 
-            Egret3DEngine.instance.debug = false;
-
             Context3DProxy.gl.enableVertexAttribArray(0);
             Context3DProxy.gl.enableVertexAttribArray(1);
             Context3DProxy.gl.enableVertexAttribArray(2);
@@ -296,7 +300,7 @@
             }
 
             if (Egret3DEngine.instance.debug) {
-                this._renderer = (new Date().getTime() - this._time) ;
+                this._renderer = Math.floor((new Date().getTime() - this._time) );
                 Egret3DState.showTime(this._time, this._delay);
                 egret3d.Egret3DState.showDataInfo("renderer: " + this._renderer.toString() + " ms");
                 egret3d.Egret3DState.show();

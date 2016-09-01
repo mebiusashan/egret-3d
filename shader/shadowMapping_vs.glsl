@@ -1,4 +1,5 @@
 uniform mat4 uniform_ShadowMatrix;
+
 uniform mat4 uniform_ModelMatrix;
 varying vec4 varying_ShadowCoord;
 

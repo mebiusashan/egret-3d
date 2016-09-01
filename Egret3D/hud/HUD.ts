@@ -12,14 +12,14 @@
     */
      export class HUD {
 
-        private static singleQuadData: Array<number> = [
+        private static singleQuadData: Float32Array =  new Float32Array([
             -1.0, -1.0, 0.0, 0.0, 1.0,
             1.0, -1.0, 0.0, 1.0, 1.0,
             1.0, 1.0, 0.0, 1.0, 0.0,
             -1.0, 1.0, 0.0, 0.0, 0.0
-        ];
+        ]);
 
-        private static singleQuadIndex: Array<number> = [0, 1, 2, 0, 2, 3];
+        private static singleQuadIndex: Uint16Array = new Uint16Array([0, 1, 2, 0, 2, 3]);
         private static vertexBytes: number = 20;
 
         protected _diffuseTexture: ITexture;
@@ -460,14 +460,21 @@
                 return;
             }
             if (!this._passUsage.program3D) {
-                this.upload(contextProxy);
+                this.upload(contextProxy); 
             }
             contextProxy.setProgram(this._passUsage.program3D);
             contextProxy.bindVertexBuffer(this._vertexBuffer3D);
             contextProxy.bindIndexBuffer(this._indexBuffer3D);
 
+            for (var i: number = 0; i < 8; i++) {
+                Context3DProxy.gl.disableVertexAttribArray(i);
+            }
+
             for (var i: number = 0; i < this._attList.length; ++i) {
-                contextProxy.vertexAttribPointer(this._attList[i].uniformIndex, this._attList[i].size, this._attList[i].dataType, this._attList[i].normalized, this._attList[i].stride, this._attList[i].offset);
+                var attribute: GLSL.Attribute = this._attList[i];
+                if (attribute.uniformIndex >= 0) {
+                    contextProxy.vertexAttribPointer(attribute.uniformIndex, attribute.size, attribute.dataType, attribute.normalized, attribute.stride, attribute.offset);
+                }
             }
 
             if (this._changeTexture) {
@@ -508,19 +515,6 @@
             contextProxy.setBlendFactors(ContextConfig.SRC_ALPHA, ContextConfig.ONE_MINUS_SRC_ALPHA);
             contextProxy.drawElement(DrawMode.TRIANGLES, 0, 6);
             contextProxy.clear(ContextConfig.DEPTH_BUFFER_BIT);
-
-            //for (var i: number = 0; i < this._attList.length; ++i) {
-            //    if (this._attList[i].uniformIndex >= 0)
-            //        context.clearVaPointer(this._attList[i].uniformIndex);
-            //}
-
-            //for (var index in this._passUsage.sampler2DList) {
-            //    sampler2D = this._passUsage.sampler2DList[index];
-            //    if (!sampler2D.texture) {
-            //        continue;
-            //    }
-            //    context.disableTexture2DAt(sampler2D.activeTextureIndex, sampler2D.uniformIndex, sampler2D.index );
-            //}
         }
     }
 }

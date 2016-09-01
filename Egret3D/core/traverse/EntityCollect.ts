@@ -65,7 +65,7 @@
                     this.softRenderItems["alphaObject"].push(renderItem);
                 }
                 else {
-                    for (var i: number = 0; i < Layer.layerNumber; i++) {
+                    for (var i: number = 0; i < Layer.layerType.length; i++) {
                         if (renderItem.tag.name == Layer.layerType[i]) {
                             this.softRenderItems[Layer.layerType[i]].push(renderItem);
                         }

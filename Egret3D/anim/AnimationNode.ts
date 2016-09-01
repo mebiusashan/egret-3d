@@ -55,9 +55,17 @@
 
         /**
         * @private
+        * 构建结束后需要清理掉临时数据
         */
         public build(geometry: Geometry, count: number) {
         
+        }
+
+        /**
+        * @private
+        */
+        public afterBuild():void {
+
         }
 
         /**

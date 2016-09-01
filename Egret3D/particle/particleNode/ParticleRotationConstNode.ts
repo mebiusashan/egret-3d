@@ -11,6 +11,15 @@
         constructor() {
             super();
             //##FilterBegin## ##Particle##
+            this.name = "ParticleRotationConstNode";
+
+            this.vertex_ShaderName[ShaderPhaseType.local_vertex] = this.vertex_ShaderName[ShaderPhaseType.local_vertex] || [];
+            this.vertex_ShaderName[ShaderPhaseType.local_vertex].push("particle_rotationConst");
+
+            this.attribute_Rotation = new GLSL.VarRegister();
+            this.attribute_Rotation.name = "attribute_rotationZ";
+            this.attribute_Rotation.size = 1;
+            this.attributes.push(this.attribute_Rotation);
             //##FilterEnd##
         }
 
@@ -25,6 +34,10 @@
         */
         public initNode(data: ParticleDataNode): void {
             //##FilterBegin## ##Particle##
+            var node: ParticleDataRotationSpeed = <ParticleDataRotationSpeed>data;
+            this._rotation = new ConstRandomValueShape();
+            this._rotation.max = node.max.z;
+            this._rotation.min = node.min.z;
             //##FilterEnd##
         }
 
@@ -38,8 +51,35 @@
         */
         public build(geometry: Geometry, count: number) {
             //##FilterBegin## ##Particle##
+            var index: number = 0;
+            var vertices: number = geometry.vertexCount / count;
+            var data: any[] = this._rotation.calculate(count);
+
+            for (var i: number = 0; i < count; ++i) {
+                var rot: number = data[i];
+                for (var j: number = 0; j < vertices; ++j) {
+                    index = i * vertices + j;
+                    index = index * geometry.vertexAttLength + this.attribute_Rotation.offsetIndex;
+
+                    geometry.vertexArray[index + 0] = rot;
+                }
+            }
+
             //##FilterEnd##
 
         }
+
+        /**
+        * @private
+        * 构建结束后需要清理掉临时数据
+        */
+        public afterBuild(): void {
+            //##FilterBegin## ##Particle##
+            this._rotation.dispose();
+            this._rotation = null;
+            //##FilterEnd##
+        }
+
+
     }
 } 

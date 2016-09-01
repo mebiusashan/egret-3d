@@ -126,7 +126,7 @@
         }
 
         //Returns data as floats and flipped along Y by default
-        public static parse(buffer): MimapTexture {
+        public static parse(buffer): Texture {
             if (buffer instanceof ArrayBuffer) {
                 buffer = new Uint8Array(buffer);
             }
@@ -188,7 +188,7 @@
             var mipmapCount:number = 1;
             var mipmap: MipmapData = new MipmapData(data, width, height);
 
-            var texture: MimapTexture = new MimapTexture();
+            var texture: Texture = new Texture();
 
             texture.internalFormat = InternalFormat.PixelArray;
             texture.colorFormat = ContextConfig.ColorFormat_RGBA8888;

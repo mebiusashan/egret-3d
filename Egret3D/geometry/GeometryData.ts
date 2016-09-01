@@ -199,6 +199,10 @@
 
             var target: Geometry = new Geometry();
             target.vertexFormat = vertexFormat;
+            target.vertexCount = source.faces * 3;
+            target.indexCount = source.faces * 3;
+
+            target.faceCount = source.faces;
 
             target.skeleton = source.skeleton;
 
@@ -209,102 +213,127 @@
             var uv_1: UV = new UV(1, 0);
 
             var index: number = 0;
+            var vertexIndex: number = 0;
+            var offset: number = 0;
             for (var faceIndex: number = 0; faceIndex < source.faces; faceIndex++) {
 
-                target.indexData.push(
-                    faceIndex * 3 + 0,
-                    faceIndex * 3 + 2,
-                    faceIndex * 3 + 1);
+                target.indexArray[faceIndex * 3 + 0] = faceIndex * 3 + 0;
+                target.indexArray[faceIndex * 3 + 1] = faceIndex * 3 + 2;
+                target.indexArray[faceIndex * 3 + 2] = faceIndex * 3 + 1;
 
                 for (var i: number = 0; i < 3; i++) {
+
+                    vertexIndex = faceIndex * 3 + i;
+                    vertexIndex *= target.vertexAttLength;
+                    offset = 0;
+
                     index = source.vertexIndices[faceIndex * 3 + i] * Geometry.positionSize;
-                    vertex.x = source.source_vertexData[index + 0];
-                    vertex.y = source.source_vertexData[index + 1];
-                    vertex.z = source.source_vertexData[index + 2];
-
-                    if (source.normalIndices && source.source_normalData && source.source_normalData.length > 0) {
-                        index = source.normalIndices[faceIndex * 3 + i] * Geometry.normalSize;
-                        normal.x = source.source_normalData[index + 0];
-                        normal.y = source.source_normalData[index + 1];
-                        normal.z = source.source_normalData[index + 2];
-                    }
-
-                    if (source.colorIndices && source.source_vertexColorData && source.source_vertexColorData.length > 0) {
-                        index = source.colorIndices[faceIndex * 3 + i] * Geometry.colorSize;
-                        color.x = source.source_vertexColorData[index + 0];
-                        color.y = source.source_vertexColorData[index + 1];
-                        color.z = source.source_vertexColorData[index + 2];
-                        color.w = source.source_vertexColorData[index + 3];
-                    }
-                    if (source.uvIndices && source.source_uvData && source.source_uvData.length > 0) {
-                        index = source.uvIndices[faceIndex * 3 + i] * Geometry.uvSize;
-                        uv_0.u = source.source_uvData[index + 0];
-                        uv_0.v = source.source_uvData[index + 1];
-                    }
-                    if (source.uv2Indices && source.source_uv2Data && source.source_uv2Data.length > 0) {
-                        index = source.uv2Indices[faceIndex * 3 + i] * Geometry.uvSize;
-                        uv_1.u = source.source_uv2Data[index + 0];
-                        uv_1.v = source.source_uv2Data[index + 1];
-                    }
 
                     if (vertexFormat & VertexFormat.VF_POSITION) {
-                        target.source_positionData.push(vertex.x);
-                        target.source_positionData.push(vertex.y);
-                        target.source_positionData.push(vertex.z);
+                        vertex.x = source.source_vertexData[index + 0];
+                        vertex.y = source.source_vertexData[index + 1];
+                        vertex.z = source.source_vertexData[index + 2];
+                        target.vertexArray[vertexIndex + offset + 0] = vertex.x;
+                        target.vertexArray[vertexIndex + offset + 1] = vertex.y;
+                        target.vertexArray[vertexIndex + offset + 2] = vertex.z;
+
+                        offset += Geometry.positionSize;
                     }
 
                     if (vertexFormat & VertexFormat.VF_NORMAL) {
-                        target.source_normalData.push(normal.x);
-                        target.source_normalData.push(normal.y);
-                        target.source_normalData.push(normal.z);
+                        if (source.normalIndices && source.source_normalData && source.source_normalData.length > 0) {
+                            index = source.normalIndices[faceIndex * 3 + i] * Geometry.normalSize;
+                            normal.x = source.source_normalData[index + 0];
+                            normal.y = source.source_normalData[index + 1];
+                            normal.z = source.source_normalData[index + 2];
+
+                        }
+
+                        target.vertexArray[vertexIndex + offset + 0] = normal.x;
+                        target.vertexArray[vertexIndex + offset + 1] = normal.y;
+                        target.vertexArray[vertexIndex + offset + 2] = normal.z;
+
+                        offset += Geometry.normalSize;
                     }
 
                     if (vertexFormat & VertexFormat.VF_TANGENT) {
-                        target.source_tangentData.push(0);
-                        target.source_tangentData.push(0);
-                        target.source_tangentData.push(0);
+
+                        target.vertexArray[vertexIndex + offset + 0] = 0;
+                        target.vertexArray[vertexIndex + offset + 1] = 0;
+                        target.vertexArray[vertexIndex + offset + 2] = 0;
+
+                        offset += Geometry.tangentSize;
                     }
+
 
                     if (vertexFormat & VertexFormat.VF_COLOR) {
-                        target.source_colorData.push(color.x);
-                        target.source_colorData.push(color.y);
-                        target.source_colorData.push(color.z);
-                        target.source_colorData.push(color.w);
+                        if (source.colorIndices && source.source_vertexColorData && source.source_vertexColorData.length > 0) {
+                            index = source.colorIndices[faceIndex * 3 + i] * Geometry.colorSize;
+                            color.x = source.source_vertexColorData[index + 0];
+                            color.y = source.source_vertexColorData[index + 1];
+                            color.z = source.source_vertexColorData[index + 2];
+                            color.w = source.source_vertexColorData[index + 3];
+                        }
+                        target.vertexArray[vertexIndex + offset + 0] = color.x;
+                        target.vertexArray[vertexIndex + offset + 1] = color.y;
+                        target.vertexArray[vertexIndex + offset + 2] = color.z;
+                        target.vertexArray[vertexIndex + offset + 3] = color.w;
+
+                        offset += Geometry.colorSize;
                     }
 
+
                     if (vertexFormat & VertexFormat.VF_UV0) {
-                        target.source_uvData.push(uv_0.u);
-                        target.source_uvData.push(uv_0.v);
+                        if (source.uvIndices && source.source_uvData && source.source_uvData.length > 0) {
+                            index = source.uvIndices[faceIndex * 3 + i] * Geometry.uvSize;
+                            uv_0.u = source.source_uvData[index + 0];
+                            uv_0.v = source.source_uvData[index + 1];
+
+                        }
+                        target.vertexArray[vertexIndex + offset + 0] = uv_0.u;
+                        target.vertexArray[vertexIndex + offset + 1] = uv_0.v;
+
+                        offset += Geometry.uvSize;
                     }
 
                     if (vertexFormat & VertexFormat.VF_UV1) {
+                        if (source.uv2Indices && source.source_uv2Data && source.source_uv2Data.length > 0) {
+                            index = source.uv2Indices[faceIndex * 3 + i] * Geometry.uv2Size;
+                            uv_1.u = source.source_uv2Data[index + 0];
+                            uv_1.v = source.source_uv2Data[index + 1];
+                        }
 
-                        target.source_uv2Data.push(uv_1.u);
-                        target.source_uv2Data.push(uv_1.v);
+                        target.vertexArray[vertexIndex + offset + 0] = uv_1.u;
+                        target.vertexArray[vertexIndex + offset + 1] = uv_1.v;
+                        offset += Geometry.uv2Size;
                     }
 
                     if (vertexFormat & VertexFormat.VF_SKIN) {
                         if (source.source_skinData != null && source.source_skinData.length > 0) {
                             index = source.vertexIndices[faceIndex * 3 + i] * Geometry.skinSize;
-                            target.source_SkinData.push(
-                                source.source_skinData[index + 0],
-                                source.source_skinData[index + 2],
-                                source.source_skinData[index + 4],
-                                source.source_skinData[index + 6],
-                                source.source_skinData[index + 1],
-                                source.source_skinData[index + 3],
-                                source.source_skinData[index + 5],
-                                source.source_skinData[index + 7]);
+                            target.vertexArray[vertexIndex + offset + 0] = source.source_skinData[index + 0];
+                            target.vertexArray[vertexIndex + offset + 1] = source.source_skinData[index + 2];
+                            target.vertexArray[vertexIndex + offset + 2] = source.source_skinData[index + 4];
+                            target.vertexArray[vertexIndex + offset + 3] = source.source_skinData[index + 6];
+                            target.vertexArray[vertexIndex + offset + 4] = source.source_skinData[index + 1];
+                            target.vertexArray[vertexIndex + offset + 5] = source.source_skinData[index + 3];
+                            target.vertexArray[vertexIndex + offset + 6] = source.source_skinData[index + 5];
+                            target.vertexArray[vertexIndex + offset + 7] = source.source_skinData[index + 7];
                         }
                         else {
-                            target.source_SkinData.push(0, 0, 0, 0, 0, 0, 0, 0);
+                            target.vertexArray[vertexIndex + offset + 0] = 0;
+                            target.vertexArray[vertexIndex + offset + 1] = 0;
+                            target.vertexArray[vertexIndex + offset + 2] = 0;
+                            target.vertexArray[vertexIndex + offset + 3] = 0;
+                            target.vertexArray[vertexIndex + offset + 4] = 0;
+                            target.vertexArray[vertexIndex + offset + 5] = 0;
+                            target.vertexArray[vertexIndex + offset + 6] = 0;
+                            target.vertexArray[vertexIndex + offset + 7] = 0;
                         }
                     }
                 }
             }
-
        
-            target.calculateVertexFormat();
 
            // GeometryData.updateFaceTangents(target);
 
@@ -645,6 +674,7 @@
 			//_vertexNormalsDirty = false;
         }
 
+        /*
         private static updateFaceTangents(geometry: Geometry) {
             var i: number = 0;
             var index1: number, index2: number, index3: number;
@@ -752,5 +782,6 @@
                 i += geometry.vertexAttLength;
             }
         }
+        */
     }
 }

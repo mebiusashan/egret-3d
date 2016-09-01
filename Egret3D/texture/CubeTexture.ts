@@ -39,7 +39,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public image_front: Texture2D;
+        public image_front: ContextTexture2D;
 
         /**
         * @language zh_CN
@@ -47,7 +47,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public image_back: Texture2D;
+        public image_back: ContextTexture2D;
 
         /**
         * @language zh_CN
@@ -55,7 +55,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public image_left: Texture2D;
+        public image_left: ContextTexture2D;
 
         /**
         * @language zh_CN
@@ -63,7 +63,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public image_right: Texture2D;
+        public image_right: ContextTexture2D;
 
         /**
         * @language zh_CN
@@ -71,7 +71,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public image_up: Texture2D;
+        public image_up: ContextTexture2D;
 
 
         /**
@@ -80,7 +80,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public image_down: Texture2D;
+        public image_down: ContextTexture2D;
 
         /**
          * @language zh_CN
@@ -92,12 +92,12 @@
          * @param image_up 默认参为null 顶部HTMLImageElement图片元素
          * @param image_down 默认参为null 底部HTMLImageElement图片元素
          */
-        constructor(image_front: Texture2D = null,
-            image_back: Texture2D = null,
-            image_left: Texture2D = null,
-            image_right: Texture2D = null,
-            image_up: Texture2D = null,
-            image_down: Texture2D = null) {
+        constructor(image_front: ContextTexture2D = null,
+            image_back: ContextTexture2D = null,
+            image_left: ContextTexture2D = null,
+            image_right: ContextTexture2D = null,
+            image_up: ContextTexture2D = null,
+            image_down: ContextTexture2D = null) {
             super();
 
             this.image_front = image_front;
@@ -125,22 +125,22 @@
             image_up: HTMLImageElement,
             image_down: HTMLImageElement): CubeTexture {
 
-            var front: Texture2D = new Texture2D();
+            var front: ContextTexture2D = new ContextTexture2D();
             front.imageData = image_front;
 
-            var back: Texture2D = new Texture2D();
+            var back: ContextTexture2D = new ContextTexture2D();
             back.imageData = image_back;
 
-            var left: Texture2D = new Texture2D();
+            var left: ContextTexture2D = new ContextTexture2D();
             left.imageData = image_left;
 
-            var right: Texture2D = new Texture2D();
+            var right: ContextTexture2D = new ContextTexture2D();
             right.imageData = image_right;
 
-            var up: Texture2D = new Texture2D();
+            var up: ContextTexture2D = new ContextTexture2D();
             up.imageData = image_up;
 
-            var down: Texture2D = new Texture2D();
+            var down: ContextTexture2D = new ContextTexture2D();
             down.imageData = image_down;
 
             var cubeTexture: CubeTexture = new CubeTexture(front, back, left, right, up, down);

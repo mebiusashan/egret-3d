@@ -45,6 +45,6 @@
         * @private
         * RenderTexture 的引用
         */
-        texture: Texture2D;
+        texture: ContextTexture2D;
     } 
 }

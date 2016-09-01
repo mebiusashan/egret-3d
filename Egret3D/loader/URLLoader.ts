@@ -1,19 +1,23 @@
 ﻿module egret3d {
 
     /**
-     * @language zh_CN
-     * @class egret3d.URLLoader
-     * @classdesc
-     * URLLoader类
-     * 用于加载和解析各类3d资源.
-     * DDS, TGA, jpg, png等格式的贴图文件.
-     * ESM, EAM, ECA等egret3d独有的模型文件,动作文件,相机动画文件
-     * @includeExample loader/URLLoader.ts
-     * @see egret3d.EventDispatcher
-     *
-     * @version Egret 3.0
-     * @platform Web,Native
-     */
+    * @language zh_CN
+    * @class egret3d.URLLoader
+    * @classdesc
+    * URLLoader类
+    * 用于加载和解析各类3d资源.  加载完成后数据存在 data 中
+    * DDS, TGA, jpg, png, hdr等格式的贴图文件. 加载完成后返回 ITexture对象 
+    * ESM, EAM, ECA, EPA 等egret3d独有的模型文件,动作文件,相机动画文件, 属性动画文件
+    * ESM: Geometry
+    * EAM: SkeletonAnimationClip
+    * ECA: CameraAnimationController
+    * EPA: PropertyAnim
+    * @includeExample loader/URLLoader.ts
+    * @see egret3d.EventDispatcher
+    *
+    * @version Egret 3.0
+    * @platform Web,Native
+    */
     export class URLLoader extends EventDispatcher {
 
 
@@ -366,12 +370,15 @@
                     return;
                 case URLLoader.DATAFORMAT_DDS:
                     this.data = DDSParser.parse(this._xhr.response);
+                    this.checkTexture(this.data);
                     break;
                 case URLLoader.DATAFORMAT_TGA:
                     this.data = TGAParser.parse(this._xhr.response);
+                    this.checkTexture(this.data);
                     break;
                 case URLLoader.DATAFORMAT_HDR:
                     this.data = HDRParser.parse(this._xhr.response);
+                    this.checkTexture(this.data);
                     break;
                 case URLLoader.DATAFORMAT_ESM:
                     this.data = ESMParser.parse(this._xhr.response);
@@ -385,11 +392,6 @@
                 case URLLoader.DATAFORMAT_EPA:
                     this.data = EPAParser.parse(this._xhr.response);
                     break;
-                case URLLoader.DATAFORMAT_PVR:
-                    //var pvr:PVR = PVRParser.parse(this._xhr.response);
-                    //this._data = pvr;
-                    break;
-
                 default:
                     this.data = this._xhr.responseText;
             }
@@ -425,8 +427,15 @@
 
         protected onLoad(img: HTMLImageElement) {
             this.data = new ImageTexture(img);
-
+            this.checkTexture(this.data);
             this.doLoadComplete();
+        }
+
+        protected checkTexture(texture: ITexture) {
+            if ((texture.width & (texture.width - 1)) != 0 ||
+                (texture.height & (texture.height - 1)) != 0) {
+                Egret3DLog.outError("<" + this.url + ">" + "<贴图宽高不是2的N次方>");
+            }
         }
 
         protected doLoadComplete() {

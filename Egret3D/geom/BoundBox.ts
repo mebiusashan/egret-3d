@@ -89,6 +89,7 @@
         */
         constructor(owner:Object3D = null, min: Vector3D = new Vector3D(), max: Vector3D = new Vector3D()) {
             super(owner);
+
             this.min.copyFrom(min);
             this.max.copyFrom(max);
             this.calculateBox();
@@ -238,52 +239,85 @@
         * @platform Web,Native
         */
         public calculateBox() {
-            this.vexData.length = 0;
-            this.indexData.length = 0;
-
             var sub: Vector3D = this.max.subtract(this.min);
 
-            this.vexData.push(this.min.x);
-            this.vexData.push(this.min.y);
-            this.vexData.push(this.min.z);
+            this.vexData = this.vexData || new Float32Array(24);
+            this.indexData = this.indexData || new Uint16Array(36);
 
-            this.vexData.push(this.min.x);
-            this.vexData.push(this.min.y);
-            this.vexData.push(this.min.z + sub.z);
+            this.vexData[0] = this.min.x;
+            this.vexData[1] = this.min.y;
+            this.vexData[2] = this.min.z;
 
-            this.vexData.push(this.min.x + sub.x);
-            this.vexData.push(this.min.y);
-            this.vexData.push(this.min.z + sub.z);
+            this.vexData[3] = this.min.x;
+            this.vexData[4] = this.min.y;
+            this.vexData[5] = this.min.z + sub.z;
 
-            this.vexData.push(this.min.x + sub.x);
-            this.vexData.push(this.min.y);
-            this.vexData.push(this.min.z);
+            this.vexData[6] = this.min.x + sub.x;
+            this.vexData[7] = this.min.y;
+            this.vexData[8] = this.min.z + sub.z;
 
-            this.vexData.push(this.max.x - sub.x);
-            this.vexData.push(this.max.y);
-            this.vexData.push(this.max.z - sub.z);
+            this.vexData[9] = this.min.x + sub.x;
+            this.vexData[10] = this.min.y;
+            this.vexData[11] = this.min.z;
+
+            this.vexData[12] = this.max.x - sub.x;
+            this.vexData[13] = this.max.y;
+            this.vexData[14] = this.max.z - sub.z;
 
 
-            this.vexData.push(this.max.x - sub.x);
-            this.vexData.push(this.max.y);
-            this.vexData.push(this.max.z);
+            this.vexData[15] = this.max.x - sub.x;
+            this.vexData[16] = this.max.y;
+            this.vexData[17] = this.max.z;
 
-            this.vexData.push(this.max.x);
-            this.vexData.push(this.max.y);
-            this.vexData.push(this.max.z);
+            this.vexData[18] = this.max.x;
+            this.vexData[19] = this.max.y;
+            this.vexData[20] = this.max.z;
 
-            this.vexData.push(this.max.x);
-            this.vexData.push(this.max.y);
-            this.vexData.push(this.max.z - sub.z);
+            this.vexData[21] = this.max.x;
+            this.vexData[22] = this.max.y;
+            this.vexData[23] = this.max.z - sub.z;
 
-            this.indexData.push(
-                0, 4, 7, 0, 7, 3,
-                2, 6, 5, 2, 5, 1,
-                4, 5, 6, 4, 6, 7,
-                0, 3, 2, 0, 2, 1,
-                0, 1, 5, 0, 5, 4,
-                3, 7, 6, 3, 6, 2
-            );
+            this.indexData[0] = 0;
+            this.indexData[1] = 4;
+            this.indexData[2] = 7;
+            this.indexData[3] = 0;
+            this.indexData[4] = 7;
+            this.indexData[5] = 3;
+
+            this.indexData[6] = 2;
+            this.indexData[7] = 6;
+            this.indexData[8] = 5;
+            this.indexData[9] = 2;
+            this.indexData[10] = 5;
+            this.indexData[11] = 1;
+
+            this.indexData[12] = 4;
+            this.indexData[13] = 5;
+            this.indexData[14] = 6;
+            this.indexData[15] = 4;
+            this.indexData[16] = 6;
+            this.indexData[17] = 7;
+
+            this.indexData[18] = 0;
+            this.indexData[19] = 3;
+            this.indexData[20] = 2;
+            this.indexData[21] = 0;
+            this.indexData[22] = 2;
+            this.indexData[23] = 1;
+
+            this.indexData[24] = 0;
+            this.indexData[25] = 1;
+            this.indexData[26] = 5;
+            this.indexData[27] = 0;
+            this.indexData[28] = 5;
+            this.indexData[29] = 4;
+
+            this.indexData[30] = 3;
+            this.indexData[31] = 7;
+            this.indexData[32] = 6;
+            this.indexData[33] = 3;
+            this.indexData[34] = 6;
+            this.indexData[35] = 2;
 
             this.width = this.max.x - this.min.x;
             this.heigth = this.max.y - this.min.y;

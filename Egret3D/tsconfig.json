@@ -7,7 +7,7 @@
         "out": "./egret3d.js"
     },
     "files": [
-        
+        "Egret3DLog.ts",
         "Egret3DState.ts",
         "config/TextureMethodType.ts",
 
@@ -58,6 +58,7 @@
         "shader/register/VarConfig.ts",
         "shader/register/Varying.ts",
         "shader/register/Extension.ts",
+        "shader/register/DefineVar.ts",
         "shader/register/VaryingType.ts",
 
         "shader/ShaderLib.ts",
@@ -101,9 +102,9 @@
         "core/context/VertexBuffer3D.ts",
         "core/context/MipmapData.ts",
         "core/context/Program3D.ts",
-        "core/context/Texture2D.ts",
         "core/context/Shader.ts",
-        "core/context/Texture3D.ts",
+        "core/context/ContextTexture2D.ts",
+        "core/context/ContextTexture3D.ts",
 
         "core/node/Object3D.ts",
         "render/IRender.ts",
@@ -112,6 +113,31 @@
         "core/node/BillBoard.ts",
         "core/node/Sky.ts",
         "core/node/Wireframe.ts",
+
+        
+        "gui/BitmapFont.ts",
+        "gui/DisplayObject.ts",
+        "gui/QuadData.ts",
+        "gui/Quad.ts",
+        "gui/GUIEventFire.ts",
+        "gui/SortUtil.ts",
+        "gui/QuadMesh.ts",
+        "gui/GUITextureGroup.ts",
+        "gui/QuadStage.ts",
+
+        "gui/component/UILayout.ts",
+        "gui/component/UIElement.ts",
+        "gui/component/UIButton.ts",
+        "gui/component/UITextField.ts",
+        "gui/component/UILabelButton.ts",
+        "gui/component/UIToggleButtonBase.ts",
+        "gui/component/UIPanel.ts",
+        "gui/component/UIList.ts",
+        "gui/component/UIToggleButton.ts",
+        "gui/component/UICheckBox.ts",
+        "gui/component/UIRadioButton.ts",
+        "gui/component/UIRadioButtonGroup.ts",
+        "gui/component/UIProgressBar.ts",
 
         "lights/LightBase.ts",
         "lights/PointLight.ts",
@@ -146,7 +172,6 @@
         "loader/AssetManager.ts",
 
         "loader/parser/DDSParser.ts",
-        "loader/parser/PVR.ts",
         "loader/parser/PVRParser.ts",
         "loader/parser/TGAParser.ts",
         "loader/parser/HDRParser.ts",
@@ -164,6 +189,8 @@
         "loader/parser/map/MapLoader.ts",
         "loader/parser/map/MapNodeData.ts",
         "loader/parser/map/MapXmlParser.ts",
+        "loader/parser/map/MapJsonParser.ts",
+        "loader/parser/map/MapConfigParser.ts",
         "loader/parser/map/MatMethodData.ts",
         "loader/parser/map/MatSphereData.ts",
         "loader/parser/map/MapLightData.ts",
@@ -174,6 +201,7 @@
 
         "material/pass/MethodData.ts",
         "material/method/MethodBase.ts",
+        "material/method/GUIMethod.ts",
         "material/method/TerrainARGBMethod.ts",
         "material/method/FogMethod.ts",
         "material/method/LineFogMethod.ts",
@@ -200,6 +228,7 @@
         "material/pass/MaterialPass.ts",
         "material/pass/ColorPass.ts",
         "material/pass/DiffusePass.ts",
+        "material/pass/FakePBRPass.ts",
         "material/pass/ShadowPass.ts",
         "material/pass/CubePass.ts",
         "material/pass/MatCapPass.ts",
@@ -211,6 +240,7 @@
 
         "material/ColorMaterial.ts",
         "material/TextureMaterial.ts",
+        "material/FakePBRMaterial.ts",
         "material/CubeTextureMaterial.ts",
 
         "render/RenderBase.ts",
@@ -219,6 +249,7 @@
 
         "particle/Value.ts",
         "particle/particleNode/ParticleEndNode.ts",
+        "particle/particleNode/ParticleLifeGenerator.ts",
         "particle/particleNode/ParticleTime.ts",
         "particle/particleNode/ParticlePosition.ts",
         "particle/particleNode/ParticleRotation.ts",
@@ -249,7 +280,9 @@
         "particle/ParticleAnimationState.ts",
         "particle/ParticleAnimation.ts",
         "particle/ParticleData.ts",
-        "loader/parser/ParticleXmlParser.ts",
+        "loader/parser/particle/ParticleXmlParser.ts",
+        "loader/parser/particle/ParticleJsonParser.ts",
+        "loader/parser/particle/ParticleParser.ts",
         "particle/ParticleEmitter.ts",
 
         "scene/Scene3D.ts",
@@ -257,8 +290,7 @@
 
         "texture/ITexture.ts",
         "texture/ImageTexture.ts",
-        "texture/PVRTexture.ts",
-        "texture/MimapTexture.ts",
+        "texture/Texture.ts",
         "texture/CubeTexture.ts",
         "texture/CheckerboardTexture.ts",
         "texture/VideoTexture.ts",
@@ -303,8 +335,9 @@
         "post/postPass/MainPass.ts",
         "post/postPass/BloomPass.ts",
         "post/postPass/GaussPass.ts",
+
+        "post/PostProcessing.ts"
         
-        "post/PostProcessing.ts"       
 
 ]      
 }	

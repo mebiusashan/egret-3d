@@ -88,6 +88,14 @@
          * @platform Web,Native
          */
         public static MOUSE_OVER: string = "onMouseOver";
+
+                /**
+         * @language zh_CN
+         * MOUSE_OVER 常量定义 onMouseOut 事件对象的 type 属性的值。
+         * @version Egret 3.0
+         * @platform Web,Native
+         */
+        public static MOUSE_OUT: string = "onMouseOut";
         
         /**
          * @language zh_CN

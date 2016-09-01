@@ -9,7 +9,7 @@ void main() {
 	vec3 uvw = normalize(varying_pos.xyz);
 	diffuseColor = vec4(textureCube(diffuseTexture, uvw.xyz));
     
-    if( diffuseColor.w <= materialSource.cutAlpha ){
+    if( diffuseColor.w < materialSource.cutAlpha ){
 		discard;
 	}else
 		diffuseColor.xyz *= diffuseColor.w ;

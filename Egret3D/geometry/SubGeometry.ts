@@ -224,6 +224,115 @@
                 offsetBytes += Geometry.skinSize / 2 * Float32Array.BYTES_PER_ELEMENT;
             }
 
+            if (this.geometry.vertexFormat & VertexFormat.VF_QUADPOS) {
+                if (passUsage.attribute_position) {
+                    if (!passUsage.attribute_position.uniformIndex) {
+                        passUsage.attribute_position.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_position.varName);
+                    }
+
+                    passUsage.attribute_position.size = QuadData.posSize;
+                    passUsage.attribute_position.dataType = ContextConfig.FLOAT;
+                    passUsage.attribute_position.normalized = false;
+                    passUsage.attribute_position.stride = QuadData.vertexBytes;
+                    passUsage.attribute_position.offsetBytes = offsetBytes;
+
+                    passUsage["attributeList"].push(passUsage.attribute_position);
+                    this.useVertexAttributeList[passUsage.attribute_position.uniformIndex] = passUsage.attribute_position.uniformIndex;
+                }
+                offsetBytes += QuadData.posSize * Float32Array.BYTES_PER_ELEMENT;
+            }
+
+
+            if (this.geometry.vertexFormat & VertexFormat.VF_QUADOFFSET) {
+                if (passUsage.attribute_shapePosition) {
+                    if (!passUsage.attribute_shapePosition.uniformIndex) {
+                        passUsage.attribute_shapePosition.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_shapePosition.varName);
+                    }
+
+                    passUsage.attribute_shapePosition.size = QuadData.offsetSize;
+                    passUsage.attribute_shapePosition.dataType = ContextConfig.FLOAT;
+                    passUsage.attribute_shapePosition.normalized = false;
+                    passUsage.attribute_shapePosition.stride = QuadData.vertexBytes;
+                    passUsage.attribute_shapePosition.offsetBytes = offsetBytes;
+
+                    passUsage["attributeList"].push(passUsage.attribute_shapePosition);
+                    this.useVertexAttributeList[passUsage.attribute_shapePosition.uniformIndex] = passUsage.attribute_shapePosition.uniformIndex;
+                }
+                offsetBytes += QuadData.offsetSize * Float32Array.BYTES_PER_ELEMENT;
+            }
+
+            if (this.geometry.vertexFormat & VertexFormat.VF_UVREC) {
+                if (passUsage.attribute_uvRec) {
+                    if (!passUsage.attribute_uvRec.uniformIndex) {
+                        passUsage.attribute_uvRec.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_uvRec.varName);
+                    }
+
+                    passUsage.attribute_uvRec.size = QuadData.uvRectangleSize ;
+                    passUsage.attribute_uvRec.dataType = ContextConfig.FLOAT;
+                    passUsage.attribute_uvRec.normalized = false;
+                    passUsage.attribute_uvRec.stride = QuadData.vertexBytes;
+                    passUsage.attribute_uvRec.offsetBytes = offsetBytes;
+
+                    passUsage["attributeList"].push(passUsage.attribute_uvRec);
+                    this.useVertexAttributeList[passUsage.attribute_uvRec.uniformIndex] = passUsage.attribute_uvRec.uniformIndex;
+                }
+                offsetBytes += QuadData.uvRectangleSize * Float32Array.BYTES_PER_ELEMENT;
+            }
+
+            if (this.geometry.vertexFormat & VertexFormat.VF_ROTATION) {
+                if (passUsage.attribute_rotate) {
+                    if (!passUsage.attribute_rotate.uniformIndex) {
+                        passUsage.attribute_rotate.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_rotate.varName);
+                    }
+
+                    passUsage.attribute_rotate.size = QuadData.rotationSize;
+                    passUsage.attribute_rotate.dataType = ContextConfig.FLOAT;
+                    passUsage.attribute_rotate.normalized = false;
+                    passUsage.attribute_rotate.stride = QuadData.vertexBytes;
+                    passUsage.attribute_rotate.offsetBytes = offsetBytes;
+
+                    passUsage["attributeList"].push(passUsage.attribute_rotate);
+                    this.useVertexAttributeList[passUsage.attribute_rotate.uniformIndex] = passUsage.attribute_rotate.uniformIndex;
+                }
+                offsetBytes += QuadData.rotationSize * Float32Array.BYTES_PER_ELEMENT;
+            }
+
+            if (this.geometry.vertexFormat & VertexFormat.VF_SCALE) {
+                if (passUsage.attribute_maskRectangle) {
+                    if (!passUsage.attribute_maskRectangle.uniformIndex) {
+                        passUsage.attribute_maskRectangle.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_maskRectangle.varName);
+                    }
+
+                    passUsage.attribute_maskRectangle.size = QuadData.scaleSize;
+                    passUsage.attribute_maskRectangle.dataType = ContextConfig.FLOAT;
+                    passUsage.attribute_maskRectangle.normalized = false;
+                    passUsage.attribute_maskRectangle.stride = QuadData.vertexBytes;
+                    passUsage.attribute_maskRectangle.offsetBytes = offsetBytes;
+
+                    passUsage["attributeList"].push(passUsage.attribute_maskRectangle);
+                    this.useVertexAttributeList[passUsage.attribute_maskRectangle.uniformIndex] = passUsage.attribute_maskRectangle.uniformIndex;
+                }
+                offsetBytes += QuadData.scaleSize * Float32Array.BYTES_PER_ELEMENT;
+            }
+
+            if (this.geometry.vertexFormat & VertexFormat.VF_QUAD_COLOR) {
+                if (passUsage.attribute_quad_color) {
+                    if (!passUsage.attribute_quad_color.uniformIndex) {
+                        passUsage.attribute_quad_color.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_quad_color.varName);
+                    }
+
+                    passUsage.attribute_quad_color.size = QuadData.colorSize;
+                    passUsage.attribute_quad_color.dataType = ContextConfig.FLOAT;
+                    passUsage.attribute_quad_color.normalized = false;
+                    passUsage.attribute_quad_color.stride = QuadData.vertexBytes;
+                    passUsage.attribute_quad_color.offsetBytes = offsetBytes;
+
+                    passUsage["attributeList"].push(passUsage.attribute_quad_color);
+                    this.useVertexAttributeList[passUsage.attribute_quad_color.uniformIndex] = passUsage.attribute_quad_color.uniformIndex;
+                }
+                offsetBytes += QuadData.colorSize * Float32Array.BYTES_PER_ELEMENT;
+            }
+
             for (var i: number = 0; i < this.preAttList.length; ++i) {
                 var var0: GLSL.VarRegister = this.preAttList[i];
                 var attribute: GLSL.Attribute = passUsage[var0.name];

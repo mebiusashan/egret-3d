@@ -36,7 +36,6 @@
             super(geometry, material);
             this.camera = camera;
             material.cullMode = ContextConfig.FRONT;
-            material.ambientColor = 0xffffff;
             if (!this.bound) {
                 this.bound = this.buildBoundBox();
             }

@@ -153,6 +153,11 @@
                             if (extension)
                                 content.addVar(extension);
                         }
+                        else if (key == "#define") {
+                            var def: GLSL.DefineVar = StringUtil.getDefine(line);
+                            if (def)
+                                content.addVar(def);
+                        }
                         else {
                             content.addVar(StringUtil.getTemper(line));
                         }
@@ -279,6 +284,11 @@
             }
 
             source += "precision highp float;            \t\n";
+
+            for (i = 0; i < content.defineList.length; i++) {
+                source += ShaderUtil.connectDefine(content.defineList[i]);
+            }
+
             ///var attribute
             for (i = 0; i < content.attributeList.length; i++) {
                 source += ShaderUtil.connectAtt(content.attributeList[i]);
@@ -401,6 +411,10 @@
 
         private static connectExtension(extension: GLSL.Extension): string {
             return "#extension " + extension.name + ":" +  extension.value + "\r\n";
+        }
+
+        private static connectDefine(def: GLSL.DefineVar): string {
+            return def.key + " " + def.name + " " + def.value + "\r\n";
         }
 
         private static getTexture2DIndex(i: number): number {

@@ -42,7 +42,7 @@
     * @version Egret 3.0
     * @platform Web,Native
     */
-    export enum ParticleValueType{
+    export enum ParticleValueType {
         Const,
         RandomConst,
         OneBezier,
@@ -148,10 +148,9 @@
         public rotationSpeed: ParticleDataRotationSpeed;
         public colorOffset: ParticleDataColorOffset;
 
-        public materialData: MatSphereData;
         public textureSheet: ParticleDataTextureSheet;
 
-        public static SCALE_VALUE: number = 1;
+        public materialData: MatSphereData;
         /**
         * @language zh_CN
         * @version Egret 3.0
@@ -170,7 +169,7 @@
             this.geometry.validate();
             this.moveSpeed.validate();
 
-           
+
             if (this.scaleBezier) {
                 this.scaleBezier.validate();
             }
@@ -189,58 +188,12 @@
 
         }
 
-
-
-        public scaleBy(value: number): void {
-            //
-            this.property.bounds.scaleBy(value);
-            this.property.gravity *= value;
-            this.property.position.scaleBy(value);
-
-            //
-            this.shape.cubeW *= value;
-            this.shape.cubeH *= value;
-            this.shape.cubeD *= value;
-
-            this.shape.sphereRadius *= value;
-
-            this.shape.hemiSphereRadius *= value;
-
-            this.shape.coneLength *= value;
-            this.shape.coneRadius *= value;
-
-            //
-            this.geometry.planeW *= value;
-            this.geometry.planeH *= value;
-
-            //
-            this.moveSpeed.max *= value;
-            this.moveSpeed.min *= value;
-            if (this.moveSpeed.bezier1) {
-                this.moveSpeed.bezier1.scaleBy(value);
-            }
-            if (this.moveSpeed.bezier2) {
-                this.moveSpeed.bezier2.scaleBy(value);
-            }
-            if (this.moveSpeed.velocityOver) {
-                this.moveSpeed.velocityOver.scaleBy(value);
-            }
-            if (this.moveSpeed.velocityLimit) {
-                this.moveSpeed.velocityLimit.scaleBy(value);
-            }
-            if (this.moveSpeed.velocityForce) {
-                this.moveSpeed.velocityForce.scaleBy(value);
-            }
-
-            //
-
-        }
     }
 
 
     export class ParticleDataNode {
         protected _nodeType: number;
-        constructor(node:number) {
+        constructor(node: number) {
             this._nodeType = node;
         }
         public get nodeType(): number {
@@ -290,7 +243,7 @@
         }
 
         public validate(): void {
-            if(this.bounds == null) {
+            if (this.bounds == null) {
                 this.bounds = new Vector3D(10, 10, 10);
             }
             if (this.bounds.x < 0) {
@@ -332,7 +285,7 @@
                 this.rotation = new Vector3D(0, 0, 0, 1);
             }
         }
-    } 
+    }
 
     export class ParticleDataEmission extends ParticleDataNode {
         public rate: number = 10;
@@ -358,38 +311,36 @@
     }
 
 
-    export class ParticleDataLife extends ParticleDataNode{
+    export class ParticleDataLife extends ParticleDataNode {
         public type: number = ParticleValueType.Const;
         public max: number = 0;
         public min: number = 0;
         public bezier1: BezierData;
         public bezier2: BezierData;
-       
+
         public duration: number = 5;
 
 
         public delay: number = 0;
         public loop: boolean = true;
-        
+
 
         constructor() {
             super(ParticleDataNodeType.Life);
         }
         public validate(): void {
             if (this.max <= 0) {
-                this.max = 1;
+                this.max = 0.000001;
             }
-            if (this.min > this.max) {
-                this.min = this.max;
+            if (this.min <= 0) {
+                this.min = 0.000001;
             }
             //life
             if (this.type == ParticleValueType.Const) {
                 this.min = this.max;
             }
             if (this.type == ParticleValueType.RandomConst) {
-                if (this.min > this.max) {
-                    this.min = this.max;
-                }
+
             }
             if (this.type == ParticleValueType.OneBezier || this.type == ParticleValueType.TwoBezier) {
                 if (this.bezier1 == null) {
@@ -411,7 +362,7 @@
             if (this.duration < 0) {
                 this.duration = 5;
             }
-           
+
         }
     }
 
@@ -421,7 +372,7 @@
         //粒子分布类型
         public type: number = ParticleDataShapeType.Cube;
         public randomDirection: boolean = false;
-
+        public emitFromShell: boolean = false;
         //正方体
         public cubeW: number = 0;
         public cubeH: number = 0;
@@ -492,9 +443,7 @@
                 this.min = this.max;
             }
             if (this.type == ParticleValueType.RandomConst) {
-                if (this.min > this.max) {
-                    this.min = this.max;
-                }
+
             }
             if (this.type == ParticleValueType.OneBezier || this.type == ParticleValueType.TwoBezier) {
                 if (this.bezier1 == null) {
@@ -529,9 +478,7 @@
                 this.min = this.max;
             }
             if (this.type == ParticleValueType.RandomConst) {
-                if (this.min > this.max) {
-                    this.min = this.max;
-                }
+
             }
             if (this.type == ParticleValueType.OneBezier || this.type == ParticleValueType.TwoBezier) {
                 if (this.bezier1 == null) {
@@ -559,24 +506,22 @@
         }
 
         public validate(): void {
-           
-                if (this.planeW < 0) {
-                    this.planeW = 10;
-                }
-                if (this.planeH < 0) {
-                    this.planeH = 10;
-                }
-           
+            if (this.planeW < 0) {
+                this.planeW = 10;
+            }
+            if (this.planeH < 0) {
+                this.planeH = 10;
+            }
 
         }
     }
 
-    
-    
+
+
 
 
     export class ParticleDataMoveSpeed extends ParticleDataNode {
-       
+
         //初始速度
         public type: number = ParticleValueType.Const;
         public max: number = 0;
@@ -608,11 +553,6 @@
             if (this.type == ParticleValueType.Const) {
                 this.min = this.max;
             }
-            if (this.type == ParticleValueType.RandomConst) {
-                if (this.min > this.max) {
-                    this.min = this.max;
-                }
-            }
             if (this.type == ParticleValueType.OneBezier || this.type == ParticleValueType.TwoBezier) {
                 if (this.bezier1 == null) {
                     this.bezier1 = new BezierData();
@@ -629,7 +569,7 @@
     }
 
 
-    export class VelocityLimitLifeTimeData{
+    export class VelocityLimitLifeTimeData {
         public type: number = ParticleValueType.Const;
         public max: number = 0;
         public min: number = 0;
@@ -644,25 +584,24 @@
             if (this.max < 0) {
                 this.max = 0;
             }
-            if (this.min > this.max) {
-                this.min = this.max;
+            if (this.min < 0) {
+                this.min = 0;
             }
-
             if (this.type == ParticleValueType.Const) {
                 this.min = this.max;
             }
-            
+
             if (this.type == ParticleValueType.OneBezier || this.type == ParticleValueType.TwoBezier) {
                 if (this.bezier1 == null) {
                     this.bezier1 = new BezierData();
                 }
                 this.bezier1.validate();
             }
-            
+
             if (this.type == ParticleValueType.TwoBezier) {
                 if (this.bezier2 == null) {
                     this.bezier2 = new BezierData();
-                }               
+                }
                 this.bezier2.validate();
             }
 
@@ -691,7 +630,7 @@
         public xBezier1: BezierData = new BezierData();
         public yBezier1: BezierData = new BezierData();
         public zBezier1: BezierData = new BezierData();
-                                   
+
         public xBezier2: BezierData = new BezierData();
         public yBezier2: BezierData = new BezierData();
         public zBezier2: BezierData = new BezierData();
@@ -843,36 +782,6 @@
         }
     }
 
-
-    //export class ParticleDataAcceleration extends ParticleDataNode {
-    //    //加速度
-    //    public max: Vector3D = new Vector3D();
-    //    public min: Vector3D = new Vector3D();
-    //    public accelerationWorld: boolean = false;
-
-    //    constructor() {
-    //        super(ParticleDataNodeType.Acceleration);
-    //    }
-
-    //    public validate(): void {
-    //        if (this.max == null) {
-    //            this.max = new Vector3D();
-    //        }
-    //        if (this.min == null) {
-    //            this.min = new Vector3D();
-    //        }
-    //        if (this.min.x > this.max.x) {
-    //            this.min.x = this.max.x;
-    //        }
-    //        if (this.min.y > this.max.y) {
-    //            this.min.y = this.max.y;
-    //        }
-    //        if (this.min.z > this.max.z) {
-    //            this.min.z = this.max.z;
-    //        }
-    //    }
-    //}
-
     export class ParticleDataScaleBezier extends ParticleDataNode {
         //粒子缩放贝塞尔曲线
         public data: BezierData = new BezierData();
@@ -894,7 +803,7 @@
         //角速度
         public max: Vector3D = new Vector3D();
         public min: Vector3D = new Vector3D();
-        
+
         public type: number = ParticleValueType.Const;
 
         public bezier1: BezierData = new BezierData();
@@ -1088,5 +997,5 @@
 
 
 
-    
+
 }

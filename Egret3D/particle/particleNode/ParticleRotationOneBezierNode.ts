@@ -17,6 +17,10 @@
         constructor() {
             super();
             //##FilterBegin## ##Particle##
+            this.name = "ParticleRotationOneBezierNode";
+
+            this.vertex_ShaderName[ShaderPhaseType.global_vertex] = this.vertex_ShaderName[ShaderPhaseType.global_vertex] || [];
+            this.vertex_ShaderName[ShaderPhaseType.global_vertex].push("particle_rotationOneBezier");
             //##FilterEnd##
 
         }
@@ -30,6 +34,8 @@
         */
         public initNode(data: ParticleDataNode): void {
             //##FilterBegin## ##Particle##
+            this._node = <ParticleDataRotationSpeed>data;
+            this._floatCompressData = this._node.bezier1.sampler();
             //##FilterEnd##
         }
 
@@ -52,6 +58,7 @@
         */
         public activeState(time: number, animTime: number, delay: number, animDelay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy) {
             //##FilterBegin## ##Particle##
+            context3DProxy.uniform1fv(usage["uniform_rotationBezier"].uniformIndex, this._floatCompressData);
             //##FilterEnd##
         }
 

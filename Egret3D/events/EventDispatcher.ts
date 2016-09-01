@@ -142,14 +142,17 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public hasEventListener(type: string, thisObject: any, callback: Function): boolean {
+        public hasEventListener(type: string, thisObject: any = null , callback: Function = null ): boolean {
             if (this.listeners[type] == null) return false;
-            for (var i: number = 0; i < this.listeners[type].length; i++) {
-                var listener: EventListener = this.listeners[type][i];
-                if (listener.equalCurrentListener(type, thisObject, callback)) {
-                    return true;
+            if (thisObject && callback) {
+                for (var i: number = 0; i < this.listeners[type].length; i++) {
+                    var listener: EventListener = this.listeners[type][i];
+                    if (listener.equalCurrentListener(type, thisObject, callback)) {
+                        return true;
+                    }
                 }
-            }
+            } else
+                return true;
             return false;
         }
     }

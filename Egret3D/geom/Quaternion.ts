@@ -585,6 +585,39 @@
         }
 
         /**
+        * @language zh_CN
+        * 计算出一个方向变换到另一个方向的四元数
+        * @param fromDirection 初始方向
+        * @param toDirection 变换后的方向
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public fromToRotation(fromDirection: Vector3D, toDirection: Vector3D) {
+            var mat: Matrix4_4 = new Matrix4_4;
+            Matrix4_4.fromToRotation(fromDirection, toDirection, mat);
+            this.fromMatrix(mat);
+        }
+
+
+        /**
+        * @language zh_CN
+        * 计算出一个方向变换到另一个方向的四元数
+        * @param fromDirection 初始方向
+        * @param toDirection 变换后的方向
+        * @param target 计算出的四元数 默认为null 结果会返回
+        * @returns Quaternion 计算出的四元数 如果 target为null 就会创建新实例返回
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public static fromToRotation(fromDirection: Vector3D, toDirection: Vector3D, target: Quaternion = null): Quaternion {
+            if (!target) {
+                target = new Quaternion();
+            }
+            target.fromToRotation(fromDirection, toDirection);
+            return target;
+        }
+
+        /**
         * @language en_US
         * Copies the data from a quaternion into this instance.
         * @param q The quaternion to copy from.

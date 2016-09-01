@@ -39,6 +39,7 @@
             super();
             this.width = 32;
             this.height = 32;
+            this.uvRectangle = new Rectangle(0, 0, 1, 1);
             this.buildCheckerboard();
         }
 

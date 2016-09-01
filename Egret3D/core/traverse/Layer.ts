@@ -13,20 +13,9 @@
     */
     export class Layer {
         
-        public static layerType: string[] = ["normalObject", "normalAlphaObject", "alphaObject", "decal" , "effect", "gui"];
+        public static layerType: string[] = ["normalObject", "normalAlphaObject", "alphaObject", "decal", "effect", "gui"];
         //  public static layerType: string[] = ["gui", "effect", "alphaObject", "normalObject"];
         public static layerTypeThan: number[] = [3, 2, 1, 0];
         public static layerNumber: number = 5 ; 
-        ///**
-        //* @language zh_CN
-        //* 是否清理深度
-        //*/
-        //public clearDepth: boolean = false;
-
-        ///**
-        //* @language zh_CN
-        //* 层级清理深度状态
-        //*/
-        //public cleanState: boolean = true; 
     }
 } 

@@ -97,8 +97,38 @@
         }
 
         private mouseWheel(m: MouseEvent3D) {
-            this._distance -= Input.wheelDelta * 0.1;
-            this._distance = Math.max(this._minDistance, Math.min(this._maxDistance, this._distance));
+
+
+            var camera: Camera3D = <Camera3D>this._target;
+            if (!camera) {
+                return;
+            }
+            var value: number = Input.wheelDelta * 0.1;
+
+            var viewPort: Rectangle = camera.viewPort;
+            switch (camera.cameraType) {
+                case CameraType.orthogonal:
+
+                    var w: number = viewPort.width - value;
+                    var h: number = viewPort.height - value;
+                    camera.updateViewport(0, 0, w, h);
+                    break;
+                case CameraType.orthogonalToCenter:
+                    var x: number = viewPort.x - value;
+                    var y: number = viewPort.y - value;
+                    var w: number = viewPort.width - value;
+                    var h: number = viewPort.height - value;
+
+                    camera.updateViewport(x, y, w, h);
+                    break;
+                case CameraType.perspective:
+                    this._distance -= value;
+                    this._distance = Math.max(this._minDistance, Math.min(this._maxDistance, this._distance));
+                    break;
+            }
+
+
+
         }
 
         private mouseUp(m: MouseEvent3D) {

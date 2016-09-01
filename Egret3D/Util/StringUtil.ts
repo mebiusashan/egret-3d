@@ -48,6 +48,9 @@
                     if (node.indexOf("#extension") >= 0) {
                         endChar = "\n";
                     }
+                    else if (node.indexOf("#define") >= 0) {
+                        endChar = "\n";
+                    }
                 }
                
                 if (endChar == file.charAt(i)) {
@@ -246,6 +249,9 @@
                 index = fields.length - 3;
                 if (index >= 0 && index < fields.length) {
                     return fields[index];
+                }
+                else {
+                    return fields[0];
                 }
             }
             return "";
@@ -476,6 +482,24 @@
             var extension: GLSL.Extension = new GLSL.Extension(name);
             extension.value = value;
             return extension;
+        }
+
+        public static getDefine(shaderLine: string): GLSL.DefineVar {
+            //var start: number = shaderLine.indexOf("#");
+            //var end: number = shaderLine.indexOf(" ");
+            //var type: string = shaderLine.substr(start, end);
+
+            var tempStr: string = shaderLine;
+            var name: string = "";
+            var value: string = "";
+            var tmpVar: GLSL.DefineVar;
+            var tempArray: Array<string> = StringUtil.parseLines(tempStr);
+            name = tempArray[1];
+            if (tempArray.length >= 3) {
+                value = tempArray[2];
+            }
+            tmpVar = new GLSL.DefineVar(name, value);
+            return tmpVar;
         }
         
         /**

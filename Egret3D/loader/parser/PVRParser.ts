@@ -21,9 +21,9 @@ module egret3d {
          * @language zh_CN
          * @param buffer 
          */
-        public static parse(buffer:ArrayBuffer):PVR {
+        public static parse(buffer:ArrayBuffer):Texture {
 
-            var pvr:PVR = new PVR;
+            var texture: Texture;
             var headerLengthInt = 13;
             var header = new Uint32Array(buffer, 0, headerLengthInt);
             var pvrDatas = {
@@ -33,24 +33,25 @@ module egret3d {
 
             // PVR v3
             if (header[0] === 0x03525650) {
-
-                pvr = PVRParser._parseV3(pvrDatas);
-
+                texture = PVRParser._parseV3(pvrDatas);
             }
             // PVR v2
             else if (header[11] === 0x21525650) {
-
-                pvr = PVRParser._parseV2(pvrDatas);
-
+                texture = PVRParser._parseV2(pvrDatas);
             } else {
-
                 console.log("PVRParser unknow pvr format. PVRParser::parse");
-
+                return texture;
             }
-            return pvr;
+
+            texture.internalFormat = InternalFormat.PixelArray;
+            texture.colorFormat = ContextConfig.ColorFormat_RGBA8888;
+
+            texture.useMipmap = false;
+
+            return texture;
         }
 
-        private static _parseV2(pvrDatas):PVR {
+        private static _parseV2(pvrDatas):Texture {
             var header = pvrDatas.header;
 
             var headerLength = header[0],
@@ -108,7 +109,7 @@ module egret3d {
 
         }
 
-        private static _parseV3(pvrDatas:any):PVR {
+        private static _parseV3(pvrDatas:any): Texture {
             var header = pvrDatas.header;
             var bpp, format;
 
@@ -154,8 +155,11 @@ module egret3d {
             return PVRParser._extract(pvrDatas);
         }
 
-        private static _extract(pvrDatas):PVR {
-            var pvr:PVR = new PVR();
+        private static _extract(pvrDatas): Texture {
+            var texture: Texture = new Texture();
+
+            texture.width = pvrDatas.width;
+            texture.height = pvrDatas.height;
 
             var buffer = pvrDatas.buffer;
             var dataOffset = pvrDatas.dataPtr,
@@ -175,8 +179,10 @@ module egret3d {
                 blockWidth = 4;
                 blockHeight = 4;
             }
-            blockSize = ( blockWidth * blockHeight ) * bpp / 8;
-            pvr.mipmaps.length = pvrDatas.numMipmaps * numSurfs;
+            blockSize = (blockWidth * blockHeight) * bpp / 8;
+            texture.mimapData = [];
+
+            //pvr.mipmaps.length = pvrDatas.numMipmaps * numSurfs;
             var mipLevel = 0;
             while (mipLevel < pvrDatas.numMipmaps) {
                 var sWidth = pvrDatas.width >> mipLevel;
@@ -201,13 +207,13 @@ module egret3d {
                         width: sWidth,
                         height: sHeight
                     };
-                    pvr.mipmaps[surfIndex * pvrDatas.numMipmaps + mipLevel] = mipmap;
+                    texture.mimapData[surfIndex * pvrDatas.numMipmaps + mipLevel] = mipmap;
                     dataOffset += dataSize;
                 }
                 mipLevel++;
             }
 
-            return pvr;
+            return texture;
         }
     }
 }

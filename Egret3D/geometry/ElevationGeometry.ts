@@ -69,8 +69,9 @@
             //    vertices = this._subGeometry.vertexData;
             //    indices = this._subGeometry.indexData;
             // } else {
-            this.verticesData = new Array<number>(numVerts * 3);
-            this.indexData = new Array<number>(this._segmentsH * this._segmentsW * 6);
+
+            this.vertexCount = numVerts;
+            this.indexCount = this._segmentsH * this._segmentsW * 6;
 
             numVerts = 0;
             numInds = 0;
@@ -87,36 +88,36 @@
                     y =  (col > this._maxElevation) ? (this._maxElevation / 0xff) * this._height : ((col < this._minElevation) ? (this._minElevation / 0xff) * this._height : (col / 0xff) * this._height);
 
                     //pos
-                    this.verticesData[numVerts++] = x;
-                    this.verticesData[numVerts++] = y;//Math.random() * 1000;;
-                    this.verticesData[numVerts++] = z;
+                    this.vertexArray[numVerts++] = x;
+                    this.vertexArray[numVerts++] = y;//Math.random() * 1000;;
+                    this.vertexArray[numVerts++] = z;
                     //normal
-                    this.verticesData[numVerts++] = 1.0;
-                    this.verticesData[numVerts++] = 1.0;
-                    this.verticesData[numVerts++] = 1.0;
+                    this.vertexArray[numVerts++] = 1.0;
+                    this.vertexArray[numVerts++] = 1.0;
+                    this.vertexArray[numVerts++] = 1.0;
                     //tan
-                    this.verticesData[numVerts++] = -1.0;
-                    this.verticesData[numVerts++] = 0.0;
-                    this.verticesData[numVerts++] = 0.0;
+                    this.vertexArray[numVerts++] = -1.0;
+                    this.vertexArray[numVerts++] = 0.0;
+                    this.vertexArray[numVerts++] = 0.0;
                     //color
-                    this.verticesData[numVerts++] = 1.0;
-                    this.verticesData[numVerts++] = 1.0;
-                    this.verticesData[numVerts++] = 1.0;
-                    this.verticesData[numVerts++] = 1.0;
+                    this.vertexArray[numVerts++] = 1.0;
+                    this.vertexArray[numVerts++] = 1.0;
+                    this.vertexArray[numVerts++] = 1.0;
+                    this.vertexArray[numVerts++] = 1.0;
                     //uv
-                    this.verticesData[numVerts++] = xi / this._segmentsW * this._scaleU;
-                    this.verticesData[numVerts++] = 1.0 - zi / this._segmentsH * this._scaleV;
-                    this.verticesData[numVerts++] = xi / this._segmentsW;
-                    this.verticesData[numVerts++] = 1.0 - zi / this._segmentsH;
+                    this.vertexArray[numVerts++] = xi / this._segmentsW * this._scaleU;
+                    this.vertexArray[numVerts++] = 1.0 - zi / this._segmentsH * this._scaleV;
+                    this.vertexArray[numVerts++] = xi / this._segmentsW;
+                    this.vertexArray[numVerts++] = 1.0 - zi / this._segmentsH;
 
                     if (xi != this._segmentsW && zi != this._segmentsH) {
                         base = xi + zi * tw;
-                        this.indexData[numInds++] = base;
-                        this.indexData[numInds++] = base + tw + 1;
-                        this.indexData[numInds++] = base + tw;
-                        this.indexData[numInds++] = base;
-                        this.indexData[numInds++] = base + 1;
-                        this.indexData[numInds++] = base + tw + 1;
+                        this.indexArray[numInds++] = base;
+                        this.indexArray[numInds++] = base + tw + 1;
+                        this.indexArray[numInds++] = base + tw;
+                        this.indexArray[numInds++] = base;
+                        this.indexArray[numInds++] = base + 1;
+                        this.indexArray[numInds++] = base + tw + 1;
                     }
                 }
             }
@@ -140,7 +141,7 @@
         private updateFaceNormals() {
             var i: number = 0, j: number = 0, k: number = 0;
             var index: number;
-            var len: number = this.indexData.length;
+            var len: number = this.indexCount
             var x1: number, x2: number, x3: number;
             var y1: number, y2: number, y3: number;
             var z1: number, z2: number, z3: number;
@@ -148,24 +149,23 @@
             var dx2: number, dy2: number, dz2: number;
             var cx: number, cy: number, cz: number;
             var d: number;
-            var vertices: Array<number> = this.verticesData;
             var posStride: number = 17;
             var posOffset: number = 0;
             var faceNormals: number[] = []; 
             while (i < len) {
 
-                index = posOffset + this.indexData[i+0] * posStride;
-                x1 = vertices[index];
-                y1 = vertices[index + 1];
-                z1 = vertices[index + 2];
-                index = posOffset + this.indexData[i+1] * posStride;
-                x2 = vertices[index];
-                y2 = vertices[index + 1];
-                z2 = vertices[index + 2];
-                index = posOffset + this.indexData[i+2] * posStride;
-                x3 = vertices[index];
-                y3 = vertices[index + 1];
-                z3 = vertices[index + 2];
+                index = posOffset + this.indexArray[i+0] * posStride;
+                x1 = this.vertexArray[index];
+                y1 = this.vertexArray[index + 1];
+                z1 = this.vertexArray[index + 2];
+                index = posOffset + this.indexArray[i+1] * posStride;
+                x2 = this.vertexArray[index];
+                y2 = this.vertexArray[index + 1];
+                z2 = this.vertexArray[index + 2];
+                index = posOffset + this.indexArray[i+2] * posStride;
+                x3 = this.vertexArray[index];
+                y3 = this.vertexArray[index + 1];
+                z3 = this.vertexArray[index + 2];
                 dx1 = x2 - x1;
                 dy1 = y2 - y1;
                 dz1 = z2 - z1;
@@ -189,18 +189,18 @@
             var normalStride: number = this.vertexAttLength;
             var normalOffset: number = 3;
             while (i < len) {
-                index = normalOffset + this.indexData[i++] * normalStride;
-                this.verticesData[index++] = faceNormals[f1];
-                this.verticesData[index++] = faceNormals[f2];
-                this.verticesData[index++] = faceNormals[f3];
-                index = normalOffset + this.indexData[i++] * normalStride;
-                this.verticesData[index++] = faceNormals[f1];
-                this.verticesData[index++] = faceNormals[f2];
-                this.verticesData[index++] = faceNormals[f3];
-                index = normalOffset + this.indexData[i++] * normalStride;
-                this.verticesData[index++] = faceNormals[f1];
-                this.verticesData[index++] = faceNormals[f2];
-                this.verticesData[index++] = faceNormals[f3];
+                index = normalOffset + this.indexArray[i++] * normalStride;
+                this.vertexArray[index++] = faceNormals[f1];
+                this.vertexArray[index++] = faceNormals[f2];
+                this.vertexArray[index++] = faceNormals[f3];
+                index = normalOffset + this.indexArray[i++] * normalStride;
+                this.vertexArray[index++] = faceNormals[f1];
+                this.vertexArray[index++] = faceNormals[f2];
+                this.vertexArray[index++] = faceNormals[f3];
+                index = normalOffset + this.indexArray[i++] * normalStride;
+                this.vertexArray[index++] = faceNormals[f1];
+                this.vertexArray[index++] = faceNormals[f2];
+                this.vertexArray[index++] = faceNormals[f3];
                 f1 += 3;
                 f2 += 3;
                 f3 += 3;

@@ -30,6 +30,15 @@
                     break;
                 }
             }
+            if (!A0) {
+                A0 = pos[pos.length - 1];
+            }
+            if (!B0) {
+                B0 = ctrl[ctrl.length - 1];
+            }
+            A1 = A1 || A0;
+            B1 = B1 || B0;
+
             t = (t - A0.x) / (A1.x - A0.x);
             return this.cubic_bezier(A0.y, B0.y, B1.y, A1.y, t);
         }

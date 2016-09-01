@@ -33,6 +33,10 @@
         */
         public initNode(data: ParticleDataNode): void {
             //##FilterBegin## ##Particle##
+            var node: ParticleDataRotationBirth = this._node = <ParticleDataRotationBirth>data;
+            this._rotations = new ConstRandomValueShape();
+            this._rotations.max = node.max;
+            this._rotations.min = node.min;
             //##FilterEnd##
         }
         /**
@@ -45,7 +49,81 @@
         */
         public build(geometry: Geometry, count: number) {
             //##FilterBegin## ##Particle##
+            this._animationState = <ParticleAnimationState>this.state;
+            var renderMode: number = this._animationState.emitter.data.property.renderMode;
+            if (renderMode == ParticleRenderModeType.StretchedBillboard) {
+                //忽略旋转
+                return;
+            }
+
+
+            var rotationArray: number[] = this._rotations.calculate(count);
+            var vertices: number = geometry.vertexCount / count;
+            var index: number = 0;
+            var pos: Vector3D = new Vector3D();
+            var rot: number;
+
+            var progress: number = 0;
+            var duration: number = this._animationState.emitter.data.life.duration;
+            var timeOffsetIndex: number = this._animationState.emitter.timeNode.offsetIndex;
+            var particleIndex: number = 0;
+            var timeIndex: number;
+            var bornTime: number;
+
+            for (var i: number = 0; i < count; ++i) {
+
+                //
+                if (this._node.type == ParticleValueType.OneBezier || this._node.type == ParticleValueType.TwoBezier) {
+                    timeIndex = particleIndex * geometry.vertexAttLength + timeOffsetIndex;
+                    bornTime = geometry.vertexArray[timeIndex + 0];          //出生时间
+                    progress = bornTime / duration;
+                    progress = progress - Math.floor(progress);               //取小数部分
+                    rot = this._node.bezier1.calc(progress);
+                    if (this._node.type == ParticleValueType.TwoBezier) {
+                        var random: number = Math.random();
+                        rot *= random;
+                        rot += this._node.bezier2.calc(progress) * (1 - random);
+                    }
+                } else {
+                    rot = rotationArray[i];
+                }
+
+
+                this.rotationMat.identity();
+                if (renderMode == ParticleRenderModeType.VerticalBillboard || renderMode == ParticleRenderModeType.HorizontalBillboard) {
+                    this.rotationMat.rotation(0, rot, 0);
+                } else {
+                    this.rotationMat.rotation(0, 0, rot);
+                }
+                for (var j: number = 0; j < vertices; ++j) {
+                    index = i * vertices + j;
+                    index = index * geometry.vertexAttLength;
+
+                    pos.x = geometry.vertexArray[index + 0];
+                    pos.y = geometry.vertexArray[index + 1];
+                    pos.z = geometry.vertexArray[index + 2];
+
+                    this.rotationMat.transformVector4(pos, pos);
+
+                    geometry.vertexArray[index + 0] = pos.x;
+                    geometry.vertexArray[index + 1] = pos.y;
+                    geometry.vertexArray[index + 2] = pos.z;
+                }
+            }
+
             //##FilterEnd##
         }
+
+        /**
+        * @private
+        * 构建结束后需要清理掉临时数据
+        */
+        public afterBuild(): void {
+            //##FilterBegin## ##Particle##
+            this._rotations.dispose();
+            this._rotations = null;
+            //##FilterEnd##
+        }
+
     }
 } 

@@ -57,7 +57,6 @@
         public update(camera: Camera3D) {
             this.renderList = this._nodes;
             this.renderList.length = 0;
-            camera.frustum.update(camera);
         }
                         
         /**

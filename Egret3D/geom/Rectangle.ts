@@ -58,7 +58,7 @@
          * @version Egret 3.0
          * @platform Web,Native
          */
-        constructor(x: number = 0, y: number = 0, width: number = 32, height: number = 32) {
+        constructor(x: number = 0, y: number = 0, width: number = 0, height: number = 0) {
             this.x = x;
             this.y = y;
             this.width = width; 
@@ -67,17 +67,27 @@
 
         /**
         * @language zh_CN
-        * 复制矩形数据
-        * @param other 被复制的矩形
+        * 从一个矩形拷贝数据
+        * @param rect 拷贝的对象
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public copy(other: Rectangle): Rectangle {
-            this.x = other.x;
-            this.y = other.y;
-            this.width = other.width;
-            this.height = other.height;
-            return this;
+        public copyFrom(rect: Rectangle): void {
+            this.x = rect.x;
+            this.y = rect.y;
+            this.width = rect.width;
+            this.height = rect.height;
+        }
+
+        /**
+        * @language zh_CN
+        * 拷贝数据到一个矩形
+        * @param rect 拷贝到目标矩形
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public copyTo(rect: Rectangle): void {
+            rect.copyFrom(this);
         }
 
         /**
@@ -98,5 +108,95 @@
             return true;
         }
 
+        /**
+         * @language zh_CN
+         * 是否相等
+         * @param rectangle  比较的对象
+         * @returns boolean 相等返回ture
+         * @version Egret 3.0
+         * @platform Web,Native
+         */
+        public equal(rectangle: Rectangle): boolean {
+            return !((this.x != rectangle.x) ||
+                     (this.y != rectangle.y) ||
+                     (this.width != rectangle.width) ||
+                     (this.height != rectangle.height));
+        }
+
+        /**
+         * @language zh_CN
+         * 是否相等
+         * @param rectangle  比较的对象
+         * @returns boolean 相等返回ture
+         * @version Egret 3.0
+         * @platform Web,Native
+         */
+        public equalArea(x: number, y: number, width: number, height: number): boolean {
+            return !((this.x != x) ||
+                (this.y != y) ||
+                (this.width != width) ||
+                (this.height != height));
+        }
+
+       /**
+         * @language zh_CN
+         * 返回相交区域
+         * @param source  比较区域
+         * @param target  目标接参
+         * @returns Rectangle 返回相交的区域
+         * @version Egret 3.0
+         * @platform Web,Native
+         */
+        public equalInnerArea(source: Rectangle, target: Rectangle): boolean {
+            var Xa1 = this.x; 
+            var Ya1 = this.y; 
+
+            var Xa2 = this.x + this.width; 
+            var Ya2 = this.y + this.height; 
+
+            var Xb1 = source.x;
+            var Yb1 = source.y;
+
+            var Xb2 = source.x + source.width;
+            var Yb2 = source.y + source.height; 
+
+            if (Math.max(Xa1, Xb1) <= Math.min(Xa2, Xb2) &&
+                Math.max(Ya1, Yb1) <= Math.min(Ya2, Yb2)) {
+                return true;
+            }
+            return false;
+        }
+
+        public innerArea(source: Rectangle, target: Rectangle): Rectangle {
+            target = target || new Rectangle();
+            var Xa1 = this.x;
+            var Ya1 = this.y;
+
+            var Xa2 = this.x + this.width;
+            var Ya2 = this.y + this.height;
+
+            var Xb1 = source.x;
+            var Yb1 = source.y;
+
+            var Xb2 = source.x + source.width;
+            var Yb2 = source.y + source.height;
+
+            var top: number = Math.max(Ya1, Yb1);
+            var bottom: number = Math.min(Ya2, Yb2);
+            var left: number = Math.max(Xa1, Xb1);
+            var right: number = Math.min(Xb2, Xa2);
+            if (top >= 0 && bottom >= 0 && (bottom - top) >= 0 && (right - left) > 0) {
+                target.x = left;
+                target.y = top;
+                target.width = right - left;
+                target.height = bottom - top;
+            } else {
+                target.x = 0;
+                target.y = 0;
+                target.width = 0;
+                target.height = 0;
+            }
+            return target;
+        }
     }
 } 

@@ -43,7 +43,18 @@
 
         private _pathRoot: string = "";
         private _path: string = "";
-        private _mapXmlParser: MapXmlParser = null;
+        private _mapParser: MapConfigParser = null;
+
+
+        /**
+        * @private
+        * @language zh_CN
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get mapParser(): MapConfigParser {
+            return this._mapParser;
+        }
 
         private static _assetMgr: AssetManager = new AssetManager();
         private _textures: any = {};
@@ -51,7 +62,7 @@
         private _taskCount: number = 0;
         private _event: LoaderEvent3D = new LoaderEvent3D();
 
-
+        private _type: string = "";
         /**
         * @private
         * @language zh_CN
@@ -94,20 +105,18 @@
 
         private _taskDict: any = {};
 
-         /**
-         * @language zh_CN
-         * 构建一个场景加载对象 构建后直接加载
-         * @param name 场景名字 默认为null 不加载 有值时 直接加载 
-         * @param mapConfig 场景配置文件 默认为"MapConfig.xml"
-         * @param path 场景文件路径 默认"resource/scene/"
-         * @version Egret 3.0
-         * @platform Web,Native
-         */
-        constructor(name: string = null, mapConfig: string = "MapConfig.xml", path: string = "resource/scene/") {
+        /**
+        * @language zh_CN
+        * 加载场景配置文件 .json 或 .xml
+        * @param url 默认参数为null  场景文件路径
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        constructor(url: string = null) {
             super();
             this.container = new Object3D();
-            if (name) {
-                this.load(name, mapConfig, path);
+            if (url) {
+                this.load(url);
             }
         }
 
@@ -125,28 +134,36 @@
         /**
         * @language zh_CN
         * 加载场景
-        * @param name 场景名字
-        * @param mapConfig 场景配置文件 默认为"MapConfig.xml"
-        * @param path 场景文件路径 默认"resource/scene/"
+        * @param url 场景文件路径
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public load(name: string, mapConfig: string = "MapConfig.xml", path: string = "resource/scene/") {
-            this._pathRoot = path + name + "/";
-            this._path = this._pathRoot + mapConfig;
+        public load(url: string) {
+
+            var s_pos: number = url.lastIndexOf("/");
+            s_pos++;
+            this._pathRoot = url.substr(0, s_pos);
+            this._path = url;
+
+            s_pos = url.lastIndexOf(".");
+            s_pos++;
+            this._type = url.substr(s_pos, url.length - s_pos);
+
+
             var load: URLLoader = MapLoader._assetMgr.dispatchTask(this._path);
 
             this.taskTotal++;
             this._taskDict[load.url] = 1;
 
             if (load.data) {
-                this.parseXML(load.data);
-                this.taskCurrent++;
+
+                this.parseConfig(load.data, this._type);
+                this.processTaskCurrent(load);
             }
             else {
 
                 this.addTask(load);
-                MapLoader._assetMgr.dispatchEvent(load, this.onXmlLoad, this, null);
+                MapLoader._assetMgr.dispatchEvent(load, this.onConfigLoad, this, null);
             }
         }
 
@@ -158,18 +175,27 @@
         //    return MapLoader._loaderDict[path];
         //}
 
-        private parseXML(xml: string) {
-            var xmlDoc = XMLParser.parse(xml);
-            this._mapXmlParser = new MapXmlParser(xmlDoc);
-            for (var v in this._mapXmlParser.taskDict) {
+        private parseConfig(dataConfig: string, type: string) {
+            var config = null;
+            switch (type) {
+                case "xml":
+                    config = XMLParser.parse(dataConfig);
+                    break;
+                case "json":
+                    config = eval("(" + dataConfig + ")");
+                    break;
+            }
+            this._mapParser = new MapConfigParser(config, type);
+
+            for (var v in this._mapParser.taskDict) {
                 this.taskTotal++;
                 this._taskDict[this._pathRoot + v] = 1;
             }
 
             this.createLight();
 
-            for (var i: number = 0; i < this._mapXmlParser.nodeList.length; i++) {
-                var mapNodeData: MapNodeData = this._mapXmlParser.nodeList[i];
+            for (var i: number = 0; i < this._mapParser.nodeList.length; i++) {
+                var mapNodeData: MapNodeData = this._mapParser.nodeList[i];
                 if (!mapNodeData.object3d.parent) {
                     this.container.addChild(mapNodeData.object3d);
                 }
@@ -185,7 +211,7 @@
                             var esmload: URLLoader = MapLoader._assetMgr.dispatchTask(path);
                             if (esmload.data) {
                                 this.processMesh(mapNodeData, new Mesh(esmload.data, new TextureMaterial()));
-                                this.taskCurrent++;
+                                this.processTaskCurrent(esmload);
                             }
                             else {
                                 this.addTask(esmload);
@@ -206,7 +232,7 @@
                                 var envHeightGeometry: ElevationGeometry = new ElevationGeometry(heightImgload.data, geo.width, geo.height, geo.depth, geo.segmentsW, geo.segmentsH);
                                 var mesh: Mesh = new Mesh(envHeightGeometry, new TextureMaterial(heightImgload.data));
                                 this.processHeightMesh(mapNodeData, mesh);
-                                this.taskCurrent++;
+                                this.processTaskCurrent(heightImgload);
                             }
                             else {
                                 this.addTask(heightImgload);
@@ -224,7 +250,7 @@
                                     this.processParticle(particleData, mapNodeData);
                                 }
 
-                                this.taskCurrent++;
+                                this.processTaskCurrent(load);
                             }
                             else {
                                 this.addTask(heightImgload);
@@ -235,13 +261,13 @@
                 }
             }
 
-            for (var i: number = 0; i < this._mapXmlParser.textures.length; ++i) {
-                var data: any = this._mapXmlParser.textures[i];
+            for (var i: number = 0; i < this._mapParser.textures.length; ++i) {
+                var data: any = this._mapParser.textures[i];
                 var path: string = this._pathRoot + data.path;
                 var textureLoad: URLLoader = MapLoader._assetMgr.dispatchTask(path);
                 if (textureLoad.data) {
                     this._textures[data.name] = textureLoad.data;
-                    this.taskCurrent++;
+                    this.processTaskCurrent(textureLoad);
                 }
                 else {
                     this.addTask(textureLoad);
@@ -249,8 +275,8 @@
                 }
             }
 
-            for (var i: number = 0; i < this._mapXmlParser.hudList.length; ++i) {
-                var hudData: HUDData = this._mapXmlParser.hudList[i];
+            for (var i: number = 0; i < this._mapParser.hudList.length; ++i) {
+                var hudData: HUDData = this._mapParser.hudList[i];
                 var hud: HUD = new HUD();
 
                 hud.name = hudData.name;
@@ -281,7 +307,7 @@
                 var hudLoad: URLLoader = MapLoader._assetMgr.dispatchTask(path);
                 if (hudLoad.data) {
                     hud.diffuseTexture = hudLoad.data;
-                    this.taskCurrent++;
+                    this.processTaskCurrent(hudLoad);
                 }
                 else {
                     this.addTask(hudLoad);
@@ -293,7 +319,16 @@
         private onParticleXML(load: URLLoader, mapNodeData: MapNodeData) {
             var particleData: ParticleData = load["ParticleData"];
             if (!particleData) {
-                particleData = new ParticleXmlParser().parse(load.data);
+                switch (this._type) {
+                    case "xml":
+                        particleData = new ParticleParser().parseXml(load.data);
+                        break;
+                    case "json":
+                        particleData = new ParticleParser().parseJson(load.data);
+                        break;
+                }
+
+
                 load["ParticleData"] = particleData;
                 particleData.fileUrl = load.url;
                 particleData.fileName = load.fileName;
@@ -305,41 +340,56 @@
         }
 
         private processParticle(particleData: ParticleData, nodeData: MapNodeData): ParticleEmitter {
-            if (!particleData.shape.meshFile) {
-                if (nodeData.geometry) {
-                    particleData.shape.geometry = GeometryUtil.createGemetryForType(nodeData.geometry.type, nodeData.geometry);
-                }
+            if (!particleData.shape.meshFile && !particleData.property.meshFile) {
                 this.processParticleGeometry(particleData, nodeData);
             }
             else {
 
-                var path: string = this._pathRoot + particleData.shape.meshFile;
-                var load: URLLoader = MapLoader._assetMgr.dispatchTask(path);
-                if (load.data) {
-                    particleData.shape.geometry = load.data;
-                    this.processParticleGeometry(particleData, nodeData);
-                }
-                else {
-                    var parData: any = {};
-                    parData.particle = particleData;
-                    parData.nodeData = nodeData;
+                if (particleData.shape.meshFile) {
+                    var path: string = this._pathRoot + particleData.shape.meshFile;
+                    var load: URLLoader = MapLoader._assetMgr.dispatchTask(path);
+                    if (load.data) {
+                        particleData.shape.geometry = load.data;
+                        this.processParticleGeometry(particleData, nodeData);
+                    }
+                    else {
+                        var parData: any = {};
+                        parData.particle = particleData;
+                        parData.nodeData = nodeData;
+                        parData.type = "shape";
 
-                    this.addTask(load);
-                    MapLoader._assetMgr.dispatchEvent(load, this.onParticleEsmLoad, this, parData);
+                        this.addTask(load);
+                        MapLoader._assetMgr.dispatchEvent(load, this.onParticleEsmLoad, this, parData);
+                    }
                 }
+
+                if (particleData.property.meshFile) {
+
+                    var path: string = this._pathRoot + particleData.property.meshFile;
+                    var load: URLLoader = MapLoader._assetMgr.dispatchTask(path);
+                    if (load.data) {
+                        particleData.property.geometry = load.data;
+                        this.processParticleGeometry(particleData, nodeData);
+                    }
+                    else {
+                        var parData: any = {};
+                        parData.particle = particleData;
+                        parData.nodeData = nodeData;
+                        parData.type = "property";
+                        this.addTask(load);
+                        MapLoader._assetMgr.dispatchEvent(load, this.onParticleEsmLoad, this, parData);
+                    }
+                }
+
+              
             }
 
             return null;
         }
 
         private processParticleGeometry(particleData: ParticleData, nodeData: MapNodeData) {
-            particleData.materialData = this._mapXmlParser.matDict[nodeData.materialIDs[0]];
+            particleData.materialData = this._mapParser.matDict[nodeData.materialIDs[0]];
             var particleNode: ParticleEmitter = new ParticleEmitter(particleData, new TextureMaterial());
-
-            nodeData.x *= ParticleData.SCALE_VALUE;
-            nodeData.y *= ParticleData.SCALE_VALUE;
-            nodeData.z *= ParticleData.SCALE_VALUE;
-            nodeData.object3d.position.scaleBy(ParticleData.SCALE_VALUE);
 
             this.processObject3d(nodeData, particleNode);
 
@@ -353,12 +403,13 @@
             object3d.position = nodeData.object3d.position;
             object3d.orientation = nodeData.object3d.orientation;
             object3d.scale = nodeData.object3d.scale;
+            object3d.tag = nodeData.object3d.tag;
             nodeData.object3d.swapObject(object3d);
             nodeData.object3d = object3d;
         }
 
-        private onXmlLoad(loader: URLLoader) {
-            this.parseXML(loader.data);
+        private onConfigLoad(loader: URLLoader) {
+            this.parseConfig(loader.data, this._type);
             this.processTask(loader);
         }
 
@@ -409,7 +460,7 @@
                     var epaload: URLLoader = MapLoader._assetMgr.dispatchTask(path);
                     if (epaload.data) {
                         this.processEpa(mapNodeData, epaload.data);
-                        this.taskCurrent++;
+                        this.processTaskCurrent(epaload);
                     }
                     else {
                         this.addTask(epaload);
@@ -451,7 +502,7 @@
                 if (load.data) {
                     var clip: SkeletonAnimationClip = load.data;
                     mesh.animation.skeletonAnimationController.addSkeletonAnimationClip(clip.clone());
-                    this.taskCurrent++;
+                    this.processTaskCurrent(load);
                 }
                 else {
                     var loadData: any = {};
@@ -477,8 +528,33 @@
         private onParticleEsmLoad(load: URLLoader, parData: any) {
             var particle: ParticleData = parData.particle;
             var nodeData: MapNodeData = parData.nodeData;
-            particle.shape.geometry = load.data;
-            this.processParticleGeometry(particle, nodeData);
+            switch (parData.type) {
+                case "shape":
+                    particle.shape.geometry = load.data;
+                    break;
+                case "property":
+                    particle.property.geometry = load.data;
+                    break;
+            }
+            var needLoad: number = 0;
+            var loaded: number = 0;
+            if (particle.shape.meshFile) {
+                needLoad ++;
+            }
+            if (particle.property.meshFile) {
+                needLoad ++;
+            }
+            if (particle.shape.geometry) {
+                loaded ++;
+            }
+            if (particle.property.geometry) {
+                loaded ++;
+            }
+
+            if (loaded == needLoad) {
+                this.processParticleGeometry(particle, nodeData);
+            }
+
             this.processTask(load);
         }
 
@@ -514,9 +590,7 @@
             this._taskCount++;
         }
 
-        private processTask(load:URLLoader) {
-            this._taskCount--;
-
+        private processTaskCurrent(load: URLLoader) {
             if (this._taskDict[load.url]) {
                 this.taskCurrent++;
                 delete this._taskDict[load.url];
@@ -527,13 +601,19 @@
             this._event.loader = load;
             this._event.data = load;
             this.dispatchEvent(this._event);
+        }
+
+        private processTask(load: URLLoader) {
+            this.processTaskCurrent(load);
+
+            this._taskCount--;
 
             //console.log("---" + load.url + "---" + this._taskCount);
             if (this._taskCount <= 0) {
 
                 var subEmitters: ParticleEmitter[] = [];
-                for (var i: number = 0; i < this._mapXmlParser.nodeList.length; i++) {
-                    var mapNodeData: MapNodeData = this._mapXmlParser.nodeList[i];
+                for (var i: number = 0; i < this._mapParser.nodeList.length; i++) {
+                    var mapNodeData: MapNodeData = this._mapParser.nodeList[i];
                     
                     if (mapNodeData.object3d instanceof ParticleEmitter) {
                         var patEmitter: ParticleEmitter = <ParticleEmitter>mapNodeData.object3d;
@@ -546,7 +626,6 @@
                             }
                         }
                     }
-
                 }
 
                 var tempEmitter: ParticleEmitter;
@@ -580,7 +659,7 @@
             var load: URLLoader = MapLoader._assetMgr.dispatchTask(path);
             if (load.data) {
                 material[type] = load.data;
-                this.taskCurrent++;
+                this.processTaskCurrent(load);
             }
             else {
 
@@ -600,7 +679,7 @@
             var load: URLLoader = MapLoader._assetMgr.dispatchTask(path);
             if (load.data) {
                 method[textureName] = load.data;
-                this.taskCurrent++;
+                this.processTaskCurrent(load);
             }
             else {
                 var methodData: any = {};
@@ -618,7 +697,7 @@
         private processMat(mapNodeData: MapNodeData) {
             var mesh: Mesh = <Mesh>mapNodeData.object3d;
             for (var i: number = 0; i < mapNodeData.materialIDs.length; ++i) {
-                var matData: MatSphereData = this._mapXmlParser.matDict[mapNodeData.materialIDs[i]];
+                var matData: MatSphereData = this._mapParser.matDict[mapNodeData.materialIDs[i]];
                 if (!matData) {
                     continue;
                 }
@@ -667,7 +746,7 @@
 
                 material.cutAlpha = matData.cutAlpha;
 
-                material.uvRectangle.copy(matData.uvRectangle);
+                material.uvRectangle.copyFrom(matData.uvRectangle);
 
                 var lightGroup: LightGroup = new LightGroup();
 
@@ -815,11 +894,11 @@
         //灯光
         private createLight(): void {
             var mapLightData: MapLightData = null;
-            for (var key in this._mapXmlParser.lightDict) {
+            for (var key in this._mapParser.lightDict) {
 
-                mapLightData = this._mapXmlParser.lightDict[key];
+                mapLightData = this._mapParser.lightDict[key];
 
-                if (mapLightData.type == LightType.directlight && this._mapXmlParser.directLight) {
+                if (mapLightData.type == LightType.directlight && this._mapParser.directLight) {
                     var dirLight: DirectLight = new DirectLight(mapLightData.direction);
                     dirLight.lightId = mapLightData.id;
                     dirLight.diffuse = mapLightData.diffuseColor;
@@ -830,7 +909,7 @@
 
                     this.lightDict[mapLightData.id] = dirLight;
 
-                } else if (mapLightData.type == LightType.pointlight && this._mapXmlParser.pointLight) {
+                } else if (mapLightData.type == LightType.pointlight && this._mapParser.pointLight) {
                     var pLight: PointLight = new PointLight(0);
                     pLight.lightId = mapLightData.id;
                     pLight.position = mapLightData.position;

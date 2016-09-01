@@ -45,6 +45,9 @@
         protected _postList: IPost[] = []; 
         protected _postHUD: HUD ; 
         protected _postProcessing: PostProcessing; 
+
+        protected _quadStage: QuadStage;//= new QuadStage();
+
         /**
         * @language zh_CN
         * 构建一个view3d对象
@@ -66,10 +69,14 @@
             this._camera.name = "MainCamera";
             this._scene.addChild3D(this._camera);
 
-            this._viewPort.x = x;
-            this._viewPort.y = y;
-            this._viewPort.width = width;
-            this._viewPort.height = height;
+            //this._viewPort.x = x * window.devicePixelRatio;
+            //this._viewPort.y = y * window.devicePixelRatio;
+            //this._viewPort.width = width * window.devicePixelRatio;
+            //this._viewPort.height = height * window.devicePixelRatio;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
             this._camera.aspectRatio = this._viewPort.width / this._viewPort.height;
             this._camera.updateViewport(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
         }
@@ -80,6 +87,10 @@
 
         public set render(render: RenderBase) {
             this._render = render; 
+        }
+
+        public get quadStage(): QuadStage {
+            return this._quadStage;
         }
 
         public set post( list:any[] ) {
@@ -201,7 +212,7 @@
         * @platform Web,Native
         */
         public set x(value: number) {
-            this._viewPort.x = value;
+            this._viewPort.x = value;// * window.devicePixelRatio;
             this._camera.updateViewport(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
 
             if (this._backImg) {
@@ -229,7 +240,7 @@
         * @platform Web,Native
         */
         public set y(value: number) {
-            this._viewPort.y = value;
+            this._viewPort.y = value;//* window.devicePixelRatio ;
             this._camera.updateViewport(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
 
             if (this._backImg) {
@@ -257,7 +268,7 @@
         * @platform Web,Native
         */
         public set width(value: number) {
-            this._viewPort.width = value;
+            this._viewPort.width = value;// * window.devicePixelRatio ;
             this._camera.aspectRatio = this._viewPort.width / this._viewPort.height;
             this._camera.updateViewport(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
 
@@ -285,7 +296,7 @@
         * @platform Web,Native
         */
         public set height(value: number) {
-            this._viewPort.height = value;
+            this._viewPort.height = value;//* window.devicePixelRatio;
             this._camera.aspectRatio = this._viewPort.width / this._viewPort.height;
             this._camera.updateViewport(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
             if (this._backImg) {
@@ -326,8 +337,45 @@
         public get entityCollect(): EntityCollect {
             return this._entityCollect;
         }
-        
-                        
+
+        /**
+        * @language zh_CN
+        * 获取gui stage
+        * @return QuadStage
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public getGUIStage(): QuadStage {
+            if (!this._quadStage) {
+                this._quadStage = new QuadStage(this);
+            }
+            return this._quadStage;
+        }
+        /**
+        * @language zh_CN
+        * 添加一个gui对象
+        * @param displayObject displayObject显示对象
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public addGUI(displayObject: DisplayObject) {
+            if (!this._quadStage) {
+                this._quadStage = new QuadStage( this );
+            }
+            this._quadStage.addChild(displayObject);
+        }
+
+        /**
+        * @language zh_CN
+        * 从场景根节点中移除一个gui quad对象
+        * @param displayObject displayObject显示对象
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public removeGUI(displayObject: DisplayObject) {
+            this._quadStage.removeChild(displayObject);
+        }
+
         /**
         * @language zh_CN
         * 添加一个Object3D对象进场景根节点
@@ -448,13 +496,8 @@
             Egret3DCanvas.context3DProxy.viewPort(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
             Egret3DCanvas.context3DProxy.setScissorRectangle(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
 
-            if (ShadowCast.instance.shadowRender[0]) {
-
-                MathUtil.CALCULATION_QUATERNION.fromEulerAngles(0, this.a++, 0);
-                var v = new Vector3D(0, -1, -1);
-                MathUtil.CALCULATION_QUATERNION.transformVector(v, ShadowCast.instance.dir);
-
-                ShadowCast.instance.shadowRender[0].draw(time, delay, Egret3DCanvas.context3DProxy, this._entityCollect, ShadowCast.instance.shadowCamera, this._viewPort, true);
+            if (ShadowCast.enableShadow) {
+                ShadowCast.instance.update(this._entityCollect,this._camera, time, delay, this._viewPort);
             }
 
             if (this._cleanParmerts & Context3DProxy.gl.COLOR_BUFFER_BIT) {
@@ -480,12 +523,15 @@
             for (var i: number = 0; i < this._huds.length; ++i) {
                 this._huds[i].draw(Egret3DCanvas.context3DProxy);
             }
-        
+
+            if (this._quadStage) {
+                this._quadStage.update(time, delay, Egret3DCanvas.context3DProxy,this);
+            }
         }
 
         private updateObject3D(object3d: Object3D, time: number, delay: number) {
             if (object3d) {
-                object3d.update(time, delay, this.camera3D)
+                object3d.update(time, delay, this.camera3D);
                 for (var i: number = 0; i < object3d.childs.length; ++i) {
                     this.updateObject3D(object3d.childs[i], time, delay);
                 }

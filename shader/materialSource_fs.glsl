@@ -13,6 +13,7 @@ struct MaterialSource{
 }; 
 uniform float uniform_materialSource[20] ;
 MaterialSource materialSource ;
+vec2 uv_0 ;
 void main(){
 	materialSource.diffuse.x = uniform_materialSource[0];
 	materialSource.diffuse.y = uniform_materialSource[1];

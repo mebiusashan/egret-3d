@@ -35,5 +35,44 @@
         */
         public uv: Vector3D = new Vector3D();
 
+        /**
+        * @language zh_CN
+        * 相交面的索引
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public faceIndex: number;
+
+        /**
+        * @language zh_CN
+        * 相交面顶点0索引
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public v0: number;
+
+        /**
+        * @language zh_CN
+        * 相交面顶点1索引
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public v1: number;
+
+        /**
+        * @language zh_CN
+        * 相交面顶点2索引
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public v2: number;
+
+        /**
+        * @language zh_CN
+        * 鼠标拣选到的所有物体
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public pickList: any;
     }
 }

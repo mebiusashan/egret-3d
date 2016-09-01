@@ -35,7 +35,6 @@
         * @private
         */
         public arrayBuffer: Float32Array;
-
         /**
         * @language zh_CN
         * 构造

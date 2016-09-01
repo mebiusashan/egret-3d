@@ -242,7 +242,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public acceptShadow: boolean = true;
+        public acceptShadow: boolean = false;
 
 
         /**
@@ -251,7 +251,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public shadowColor: Float32Array = new Float32Array([0.5, 0.5, 0.6]);
+        public shadowColor: Float32Array = new Float32Array([0.2, 0.2, 0.2, 0.003]);
 
         /**
         * @language zh_CN
@@ -366,7 +366,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public cutAlpha: number = 0.7;
+        public cutAlpha: number = 0;
 
        
 
@@ -517,7 +517,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public colorTransform: ColorTransform = new ColorTransform();
+        public colorTransform: ColorTransform;
         /**
          * @language zh_CN
          */
@@ -558,7 +558,7 @@
             //data.environmentMapTex = this.environmentMapTex;
             data.shadowMapTexture = this.shadowMapTexture;
 
-            for (var i: number = 0; i < 3; ++i) {
+            for (var i: number = 0; i < 4; ++i) {
                 data.shadowColor[i] = this.shadowColor[i];
             }
             //data.splat_0Tex = this.splat_0Tex;

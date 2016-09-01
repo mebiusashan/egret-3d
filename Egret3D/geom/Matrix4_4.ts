@@ -241,7 +241,7 @@
             this.rawData[12] = 0;
             this.rawData[13] = 0;
             this.rawData[14] = zn / (zn - zf);
-            this.rawData[15] = 1;
+            this.rawData[15] = 1 ;
         }
 
         /**
@@ -257,7 +257,7 @@
         * @platform Web,Native
         */
         public orthoOffCenter(l: number, r: number, b: number, t: number, zn: number, zf: number) {
-            this.rawData[0] = 2 / (r - 1);
+            this.rawData[0] = 2 / (r - l);
             this.rawData[1] = 0;
             this.rawData[2] = 0;
             this.rawData[3] = 0;
@@ -269,13 +269,111 @@
 
             this.rawData[8] = 0;
             this.rawData[9] = 0;
-            this.rawData[10] = 1 / (zf - zn);
+            this.rawData[10] = 1.0 / (zf - zn);
             this.rawData[11] = 0;
-
-            this.rawData[12] = (1 + r) / (1 - r);
+            
+            this.rawData[12] = (l + r) / (l - r);
             this.rawData[13] = (t + b) / (b - t);
             this.rawData[14] = zn / (zn - zf);
             this.rawData[15] = 1;
+        }
+
+        /**
+        * @language zh_CN
+        * 计算出一个方向变换到另一个方向的旋转矩阵
+        * @param fromDirection 初始方向
+        * @param toDirection 变换后的方向
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public fromToRotation(fromDirection: Vector3D, toDirection: Vector3D) {
+            var EPSILON: number = 0.000001;
+            var v: Vector3D = Vector3D.HELP_0;
+            toDirection.crossProduct(fromDirection, v);
+            var e: number = toDirection.dotProduct(fromDirection);
+
+            if (e > 1.0 - EPSILON) {
+                this.identity();
+            }
+            else if (3 < -1.0 + EPSILON) {
+
+                var up: Vector3D = Vector3D.HELP_1;
+                var left: Vector3D = Vector3D.HELP_2;
+                var invlen: number = 0;
+
+                var fxx, fyy, fzz, fxy, fxz, fyz;
+                var uxx, uyy, uzz, uxy, uxz, uyz;
+                var lxx, lyy, lzz, lxy, lxz, lyz;
+
+                left.x = 0.0; left.y = fromDirection.z; left.z = -fromDirection.y;
+                if (left.dotProduct(left) < EPSILON) {
+
+                    left.x = -fromDirection.z; left.y = 0.0; left.z = fromDirection.x;
+                }
+                /* normalize "left" */
+                invlen = 1.0 / Math.sqrt(left.dotProduct(left));
+                left[0] *= invlen;
+                left[1] *= invlen;
+                left[2] *= invlen;
+
+                left.crossProduct(fromDirection, up);
+
+                fxx = -fromDirection.x * fromDirection.x; fyy = -fromDirection.y * fromDirection.y; fzz = -fromDirection.z * fromDirection.z;
+                fxy = -fromDirection.x * fromDirection.y; fxz = -fromDirection.x * fromDirection.z; fyz = -fromDirection.y * fromDirection.z;
+
+                uxx = up.x * up.x; uyy = up.y * up.y; uzz = up.z * up.z;
+                uxy = up.x * up.y; uxz = up.x * up.z; uyz = up.y * up.z;
+
+                lxx = -left.x * left.x; lyy = -left.y * left.y; lzz = -left.z * left.z;
+                lxy = -left.x * left.y; lxz = -left.x * left.z; lyz = -left.y * left.z;
+
+
+                this.rawData[0] = fxx + uxx + lxx; this.rawData[1] = fxy + uxy + lxy; this.rawData[2] = fxz + uxz + lxz;
+                this.rawData[4] = this.rawData[1]; this.rawData[5] = fyy + uyy + lyy; this.rawData[6] = fyz + uyz + lyz;
+                this.rawData[8] = this.rawData[2]; this.rawData[9] = this.rawData[6]; this.rawData[10] = fzz + uzz + lzz;
+
+                this.rawData[3] = 0;
+                this.rawData[7] = 0;
+                this.rawData[11] = 0;
+                this.rawData[15] = 1;
+            }
+            else {
+                var hvx, hvz, hvxy, hvxz, hvyz;
+                var h = (1.0 - e) / v.dotProduct(v);
+                hvx = h * v.x;
+                hvz = h * v.z;
+                hvxy = hvx * v.y;
+                hvxz = hvx * v.z;
+                hvyz = hvz * v.y;
+                this.rawData[0] = e + hvx * v.x; this.rawData[1] = hvxy - v.z; this.rawData[2] = hvxz + v.y;
+                this.rawData[4] = hvxy + v.z; this.rawData[5] = e + h * v.y * v.y; this.rawData[6] = hvyz - v.x;
+                this.rawData[8] = hvxz - v.y; this.rawData[9] = hvyz + v.x; this.rawData[10] = e + hvz * v.z;
+
+                this.rawData[3] = 0;
+                this.rawData[7] = 0;
+                this.rawData[11] = 0;
+                this.rawData[15] = 1;
+            }
+        }
+
+
+        /**
+        * @language zh_CN
+        * 计算出一个方向变换到另一个方向的旋转矩阵
+        * @param fromDirection 初始方向
+        * @param toDirection 变换后的方向
+        * @param target 计算出的旋转矩阵 默认为null 结果会返回
+        * @returns Quaternion 计算出的旋转矩阵 如果 target为null 就会创建新实例返回
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public static fromToRotation(fromDirection: Vector3D, toDirection: Vector3D, target: Matrix4_4 = null): Matrix4_4 {
+            if (!target) {
+                target = new Matrix4_4();
+            }
+
+            target.fromToRotation(fromDirection, toDirection);
+            return target;
         }
 
         /**
@@ -856,7 +954,6 @@
             vec[0] = pos;
             vec[1] = rot;
             vec[2] = scale;
-
 
             return vec;
         }

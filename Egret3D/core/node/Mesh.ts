@@ -26,12 +26,12 @@
         * @language zh_CN
         * 构建一个Mesh对象
         * @param geometry 模型数据
-        * @param material 模型材质
-        * @param animation 模型动画
+        * @param material 模型材质 默认为null 为null做自动创建一个TextureMaterial
+        * @param animation 模型动画 默认为null 没有动画可以不指定
         * @version Egret 3.0
         * @platform Web,Native
         */
-        constructor(geometry: Geometry, material: MaterialBase, animation: IAnimation = null) {
+        constructor(geometry: Geometry, material: MaterialBase = null, animation: IAnimation = null) {
             super();
 
             this.type = "mesh";
@@ -212,25 +212,25 @@
             var bound: BoundBox = new BoundBox(this);
             bound.min.copyFrom(new Vector3D(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE));
             bound.max.copyFrom(new Vector3D(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE));
-            for (var i: number = 0; i < this.geometry.verticesData.length; i += this.geometry.vertexAttLength) {
-                if (bound.max.x < this.geometry.verticesData[i]) {
-                    bound.max.x = this.geometry.verticesData[i];
+            for (var i: number = 0; i < this.geometry.vertexCount; i += this.geometry.vertexAttLength) {
+                if (bound.max.x < this.geometry.vertexArray[i]) {
+                    bound.max.x = this.geometry.vertexArray[i];
                 }
-                if (bound.max.y < this.geometry.verticesData[i + 1]) {
-                    bound.max.y = this.geometry.verticesData[i + 1];
+                if (bound.max.y < this.geometry.vertexArray[i + 1]) {
+                    bound.max.y = this.geometry.vertexArray[i + 1];
                 }
-                if (bound.max.z < this.geometry.verticesData[i + 2]) {
-                    bound.max.z = this.geometry.verticesData[i + 2];
+                if (bound.max.z < this.geometry.vertexArray[i + 2]) {
+                    bound.max.z = this.geometry.vertexArray[i + 2];
                 }
 
-                if (bound.min.x > this.geometry.verticesData[i]) {
-                    bound.min.x = this.geometry.verticesData[i];
+                if (bound.min.x > this.geometry.vertexArray[i]) {
+                    bound.min.x = this.geometry.vertexArray[i];
                 }
-                if (bound.min.y > this.geometry.verticesData[i + 1]) {   
-                    bound.min.y = this.geometry.verticesData[i + 1];
+                if (bound.min.y > this.geometry.vertexArray[i + 1]) {   
+                    bound.min.y = this.geometry.vertexArray[i + 1];
                 }
-                if (bound.min.z > this.geometry.verticesData[i + 2]) {
-                    bound.min.z = this.geometry.verticesData[i + 2];
+                if (bound.min.z > this.geometry.vertexArray[i + 2]) {
+                    bound.min.z = this.geometry.vertexArray[i + 2];
                 }
             }
 

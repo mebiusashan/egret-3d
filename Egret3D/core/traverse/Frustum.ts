@@ -11,15 +11,39 @@
     * @platform Web,Native
     */
     export class Frustum {
-        
+
         public box: BoundBox;
 
         private _vtxNum: number = 8;
         private _planeNum: number = 6;
         private _vertex: Array<Vector3D>;
+        private _tempVertices: Array<Vector3D>;
 
         private _pos: Vector3D;
         private _plane: Array<Plane3D>;
+
+        private _frustum: Wireframe = new Wireframe();
+
+        /**
+        * @language zh_CN
+        * @private
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get vertices(): Vector3D[] {
+            return this._vertex;
+        }
+
+
+        /**
+        * @language zh_CN
+        * 摄像机渲染线框
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get wireframe(): Wireframe {
+            return this._frustum;
+        }
 
         /**
         * @language zh_CN
@@ -43,6 +67,11 @@
                 this._vertex.push(new Vector3D());
             }
 
+            this._tempVertices = new Array<Vector3D>();
+            for (var i: number = 0; i < this._vtxNum; ++i) {
+                this._tempVertices.push(new Vector3D());
+            }
+
             this._pos = new Vector3D();
             this._plane = new Array<Plane3D>();
             for (var i: number = 0; i < 6; ++i) {
@@ -51,10 +80,18 @@
             this.box = new BoundBox(null, new Vector3D(), new Vector3D());
             ///this.box = new CubeBoxBound(new Vector3D(99999.0, 99999.0, 99999.0), new Vector3D(-99999.0, -99999.0, -99999.0));
             this.center = new Vector3D();
+            this._frustum.material.diffuseColor = 0xffffff;
+            this._frustum.name = "CameraFrustum";
+            this._frustum.visible = false;
+
+            this._frustum.geometry.vertexCount = 8;
+            this._frustum.geometry.indexCount = 24;
+            this._frustum.geometry.setVertexIndices(0, [0, 1, 1, 2, 2, 3, 0, 3, 4, 5, 5, 6, 6, 7, 4, 7, 0, 4, 1, 5, 3, 7, 2, 6]);
         }
 
         /**
         * @language zh_CN
+        * @private
         * 生成一个视椎体
         * @param fovY 观察时y 轴方向的角度，就是观察范围夹角。
         * @param aspectRatio 纵横比，在视空间宽度除以高度.
@@ -106,6 +143,101 @@
             this._vertex[7].z = farPlane;
         }
 
+        protected makeOrthoFrustum(w: number, h: number, zn: number, zf: number) {
+            /// near top right
+            this._vertex[0].x = w / 2;
+            this._vertex[0].y = h / 2;
+            this._vertex[0].z = zn;
+            /// near top left
+            this._vertex[1].x = -w / 2;
+            this._vertex[1].y = h / 2;
+            this._vertex[1].z = zn;
+            /// near bottom left
+            this._vertex[2].x = -w / 2;
+            this._vertex[2].y = -h / 2;
+            this._vertex[2].z = zn;
+            /// near bottom right
+            this._vertex[3].x = w / 2;
+            this._vertex[3].y = -h / 2;
+            this._vertex[3].z = zn;
+            /// far top right
+            this._vertex[4].x = w / 2;
+            this._vertex[4].y = h / 2;
+            this._vertex[4].z = zf;
+            /// far top left
+            this._vertex[5].x = -w / 2;
+            this._vertex[5].y = h / 2;
+            this._vertex[5].z = zf;
+            /// far bottom left
+            this._vertex[6].x = -w / 2;
+            this._vertex[6].y = -h / 2;
+            this._vertex[6].z = zf;
+            /// far bottom right
+            this._vertex[7].x = w / 2;
+            this._vertex[7].y = -h / 2;
+            this._vertex[7].z = zf;
+        }
+
+        protected makeOrthoToCenterFrustum(l: number, r: number, b: number, t: number, zn: number, zf: number) {
+            /// near top right
+            this._vertex[0].x = r;
+            this._vertex[0].y = t;
+            this._vertex[0].z = zn;
+            /// near top left
+            this._vertex[1].x = l;
+            this._vertex[1].y = t;
+            this._vertex[1].z = zn;
+            /// near bottom left
+            this._vertex[2].x = l;
+            this._vertex[2].y = b;
+            this._vertex[2].z = zn;
+            /// near bottom right
+            this._vertex[3].x = r;
+            this._vertex[3].y = b;
+            this._vertex[3].z = zn;
+            /// far top right
+            this._vertex[4].x = r;
+            this._vertex[4].y = t;
+            this._vertex[4].z = zf;
+            /// far top left
+            this._vertex[5].x = l;
+            this._vertex[5].y = t;
+            this._vertex[5].z = zf;
+            /// far bottom left
+            this._vertex[6].x = l;
+            this._vertex[6].y = b;
+            this._vertex[6].z = zf;
+            /// far bottom right
+            this._vertex[7].x = r;
+            this._vertex[7].y = b;
+            this._vertex[7].z = zf;
+        }
+
+        /**
+        * @language zh_CN
+        * 数据更新.
+        * @param camera 视椎的摄像机.
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public updateFrustum(camera: Camera3D) {
+            switch (camera.cameraType) {
+                case CameraType.perspective:
+                    this.makeFrustum(camera.fieldOfView, camera.aspectRatio, camera.near, camera.far);
+                    break;
+                case CameraType.orthogonal:
+                    this.makeOrthoFrustum(camera.viewPort.width, camera.viewPort.height, camera.near, camera.far);
+                    break;
+                case CameraType.orthogonalToCenter:
+                    this.makeOrthoToCenterFrustum(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height, camera.near, camera.far);
+                    break;
+            }
+
+            for (var i: number = 0; i < this.vertices.length; ++i) {
+                this._frustum.geometry.setVerticesForIndex(i, VertexFormat.VF_POSITION, [this.vertices[i].x, this.vertices[i].y, this.vertices[i].z], 1);
+            }
+        }
+
         /**
         * @language zh_CN
         * 数据更新.
@@ -115,66 +247,62 @@
         */
         public update(camera: Camera3D) {
 
-            this.makeFrustum(camera.fieldOfView, camera.aspectRatio, camera.near, camera.far);
-
             /// 摄像机变化之后的顶点也变化;
-            var vtx: Array<Vector3D> = new Array<Vector3D>();
             var mat: Matrix4_4 = Matrix4_4.helpMatrix ;
             mat.copyFrom(camera.modelMatrix);
-            ///mat.invert(); /// 眼睛的世界矩阵;
 
-            this._curVer = vtx;
+            //this._frustum.modelMatrix = mat;
 
             for (var i: number = 0; i < this._vtxNum; ++i) {
-                vtx.push(mat.transformVector(this._vertex[i]));
+                mat.transformVector(this._vertex[i], this._tempVertices[i]);
             }
             this.box.max.x = this.box.max.y = this.box.max.z = -Number.MAX_VALUE;
             this.box.min.x = this.box.min.y = this.box.min.z = Number.MAX_VALUE;
 
-            for (var i: number = 0; i < vtx.length; ++i) {
-                if (this.box.max.x < vtx[i].x) {
-                    this.box.max.x = vtx[i].x;
+            for (var i: number = 0; i < this._tempVertices.length; ++i) {
+                if (this.box.max.x < this._tempVertices[i].x) {
+                    this.box.max.x = this._tempVertices[i].x;
                 }
-                if (this.box.max.y < vtx[i].y) {
-                    this.box.max.y = vtx[i].y;
+                if (this.box.max.y < this._tempVertices[i].y) {
+                    this.box.max.y = this._tempVertices[i].y;
                 }
-                if (this.box.max.z < vtx[i].z) {
-                    this.box.max.z = vtx[i].z;
+                if (this.box.max.z < this._tempVertices[i].z) {
+                    this.box.max.z = this._tempVertices[i].z;
                 }
 
-                if (this.box.min.x > vtx[i].x) {
-                    this.box.min.x = vtx[i].x;
+                if (this.box.min.x > this._tempVertices[i].x) {
+                    this.box.min.x = this._tempVertices[i].x;
                 }
-                if (this.box.min.y > vtx[i].y) {
-                    this.box.min.y = vtx[i].y;
+                if (this.box.min.y > this._tempVertices[i].y) {
+                    this.box.min.y = this._tempVertices[i].y;
                 }
-                if (this.box.min.z > vtx[i].z) {
-                    this.box.min.z = vtx[i].z;
+                if (this.box.min.z > this._tempVertices[i].z) {
+                    this.box.min.z = this._tempVertices[i].z;
                 }
             }
 
             this.box.calculateBox();
 
-            this._plane[0].fromPoints(vtx[4], vtx[5], vtx[6]);        /// 远平面(far);
-            this._plane[1].fromPoints(vtx[1], vtx[6], vtx[5]);        /// 左平面(left);
-            this._plane[2].fromPoints(vtx[0], vtx[4], vtx[7]);        /// 右平面(right);
+            this._plane[0].fromPoints(this._tempVertices[4], this._tempVertices[5], this._tempVertices[6]);        /// 远平面(far);
+            this._plane[1].fromPoints(this._tempVertices[1], this._tempVertices[6], this._tempVertices[5]);        /// 左平面(left);
+            this._plane[2].fromPoints(this._tempVertices[0], this._tempVertices[4], this._tempVertices[7]);        /// 右平面(right);
 
-            this._plane[3].fromPoints(vtx[1], vtx[0], vtx[3]);        /// 近平面(near);
-            this._plane[4].fromPoints(vtx[1], vtx[5], vtx[4]);        /// 上平面(top);
-            this._plane[5].fromPoints(vtx[3], vtx[7], vtx[6]);        /// 下平面(bottom);
+            this._plane[3].fromPoints(this._tempVertices[1], this._tempVertices[0], this._tempVertices[3]);        /// 近平面(near);
+            this._plane[4].fromPoints(this._tempVertices[1], this._tempVertices[5], this._tempVertices[4]);        /// 上平面(top);
+            this._plane[5].fromPoints(this._tempVertices[3], this._tempVertices[7], this._tempVertices[6]);        /// 下平面(bottom);
             for (var i: number = 0; i < this._planeNum; i++) {
                 this._plane[i].normalize();
             }
 
             var nearCenter: Vector3D = new Vector3D();
-            nearCenter.copyFrom(vtx[0].subtract(vtx[2]));
+            nearCenter.copyFrom(this._tempVertices[0].subtract(this._tempVertices[2]));
             nearCenter.scaleBy(0.5);
-            nearCenter.copyFrom(vtx[2].add(nearCenter));
+            nearCenter.copyFrom(this._tempVertices[2].add(nearCenter));
 
             var farCenter: Vector3D = new Vector3D();
-            farCenter.copyFrom(vtx[4].subtract(vtx[6]));
+            farCenter.copyFrom(this._tempVertices[4].subtract(this._tempVertices[6]));
             farCenter.scaleBy(0.5);
-            farCenter.copyFrom(vtx[6].add(farCenter));
+            farCenter.copyFrom(this._tempVertices[6].add(farCenter));
 
             this.center.copyFrom(farCenter.subtract(nearCenter));
             this.center.scaleBy(0.5);

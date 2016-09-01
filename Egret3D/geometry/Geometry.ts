@@ -86,20 +86,84 @@
          * @platform Web,Native
          */
         VF_SKIN = 0x00000040,
+
+        /**
+          * @private
+          * @language zh_CN
+          * quad uv rectangle
+          * @version Egret 3.0
+          * @platform Web,Native
+          */
+        VF_UVREC = 0x00000080,
+
+             /**
+          * @private
+          * @language zh_CN
+          * quad uv rectangle
+          * @version Egret 3.0
+          * @platform Web,Native
+          */
+        VF_ROTATION = 0x00000100,
+
+             /**
+          * @private
+          * @language zh_CN
+          * quad uv rectangle
+          * @version Egret 3.0
+          * @platform Web,Native
+          */
+        VF_SIZE = 0x00000200,
+
+             /**
+          * @private
+          * @language zh_CN
+          * quad uv rectangle
+          * @version Egret 3.0
+          * @platform Web,Native
+          */
+        VF_SCALE = 0x00000400,
+
+        /**
+        * @private
+        * @language zh_CN
+        * quad uv rectangle
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        VF_QUADPOS = 0x00000800,
+
+        /**
+        * @private
+        * @language zh_CN
+        * quad uv rectangle
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        VF_QUADOFFSET = 0x00001000,
+
+        /**
+         * @private
+         * @language zh_CN
+         * quad uv rectangle
+         * @version Egret 3.0
+         * @platform Web,Native
+         */
+        VF_QUAD_COLOR = 0x00002000,
     }
 
     /**
-     * @language zh_CN
-     * @class egret3d.Geometry
-     * @classdesc
-     * 表示几何形状 子集
-     * @see egret3d.VertexBuffer3D
-     * @see egret3d.IndexBuffer3D
-     * @see egret3d.SubGeometry
-     *
-     * @version Egret 3.0
-     * @platform Web,Native
-     */
+    * @language zh_CN
+    * @class egret3d.Geometry
+    * @classdesc
+    * 注意:当使用vertexArray 或 indexArray 必须先设置 vertexCount 或 indexCount
+    * 表示几何形状 子集
+    * @see egret3d.VertexBuffer3D
+    * @see egret3d.IndexBuffer3D
+    * @see egret3d.SubGeometry
+    *
+    * @version Egret 3.0
+    * @platform Web,Native
+    */
     export class Geometry {
 
        /**
@@ -131,11 +195,11 @@
 
         /**
         * @language zh_CN
-        * 顶点数据
+        * 顶点数据 
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public verticesData: Array<number> = new Array<number>();
+        public vertexArray: Float32Array;
 
         /**
         * @language zh_CN
@@ -143,8 +207,8 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public indexData: Array<number> = new Array<number>();
-                
+        public indexArray: Uint16Array;
+
         /**
         * @language zh_CN
         * shader buffer
@@ -159,69 +223,6 @@
         * @platform Web,Native
         */
         public sharedIndexBuffer: IndexBuffer3D;
-
-        /**
-        * @private
-        * @language zh_CN
-        * 顶点坐标数据
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public source_positionData: Array<number> = new Array<number>();
-                        
-        /**
-        * @private
-        * @language zh_CN
-        * 顶点法线数据
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public source_normalData: Array<number> = new Array<number>();
-                                
-        /**
-        * @private
-        * @language zh_CN
-        * 顶点切线数据
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public source_tangentData: Array<number> = new Array<number>();
-                                
-        /**
-        * @private
-        * @language zh_CN
-        * 顶点颜色数据
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public source_colorData: Array<number> = new Array<number>();
-                                
-        /**
-        * @private
-        * @language zh_CN
-        * 顶点uv数据
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public source_uvData: Array<number> = new Array<number>();
-                                
-        /**
-        * @private
-        * @language zh_CN
-        * 顶点第二uv数据
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public source_uv2Data: Array<number> = new Array<number>();
-
-        /**
-        * @private
-        * @language zh_CN
-        * 顶点第二uv数据
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public source_SkinData: Array<number> = new Array<number>();
 
         /**
         * @private
@@ -315,43 +316,113 @@
         */
         private _bufferDiry: boolean = true;
 
-
-        public _vertexCount: number = -1;
-    
         /**
         * @language zh_CN
-        * 得到顶点的数量
-        * @returns number 顶点的数量
+        * 顶点的数量
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public _vertexCount: number = 0;
+
+        /**
+        * @language zh_CN
+        * 索引数量
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public _indexCount: number = 0;
+
+        /**
+        * @language zh_CN
+        * 顶点的数量
         * @version Egret 3.0
         * @platform Web,Native
         */
         public get vertexCount(): number {
-            if (this._vertexCount < 0) {
-                this._vertexCount = this.verticesData.length / this.vertexAttLength;
-            }
-
             return this._vertexCount;
         }
-            
+
         /**
         * @language zh_CN
-        * 设置顶点的数量
-        * @param value 顶点的数量
+        * 设置顶点的数量，同时 this.vertexArray = new Float32Array(this.vertexAttLength * this.vertexCount);
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public set vertexCount(value:number) {
+        public set vertexCount(value: number) {
+            if (this._vertexCount == value) {
+                return;
+            }
+            var data: Float32Array = new Float32Array(value * this.vertexAttLength);
+            if (this.vertexArray) {
+                if (this.vertexCount < value) {
+                    data.set(this.vertexArray);
+                }
+                delete this.vertexArray;
+            }
+            this.vertexArray = data;
             this._vertexCount = value;
         }
 
         /**
         * @language zh_CN
-        * 获取模型面数
+        * 索引的数量
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get indexCount(): number {
+            return this._indexCount;
+        }
+
+        /**
+        * @language zh_CN
+        * 设置索引的数量，同时 this.indexArray = new Uint16Array(this._indexCount);
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set indexCount(value: number) {
+            if (this._indexCount == value) {
+                return;
+            }
+
+            var data: Uint16Array = new Uint16Array(value);
+            if (this.indexArray) {
+                if (this.indexCount < value) {
+                    data.set(this.indexArray);
+                }
+                delete this.indexArray;
+            }
+            this.indexArray = data;
+            this._indexCount = value;
+            this._faceCount = value / 3;
+        }
+
+        public _faceCount: number = 0;
+
+        /**
+        * @language zh_CN
+        * 模型面数
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set faceCount(value: number) {
+            if (this._faceCount == value) {
+                return;
+            }
+            this.indexCount = value * 3;
+            this._faceCount = value;
+        }
+
+        /**
+        * @language zh_CN
+        * 模型面数
         * @version Egret 3.0
         * @platform Web,Native
         */
         public get faceCount(): number {
-            return this.indexData.length / 3;
+            return this._faceCount;
+        }
+
+        constructor() {
         }
 
         /**
@@ -363,7 +434,7 @@
             subGeometry.matID = 0;
             subGeometry.geometry = this;
             subGeometry.start = 0;
-            subGeometry.count = this.indexData ? this.indexData.length : 0 ;
+            subGeometry.count = this.indexCount;
             this.subGeometrys.push(subGeometry);
         }
 
@@ -411,6 +482,34 @@
                 this.vertexAttLength += Geometry.skinSize;
             }
 
+            if (this.vertexFormat & VertexFormat.VF_UVREC) {
+                this.vertexAttLength += QuadData.uvRectangleSize;
+            }
+
+            if (this.vertexFormat & VertexFormat.VF_ROTATION) {
+                this.vertexAttLength += QuadData.rotationSize;
+            }
+
+            if (this.vertexFormat & VertexFormat.VF_SIZE) {
+                this.vertexAttLength += QuadData.offsetSize;
+            }
+
+            if (this.vertexFormat & VertexFormat.VF_SCALE) {
+                this.vertexAttLength += QuadData.scaleSize;
+            }
+
+            if (this.vertexFormat & VertexFormat.VF_QUADPOS) {
+                this.vertexAttLength += QuadData.posSize;
+            }
+
+            if (this.vertexFormat & VertexFormat.VF_QUADOFFSET) {
+                this.vertexAttLength += QuadData.offsetSize;
+            }
+
+            if (this.vertexFormat & VertexFormat.VF_QUAD_COLOR) {
+                this.vertexAttLength += QuadData.colorSize;
+            }
+
             this.vertexSizeInBytes = this.vertexAttLength * 4;
         }
                         
@@ -424,59 +523,6 @@
 
         public get vertexFormat(): number {
             return this._vertexFormat;
-        }
-                
-        /**
-        * @private
-        * @language zh_CN
-        * 根据顶点格式生成顶点buffer
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public calculateVertexFormat() {
-            this.vertexCount = this.source_positionData.length / Geometry.positionSize;
-            for (var i: number = 0; i < this.vertexCount; ++i) {
-                if (this.vertexFormat & VertexFormat.VF_POSITION) {
-                    this.verticesData.push(this.source_positionData[i * Geometry.positionSize]);
-                    this.verticesData.push(this.source_positionData[i * Geometry.positionSize + 1]);
-                    this.verticesData.push(this.source_positionData[i * Geometry.positionSize + 2]);
-                }
-
-                if (this.vertexFormat & VertexFormat.VF_NORMAL) {
-                    this.verticesData.push(this.source_normalData[i * Geometry.normalSize]);    
-                    this.verticesData.push(this.source_normalData[i * Geometry.normalSize + 1]);
-                    this.verticesData.push(this.source_normalData[i * Geometry.normalSize + 2]);
-                }
-
-                if (this.vertexFormat & VertexFormat.VF_TANGENT) {
-                    this.verticesData.push(this.source_tangentData[i * Geometry.tangentSize]);
-                    this.verticesData.push(this.source_tangentData[i * Geometry.tangentSize + 1]);
-                    this.verticesData.push(this.source_tangentData[i * Geometry.tangentSize + 2]);
-                }
-
-                if (this.vertexFormat & VertexFormat.VF_COLOR) {
-                    this.verticesData.push(this.source_colorData[i * Geometry.colorSize]);
-                    this.verticesData.push(this.source_colorData[i * Geometry.colorSize + 1]);
-                    this.verticesData.push(this.source_colorData[i * Geometry.colorSize + 2]);
-                    this.verticesData.push(this.source_colorData[i * Geometry.colorSize + 3]);
-                }
-
-                if (this.vertexFormat & VertexFormat.VF_UV0) {
-                    this.verticesData.push(this.source_uvData[i * Geometry.uvSize]);
-                    this.verticesData.push(this.source_uvData[i * Geometry.uvSize + 1]);
-                }
-
-                if (this.vertexFormat & VertexFormat.VF_UV1) {
-                    this.verticesData.push(this.source_uv2Data[i * Geometry.uv2Size]);
-                    this.verticesData.push(this.source_uv2Data[i * Geometry.uv2Size + 1]);
-                }
-
-                if (this.vertexFormat & VertexFormat.VF_SKIN) {
-                    for (var j = 0; j < Geometry.skinSize; ++j) {
-                        this.verticesData.push(this.source_SkinData[i * Geometry.skinSize + j]);
-                    }
-                }
-            }
         }
                         
         /**
@@ -503,10 +549,11 @@
         */
         public upload(context3DProxy: Context3DProxy, drawType: number = Context3DProxy.gl.STATIC_DRAW ) {
             if (!this.sharedIndexBuffer && !this.sharedVertexBuffer) {
-                this.sharedIndexBuffer = context3DProxy.creatIndexBuffer(this.indexData);
-                this.sharedVertexBuffer = context3DProxy.creatVertexBuffer(this.verticesData,drawType);
+                this.sharedIndexBuffer = context3DProxy.creatIndexBuffer(this.indexArray);
+                this.sharedVertexBuffer = context3DProxy.creatVertexBuffer(this.vertexArray, drawType); 
             } else {
-                this.sharedVertexBuffer.arrayBuffer.set(this.verticesData);
+                //this.sharedVertexBuffer.arrayBuffer.set(this.verticesData);
+                //this.sharedVertexBuffer.arrayBuffer = this.verticesData;
                 context3DProxy.uploadVertexBuffer(this.sharedVertexBuffer);
             }
         }
@@ -525,59 +572,59 @@
                 target = new Array<number>();
             }
 
-            if (index < 0 || index >= this.verticesData.length) {
+            if (index < 0 || index >= this.vertexCount) {
                 return target;
             }
             var offset: number = 0;
             if (this.vertexFormat & VertexFormat.VF_POSITION) {
                 if (vf & VertexFormat.VF_POSITION) {
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 1]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 2]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
                 }
                 offset += Geometry.positionSize;
             }
 
             if (this.vertexFormat & VertexFormat.VF_NORMAL) {
                 if (vf & VertexFormat.VF_NORMAL) {
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 1]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 2]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
                 }
                 offset += Geometry.normalSize;
             }
 
             if (this.vertexFormat & VertexFormat.VF_TANGENT) {
                 if (vf & VertexFormat.VF_TANGENT) {
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 1]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 2]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
                 }
                 offset += Geometry.tangentSize;
             }
 
             if (this.vertexFormat & VertexFormat.VF_COLOR) {
                 if (vf & VertexFormat.VF_COLOR) {
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 1]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 2]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 3]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 3]);
                 }
                 offset += Geometry.colorSize;
             }
 
             if (this.vertexFormat & VertexFormat.VF_UV0) {
                 if (vf & VertexFormat.VF_UV0) {
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 1]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
                 }
                 offset += Geometry.uvSize;
             }
 
             if (this.vertexFormat & VertexFormat.VF_UV1) {
                 if (vf & VertexFormat.VF_UV1) {
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.verticesData[index * this.vertexAttLength + offset + 1]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
                 }
                 offset += Geometry.uv2Size;
             }
@@ -585,7 +632,7 @@
             if (this.vertexFormat & VertexFormat.VF_SKIN) {
                 if (vf & VertexFormat.VF_SKIN) {
                     for (var j = 0; j < Geometry.skinSize; ++j) {
-                        target.push(this.verticesData[index * this.vertexAttLength + offset + j]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + j]);
                     }
                 }
                 offset += Geometry.skinSize;
@@ -605,94 +652,101 @@
         * @platform Web,Native
         */
         public setVerticesForIndex(index: number, vf: VertexFormat, src: Array<number>, vertexCount: number = 1) {
+            if (index + vertexCount > this.vertexCount) {
+                if (index + vertexCount > this.vertexCount) {
+                    this.vertexCount = index + vertexCount;
+                }
+            }
+
+            this._bufferDiry = true;
             var offset: number = 0;
             var srcOffset: number = 0;
             for (var i: number = 0; i < vertexCount; ++i) {
                 offset = 0;
                 if (this.vertexFormat & VertexFormat.VF_POSITION) {
                     if (vf & VertexFormat.VF_POSITION) {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
-                        this.verticesData[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
+                        this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
                         srcOffset += Geometry.positionSize;
                     }
                     else {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = 0;
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = 0;
-                        this.verticesData[index * this.vertexAttLength + offset + 2] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 2] = 0;
                     }
                     offset += Geometry.positionSize;
                 }
 
                 if (this.vertexFormat & VertexFormat.VF_NORMAL) {
                     if (vf & VertexFormat.VF_NORMAL) {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
-                        this.verticesData[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
+                        this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
                         srcOffset += Geometry.normalSize;
                     }
                     else {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = 0;
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = 0;
-                        this.verticesData[index * this.vertexAttLength + offset + 2] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 2] = 0;
                     }
                     offset += Geometry.normalSize;
                 }
 
                 if (this.vertexFormat & VertexFormat.VF_TANGENT) {
                     if (vf & VertexFormat.VF_TANGENT) {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
-                        this.verticesData[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
+                        this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
                         srcOffset += Geometry.tangentSize;
                     }
                     else {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = 0;
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = 0;
-                        this.verticesData[index * this.vertexAttLength + offset + 2] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 2] = 0;
                     }
                     offset += Geometry.tangentSize;
                 }
 
                 if (this.vertexFormat & VertexFormat.VF_COLOR) {
                     if (vf & VertexFormat.VF_COLOR) {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
-                        this.verticesData[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
-                        this.verticesData[index * this.vertexAttLength + offset + 3] = src[srcOffset + 3];
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
+                        this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
+                        this.vertexArray[index * this.vertexAttLength + offset + 3] = src[srcOffset + 3];
                         srcOffset += Geometry.colorSize;
                     }
                     else {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = 1;
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = 1;
-                        this.verticesData[index * this.vertexAttLength + offset + 2] = 1;
-                        this.verticesData[index * this.vertexAttLength + offset + 3] = 1;
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 1;
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 1;
+                        this.vertexArray[index * this.vertexAttLength + offset + 2] = 1;
+                        this.vertexArray[index * this.vertexAttLength + offset + 3] = 1;
                     }
                     offset += Geometry.colorSize;
                 }
 
                 if (this.vertexFormat & VertexFormat.VF_UV0) {
                     if (vf & VertexFormat.VF_UV0) {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                         srcOffset += Geometry.uvSize;
                     }
                     else {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = 0;
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 0;
                     }
                     offset += Geometry.uvSize;
                 }
 
                 if (this.vertexFormat & VertexFormat.VF_UV1) {
                     if (vf & VertexFormat.VF_UV1) {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                         srcOffset += Geometry.uv2Size;
                     }
                     else {
-                        this.verticesData[index * this.vertexAttLength + offset + 0] = 0;
-                        this.verticesData[index * this.vertexAttLength + offset + 1] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
+                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 0;
                     }
                     offset += Geometry.uv2Size;
                 }
@@ -700,13 +754,13 @@
                 if (this.vertexFormat & VertexFormat.VF_SKIN) {
                     if (vf & VertexFormat.VF_SKIN) {
                         for (var j = 0; j < Geometry.skinSize; ++j) {
-                            this.verticesData[index * this.vertexAttLength + offset + j] = src[srcOffset + j];
+                            this.vertexArray[index * this.vertexAttLength + offset + j] = src[srcOffset + j];
                         }
                         srcOffset += Geometry.skinSize;
                     }
                     else {
                         for (var j = 0; j < Geometry.skinSize; ++j) {
-                            this.verticesData[index * this.vertexAttLength + offset + j] = 0;
+                            this.vertexArray[index * this.vertexAttLength + offset + j] = 0;
                         }
                     }
                     offset += Geometry.skinSize;
@@ -730,10 +784,19 @@
             if (!target) {
                 target = new Array<number>();
             }
-            count == -1 ? count = this.indexData.length : count;
+
+            if (start >= this.indexCount) {
+                return target;
+            }
+
+            count == -1 ? count = this.indexCount : count;
+
+            if (start + count > this.indexCount) {
+                count = this.indexCount - start;
+            }
 
             for (var i: number = 0; i < count - start; ++i) {
-                target[i] = this.indexData[i + start];
+                target[i] = this.indexArray[i + start];
             }
             return target;
         }
@@ -747,8 +810,11 @@
         * @platform Web,Native
         */
         public setVertexIndices(start: number, indices: Array<number>) {
+            if (start + indices.length > this.indexCount) {
+                this.indexCount = start + indices.length;
+            }
             for (var i: number = 0; i < indices.length; ++i) {
-                this.indexData[start + i] = indices[i];
+                this.indexArray[start + i] = indices[i];
             }
         }
     }

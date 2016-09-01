@@ -8,11 +8,11 @@
      * 引擎库前期加载设置，开发中加载未压缩的编译引擎
      */
     export class Egret3DEngine {
-        private static _instance: Egret3DEngine;
+        public static instance: Egret3DEngine = new Egret3DEngine();
 
         public jsPath: string = "js/";
         public onTsconfig: Function;
-        public debug: boolean = true;
+        public debug: boolean = false;
 
         private _tsconfigs: string[] = [];
         private _currentConfig: string;
@@ -22,13 +22,9 @@
         private _complete: Function;
         private _thisObject: Function;
 
-        public static get instance(): Egret3DEngine {
-            if (!Egret3DEngine._instance) {
-                Egret3DEngine._instance = new Egret3DEngine();
-            }
-
-            return Egret3DEngine._instance;
-        }
+        //public static get instance(): Egret3DEngine {
+        //    return Egret3DEngine._instance;
+        //}
 
         private static getXHR(): any {
             var xhr: any = null;

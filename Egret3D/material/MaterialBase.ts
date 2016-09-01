@@ -31,6 +31,7 @@
         public materialData: MaterialData;
 
         private _lightGroup: LightGroup;
+        private _shadowMethod: ShadowMethod;
          /**
          * @language zh_CN
          * @class egret3d.MaterialBase
@@ -690,20 +691,23 @@
          * @platform Web,Native
          */
         public addPass(pass: PassType) {
-            this.passes[pass] = this.passes[PassType.shadowPass] || PassUtil.CreatPass(pass, this.materialData);
+            this.passes[pass] = PassUtil.CreatPass(pass, this.materialData);
         }
 
         /**
-         * @language zh_CN
-         * 设置材质 castShadow 值。
-         * 设置材质是否接受阴影，设置了之后必须要给 shadowmaping 的方法。
-         * @param value {boolean}
-         * @version Egret 3.0
-         * @platform Web,Native
-         */
+        * @language zh_CN
+        * 使用阴影详细请看 ShadowCast
+        * @see egret3d.ShadowCast
+        * 设置材质 castShadow 值。
+        * 设置材质是否接受阴影，设置了之后必须要给 shadowmaping 的方法。
+        * @param value {boolean}
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set castShadow(value: boolean) {
-            this.materialData.castShadow = value;
+            this.materialData.castShadow = value; 
             if (value) {
+                ShadowCast.enableShadow = true;
                 this.addPass(PassType.shadowPass);
             } else {
                 if (this.passes[PassType.shadowPass]) {
@@ -714,31 +718,51 @@
         }
 
         /**
-         * @language zh_CN
-         * 返回材质 castShadow 值。
-         * 返回材质 是否产生阴影 值。
-         * @returns {boolean}
-         * @version Egret 3.0
-         * @platform Web,Native
-         */
+        * @language zh_CN
+        * 使用阴影详细请看 ShadowCast
+        * @see egret3d.ShadowCast
+        * 返回材质 castShadow 值。
+        * 返回材质 是否产生阴影 值。
+        * @returns {boolean}
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public get castShadow(): boolean {
             return this.materialData.castShadow;
         }
 
         /**
-         * @language zh_CN
-         * 设置材质 acceptShadow 值。
-         * 设置材质是否是否产生阴影，设置了之后必须要给 shadowmaping 的方法。
-         * @param value {boolean}
-         * @version Egret 3.0
-         * @platform Web,Native
-         */
+        * @language zh_CN
+        * 使用阴影详细请看 ShadowCast
+        * @see egret3d.ShadowCast
+        * 设置材质 acceptShadow 值。
+        * 设置材质是否是否产生阴影，设置了之后必须要给 shadowmaping 的方法。
+        * @param value {boolean}
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set acceptShadow(value: boolean) {
+            if (this.materialData.acceptShadow == value) {
+                return;
+            }
             this.materialData.acceptShadow = value;
+
+            if (this.materialData.acceptShadow) {
+                this._shadowMethod  = new ShadowMethod(this);
+                this._shadowMethod .shadowMapTexture = ShadowCast.instance.shadowRender.renderTexture;
+                this.diffusePass.addMethod(this._shadowMethod );
+            }
+            else {
+                if (this._shadowMethod) {
+                    this.diffusePass.removeMethod(this._shadowMethod);
+                }
+            }
         }
 
         /**
         * @language zh_CN
+        * 使用阴影详细请看 ShadowCast
+        * @see egret3d.ShadowCast
         * 返回材质 acceptShadow 值。
         * 返回材质是否接受阴影，设置了之后必须要给 shadowmaping 的方法。
         * @returns {boolean}
@@ -775,6 +799,31 @@
             color |= this.materialData.shadowColor[1] * 255.0 << 8;
             color |= this.materialData.shadowColor[2] * 255.0;
             return color;
+        }
+
+
+        /**
+        * @language zh_CN
+        * @private
+        * 设置 阴影offset
+        * @param offset 
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set shadowOffset(offset: number) {
+            this.materialData.shadowColor[3] = offset;
+        }
+
+        /**
+        * @language zh_CN
+        * @private
+        * 返回材质 阴影offset
+        * @returns number 阴影offset
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get shadowOffset(): number {
+            return this.materialData.shadowColor[3];
         }
 
         /**

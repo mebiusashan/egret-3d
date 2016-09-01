@@ -92,7 +92,9 @@
         */
         public sampler3DList: Array<Sampler3D> = new Array<Sampler3D>();
                                                                 
-        public extensionList: Array<Extension> = new Array<Extension>();                                                
+        public extensionList: Array<Extension> = new Array<Extension>();
+        public defineList: Array<DefineVar> = new Array<Extension>();       
+
         /**
         * @private
         * 增加一个变量对象
@@ -121,6 +123,9 @@
             }
             else if (sVar.key == "#extension") {
                 this.extensionList.push(sVar);
+            }
+            else if (sVar.key == "#define") {
+                this.defineList.push(sVar);
             }
             else {
                 this.tempList.push(sVar);
@@ -336,6 +341,20 @@
                     this.extensionList.push(otherContent.extensionList[i].clone());
                 }
             }
+
+
+            for (var i: number = 0; i < otherContent.defineList.length; ++i) {
+                var isAdd: boolean = true;
+                for (var j: number = 0; j < this.defineList.length; ++j) {
+                    if (otherContent.defineList[i].name == this.defineList[j].name) {
+                        isAdd = false;
+                        break;
+                    }
+                }
+                if (isAdd) {
+                    this.defineList.push(otherContent.defineList[i].clone());
+                }
+            }
         }
 
         private mergeMainFunc(func1: string, func2: string): string {
@@ -420,6 +439,9 @@
                 content.extensionList.push(this.extensionList[i].clone());
             }
 
+            for (var i: number = 0; i < this.defineList.length; ++i) {
+                content.defineList.push(this.defineList[i].clone());
+            }
             return content;
         }
     }

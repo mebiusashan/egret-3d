@@ -24,6 +24,11 @@
         */
         public initNode(data: ParticleDataNode): void {
             //##FilterBegin## ##Particle##
+            var node: ParticleDataScaleBirth = this._node = <ParticleDataScaleBirth>data;
+
+            this._scaleValue = new ConstRandomValueShape();
+            this._scaleValue.max = node.max;
+            this._scaleValue.min = node.min;
             //##FilterEnd##
 
         }
@@ -39,7 +44,60 @@
         */
         public build(geometry: Geometry, count: number) {
             //##FilterBegin## ##Particle##
+            this._animationState = <ParticleAnimationState>this.state;
+            var scaleArray: number[] = this._scaleValue.calculate(count);
+            var vertices: number = geometry.vertexCount / count;
+            var index: number = 0;
+
+            var progress: number = 0;
+            var duration: number = this._animationState.emitter.data.life.duration;
+            var timeOffsetIndex: number = this._animationState.emitter.timeNode.offsetIndex;
+            var particleIndex: number = 0;
+            var timeIndex: number;
+            var bornTime: number;
+
+
+            var scale: number = 0;
+            for (var i: number = 0; i < count; ++i) {
+                //
+                if (this._node.type == ParticleValueType.OneBezier || this._node.type == ParticleValueType.TwoBezier) {
+                    timeIndex = particleIndex * geometry.vertexAttLength + timeOffsetIndex;
+                    bornTime = geometry.vertexArray[timeIndex + 0];          //出生时间
+                    progress = bornTime / duration;
+                    progress = progress - Math.floor(progress);               //取小数部分
+                    scale = this._node.bezier1.calc(progress);
+                    if (this._node.type == ParticleValueType.TwoBezier) {
+                        var random: number = Math.random();
+                        scale *= random;
+                        scale += this._node.bezier2.calc(progress) * (1 - random);
+                    }
+                } else {
+                    scale = scaleArray[i];
+                }
+                for (var j: number = 0; j < vertices; ++j) {
+                    index = i * vertices + j;
+                    index = index * geometry.vertexAttLength;
+                    geometry.vertexArray[index + 0] *= scale;
+                    geometry.vertexArray[index + 1] *= scale;
+                    geometry.vertexArray[index + 2] *= scale;
+
+                }
+            }
+
+
             //##FilterEnd##
         }
+
+        /**
+        * @private
+        * 构建结束后需要清理掉临时数据
+        */
+        public afterBuild(): void {
+            //##FilterBegin## ##Particle##
+            this._scaleValue.dispose();
+            this._scaleValue = null;
+            //##FilterEnd##
+        }
+
     }
 } 

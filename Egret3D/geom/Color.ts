@@ -229,6 +229,25 @@
 
         /**
          * @language zh_CN
+         * 设置颜色值
+         * @param rgb 0xffffff格式
+         * @version Egret 3.0
+         * @platform Web,Native
+         */
+        public setColorRGB(rgb: number): void {
+
+            this.r = rgb & 0xff0000;
+            this.r >>= 16;
+
+            this.g = rgb & 0xff00;
+            this.g >>= 8;
+
+            this.b = rgb & 0xff;
+        }
+
+
+        /**
+         * @language zh_CN
          * 在2个颜色之间取随机颜色
          * @param c1 第一个颜色
          * @param c2 第二个颜色

@@ -18,6 +18,16 @@
         constructor() {
             super();
             //##FilterBegin## ##Particle##
+            this.name = "ParticleVelocityLimitConstNode";
+
+            this.vertex_ShaderName[ShaderPhaseType.global_vertex] = this.vertex_ShaderName[ShaderPhaseType.global_vertex] || [];
+            this.vertex_ShaderName[ShaderPhaseType.global_vertex].push("particle_velocityLimitConst");
+
+            this.attribute_velocityLimit = new GLSL.VarRegister();
+            this.attribute_velocityLimit.name = "attribute_velocityLimit";
+            this.attribute_velocityLimit.size = 1;
+            this.attributes.push(this.attribute_velocityLimit);
+
             //##FilterEnd##
         }
 
@@ -30,6 +40,10 @@
         */
         public initNode(data: ParticleDataNode): void {
             //##FilterBegin## ##Particle##
+            var node: ParticleDataMoveSpeed = <ParticleDataMoveSpeed>data;
+            this._limitValue = new ConstRandomValueShape();
+            this._limitValue.max = node.velocityLimit.max;
+            this._limitValue.min = node.velocityLimit.min;
             //##FilterEnd##
 
 
@@ -44,9 +58,36 @@
         */
         public build(geometry: Geometry, count: number) {
             //##FilterBegin## ##Particle##
+            this._animationState = <ParticleAnimationState>this.state;
+
+            var vertices: number = geometry.vertexCount / count;
+            var index: number = 0;
+
+            var data: Array<number> = this._limitValue.calculate(count);
+            for (var i: number = 0; i < count; ++i) {
+                var limit: number = data[i];
+
+                for (var j: number = 0; j < vertices; ++j) {
+                    index = i * vertices + j;
+                    index = index * geometry.vertexAttLength + this.attribute_velocityLimit.offsetIndex;
+                    geometry.vertexArray[index + 0] = limit;
+                }
+            }
+
             //##FilterEnd##
         }
 
+
+        /**
+        * @private
+        * 构建结束后需要清理掉临时数据
+        */
+        public afterBuild(): void {
+            //##FilterBegin## ##Particle##
+            this._limitValue.dispose();
+            this._limitValue = null;
+            //##FilterEnd##
+        }
 
     }
 } 

@@ -287,12 +287,30 @@
         /**
         * @language zh_CN
         * 向量相加，结果返回一个新实例
+        * @param a
+        * @param target 默认为null
         * @returns Vector3D 结果返回
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public add(a: Vector3D): Vector3D {
-            return new Vector3D(this.x + a.x, this.y + a.y, this.z + a.z, this.w + a.w)
+        public add(a: Vector3D, target: Vector3D = null): Vector3D {
+            if (!target) {
+                target = new Vector3D();
+            }
+
+            var a0x: number = this.x;
+            var a0y: number = this.y;
+            var a0z: number = this.z;
+            var a0w: number = this.w;
+
+
+            var a1x: number = a.x;
+            var a1y: number = a.y;
+            var a1z: number = a.z;
+            var a1w: number = a.w;
+
+            target.setTo(a0x + a1x, a0y + a1y, a0z + a1z, a0w + a1w);
+            return target;
         }
 
         /**
@@ -838,6 +856,22 @@
             this.x = parseFloat(strS[0]);
             this.y = parseFloat(strS[1]);
             this.z = parseFloat(strS[2]);
+        }
+
+
+        /**
+         * @language zh_CN
+         * 是否相等
+         * @param rectangle  比较的对象
+         * @returns boolean 相等返回ture
+         * @version Egret 3.0
+         * @platform Web,Native
+         */
+        public equal(other: Vector3D): boolean {
+            return !((this.x != other.x) ||
+                (this.y != other.y) ||
+                (this.z != other.z) ||
+                (this.w != other.w));
         }
     }
 }

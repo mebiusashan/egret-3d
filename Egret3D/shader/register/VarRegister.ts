@@ -119,6 +119,7 @@
             temp.level = this.level;
             temp.varName = this.varName;
             temp.value = this.value;
+            temp.key = this.key;
             return temp;
         }
 

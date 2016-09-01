@@ -41,6 +41,15 @@
         */
         static RESIZE: string = "resize";
 
+
+         /**
+        * @language zh_CN
+        * CHANGE 常量定义 change 事件对象的 type 属性值。
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        static CHANGE:string = "change";
+
         //----------------------------------------------------
         //----------------------------------------------------
         //----------------------------------------------------

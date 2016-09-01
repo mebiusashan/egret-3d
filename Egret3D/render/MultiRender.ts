@@ -46,12 +46,6 @@
             var material: MaterialBase;
             for (this._renderIndex = 0; this._renderIndex < this.numEntity; this._renderIndex++) {
                 this._renderItem = collect.renderList[this._renderIndex];
-                if (shadow) {
-                    if (!this._renderItem.material.castShadow) {
-                        continue;
-                    }
-                    //ShadowCast.instance.calculateCamera(this._renderItem, camera);
-                }
 
                 this._renderItem.geometry.activeState(time, delay, Egret3DCanvas.context3DProxy, camera);
                 for (this._i = 0; this._i < this._renderItem.geometry.subGeometrys.length; this._i++) {

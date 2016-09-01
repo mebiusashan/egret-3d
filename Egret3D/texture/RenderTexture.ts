@@ -33,6 +33,7 @@
             this.width = width;
             this.height = height;
             this.frameBufferFormat = frameBufferFormat;
+            this.uvRectangle = new Rectangle(0,0,1.0,1.0);
         }
 
         /**
