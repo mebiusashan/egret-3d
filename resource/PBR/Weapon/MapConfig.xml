@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <version>1</version>
+  <cameraAnims />
+  <node type="Mesh" insID="-4971920" parent="-1" name="Kratos_weapon_20160801" path="Model/0_Kratos_weapon_20160801.esm">
+    <pos x="507.117645" y="-329.60907" z="217.357254" />
+    <rot rx="-0.7071068" ry="0" rz="0" rw="0.7071068" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="1" />
+  </node>
+  <mat id="1" name="Egret3D/d/E3D_D_Normal">
+    <diffuseTextureName>Texture/Kratos_weapon_Specular.png</diffuseTextureName>
+    <normalTextureName />
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0x808080</ambientColor>
+    <specularColor>0x1f4f78</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>true</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+  </mat>
+  <env directLight="close" pointLight="close" />
+</scene>

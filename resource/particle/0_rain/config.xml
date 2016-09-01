@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<particle xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <version>1</version>
+  <id>0</id>
+  <property>
+    <particleCount>2000</particleCount>
+    <bounds x="10" y="10" z="10" />
+    <colorType>Const</colorType>
+    <colorConst1>0xffFAFFDA</colorConst1>
+    <gravity>400</gravity>
+    <prewarm>true</prewarm>
+    <transform>
+      <rotation x="270" y="0" z="0" />
+      <scale x="1" y="1" z="1" />
+      <position x="0" y="100" z="0" />
+    </transform>
+    <render>
+      <renderMode>StretchedBillboard</renderMode>
+      <cameraScale>0</cameraScale>
+      <lengthScale>5</lengthScale>
+      <speedScale>0</speedScale>
+    </render>
+  </property>
+  <emission>
+    <rate>2000</rate>
+    <type>Const</type>
+  </emission>
+  <life>
+    <duration>1</duration>
+    <type>RandomConst</type>
+    <max>0.3</max>
+    <min>0.2</min>
+    <delay>0</delay>
+    <loop>true</loop>
+  </life>
+  <shape>
+    <type>Cone</type>
+    <randomDirection>false</randomDirection>
+    <cone coneHeight="25" coneRadiusBottom="150" coneRadiusTop="150" type="Volume" />
+  </shape>
+  <rotationBirth>
+    <type>Const</type>
+    <min>0</min>
+    <max>0</max>
+  </rotationBirth>
+  <scaleBirth>
+    <type>RandomConst</type>
+    <min>9</min>
+    <max>12</max>
+  </scaleBirth>
+  <geometry>
+    <type>Plane</type>
+    <plane width="1" height="1" />
+  </geometry>
+  <moveSpeed>
+    <type>Const</type>
+    <min>0</min>
+    <max>0</max>
+    <velocityForce>
+      <type>Const</type>
+      <worldSpace>false</worldSpace>
+      <max x="-1000" y="2000" z="0" />
+      <min x="-1000" y="2000" z="0" />
+    </velocityForce>
+  </moveSpeed>
+  <mat id="0">
+    <diffuseTextureName>splatt_a.png</diffuseTextureName>
+    <normalTextureName />
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0xffffff</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0.05</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>ADD</blendMode>
+  </mat>
+</particle>

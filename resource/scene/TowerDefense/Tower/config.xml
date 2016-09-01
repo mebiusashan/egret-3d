@@ -1,0 +1,9 @@
+<root egret3d="scene3d">
+    <mesh link="02.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="01.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="Tower_01a.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,621.40" />
+    <mesh link="Tower_01b.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="228.79,0.00,474.59" />
+    <mesh link="Tower_02a.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,-621.40" />
+    <mesh link="Tower_02b.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="228.79,0.00,-474.59" />
+    <mesh link="water.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+</root>

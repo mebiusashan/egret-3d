@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<particle>
+  <version>1</version>
+  <property>
+    <particleCount>400</particleCount>
+    <bounds x="10" y="10" z="10"></bounds>
+    <colorType>OneGradients</colorType>
+    <colorConst1>0xffffffff</colorConst1>
+    <colorConst2>0xff00ff00</colorConst2>
+    <colorGradients1>
+      <item time="0.0" color="0xff00ff00"></item>
+      <item time="0.4" color="0xffff0000"></item>
+      <item time="0.6" color="0xff0000ff"></item>
+      <item time="1.0" color="0xffffffff"></item>
+    </colorGradients1>
+    <colorGradients2>
+      <item time="0.0" color="0xff00ff00"></item>
+      <item time="0.4" color="0xffff0000"></item>
+      <item time="0.6" color="0xff0000ff"></item>
+      <item time="1.0" color="0xffffffff"></item>
+    </colorGradients2>
+    <gravity>0</gravity>
+    <prewarm>false</prewarm>
+    <transform>
+      <rotation x="0" y="0" z="0"></rotation>
+      <scale x="1" y="1" z="1"></scale>
+      <position x="0" y="0" z="0"></position>
+    </transform>
+
+    <render>
+      <renderMode>Billboard</renderMode>
+
+    </render>
+  </property>
+
+  <colorOffset>
+    <item time="0.0" color="0xff00ff00"></item>
+    <item time="0.4" color="0xffff0000"></item>
+    <item time="0.6" color="0xff0000ff"></item>
+    <item time="1.0" color="0xffffffff"></item>
+  </colorOffset>
+  
+  
+  <emission>
+    <rate>20</rate>
+    <type>Const</type>
+    <bursts>
+      <item time="1.2" count="10"></item>
+      <item time="2.2" count="20"></item>
+      <item time="3.2" count="30"></item>
+    </bursts>
+    <bezier>
+      <pos x="0" y="0"></pos>
+      <pos x="0" y="0"></pos>
+      <pos x="1" y="0"></pos>
+      <pos x="1" y="0"></pos>
+      <ctrl x="0" y="0"></ctrl>
+      <ctrl x="0" y="0"></ctrl>
+      <ctrl x="1" y="0"></ctrl>
+      <ctrl x="1" y="0"></ctrl>
+    </bezier>
+  </emission>
+  
+  
+  <life>
+    <duration>5</duration>
+    <type>Const</type>
+    <max>5</max>
+    <min>2</min>
+    <delay>0</delay>
+    <loop>true</loop>
+  </life>
+  
+  <shape>
+    <type>Cube</type>
+    <randomDirection>false</randomDirection>
+    <cube width="0" height="0" depth="0"></cube>
+    <sphereRadius>0</sphereRadius>
+    <hemiSphereRadius>0</hemiSphereRadius>
+    <cone coneHeight="10" coneRadiusBottom="4" coneRadiusTop="6"></cone>
+  </shape>
+  
+  
+  <rotationBirth>
+    <type>Const</type>
+    <max>0</max>
+    <min>0</min>
+  </rotationBirth>
+  
+  
+  <scaleBirth>
+    <type>Const</type>
+    <max>1</max>
+    <min>1</min>
+  </scaleBirth>
+  
+  <geometry>
+    <type>Plane</type>
+    <plane width="4" height="4"></plane>
+    <cube width="4" height="4" depth="4"></cube>
+    <sphere radius="2" segmentW="6" segmentH="6"></sphere>
+  </geometry>
+  
+  
+  <moveSpeed>
+    <type>Const</type>
+    <max>40</max>
+    <min>40</min>
+    <velocityOver>
+      <type>TwoBezier</type>
+      <min x="1" y="1" z="1"></min>
+      <max x="2" y="1" z="2"></max>
+      <worldSpace>true</worldSpace>
+      <xBezier1>
+        <pos x="0" y="0"></pos>
+        <pos x="0.3" y="15"></pos>
+        <pos x="0.3" y="15"></pos>
+        <pos x="1" y="-10"></pos>
+        <ctrl x="0" y="5"></ctrl>
+        <ctrl x="0.3" y="15"></ctrl>
+        <ctrl x="0.35" y="15"></ctrl>
+        <ctrl x="1" y="-10"></ctrl>
+      </xBezier1>
+      <yBezier1>
+        <pos x="0" y="0"></pos>
+        <pos x="1" y="0"></pos>
+        <ctrl x="0" y="0"></ctrl>
+        <ctrl x="1" y="0"></ctrl>
+      </yBezier1>
+      <zBezier1>
+        <pos x="0" y="0"></pos>
+        <pos x="1" y="0"></pos>
+        <ctrl x="0" y="0"></ctrl>
+        <ctrl x="1" y="0"></ctrl>
+      </zBezier1>
+      <xBezier2>
+        <pos x="0" y="0"></pos>
+        <pos x="0.3" y="15"></pos>
+        <pos x="0.3" y="15"></pos>
+        <pos x="1" y="-10"></pos>
+        <ctrl x="0" y="5"></ctrl>
+        <ctrl x="0.3" y="15"></ctrl>
+        <ctrl x="0.35" y="15"></ctrl>
+        <ctrl x="1" y="-10"></ctrl>
+      </xBezier2>
+      <yBezier2>
+        <pos x="0" y="0"></pos>
+        <pos x="1" y="0"></pos>
+        <ctrl x="0" y="0"></ctrl>
+        <ctrl x="1" y="0"></ctrl>
+      </yBezier2>
+      <zBezier2>
+        <pos x="0" y="0"></pos>
+        <pos x="1" y="0"></pos>
+        <ctrl x="0" y="0"></ctrl>
+        <ctrl x="1" y="0"></ctrl>
+      </zBezier2>
+    </velocityOver>
+    <velocityForce>
+      <type>TwoBezier</type>
+      <min x="1" y="1" z="1"></min>
+      <max x="2" y="1" z="2"></max>
+      <worldSpace>true</worldSpace>
+      <xBezier1>
+        <pos x="0" y="0"></pos>
+        <pos x="1" y="0"></pos>
+        <ctrl x="0" y="0"></ctrl>
+        <ctrl x="1" y="0"></ctrl>
+      </xBezier1>
+      <yBezier1>
+        <pos x="0" y="0"></pos>
+        <pos x="0.3" y="12"></pos>
+        <pos x="0.3" y="12"></pos>
+        <pos x="1.0" y="-8"></pos>
+        <ctrl x="0" y="4"></ctrl>
+        <ctrl x="0.35" y="12"></ctrl>
+        <ctrl x="0.36" y="12"></ctrl>
+        <ctrl x="1" y="-8"></ctrl>
+      </yBezier1>
+      <zBezier1>
+        <pos x="0" y="0"></pos>
+        <pos x="1" y="0"></pos>
+        <ctrl x="0" y="0"></ctrl>
+        <ctrl x="1" y="0"></ctrl>
+      </zBezier1>
+      <xBezier2>
+        <pos x="0" y="0"></pos>
+        <pos x="1" y="0"></pos>
+        <ctrl x="0" y="0"></ctrl>
+        <ctrl x="1" y="0"></ctrl>
+      </xBezier2>
+      <yBezier2>
+        <pos x="0" y="0"></pos>
+        <pos x="0.3" y="3"></pos>
+        <pos x="0.3" y="3"></pos>
+        <pos x="1" y="-2.0"></pos>
+        <ctrl x="0" y="1"></ctrl>
+        <ctrl x="0.3" y="3"></ctrl>
+        <ctrl x="0.35" y="3"></ctrl>
+        <ctrl x="1" y="-2.0"></ctrl>
+      </yBezier2>
+      <zBezier2>
+        <pos x="0" y="0"></pos>
+        <pos x="1" y="0"></pos>
+        <ctrl x="0" y="0"></ctrl>
+        <ctrl x="1" y="0"></ctrl>
+      </zBezier2>
+    </velocityForce>
+    <velocityLimit>
+      <type>TwoBezier</type>
+      <min>100</min>
+      <max>200</max>
+      <bezier1>
+        <pos x="0" y="0"></pos>
+        <pos x="0.5" y="150"></pos>
+        <pos x="0.5" y="150"></pos>
+        <pos x="1" y="100"></pos>
+        <ctrl x="0.2" y="50"></ctrl>
+        <ctrl x="0.4" y="150"></ctrl>
+        <ctrl x="0.6" y="150"></ctrl>
+        <ctrl x="0.8" y="100"></ctrl>
+      </bezier1>
+      <bezier2>
+        <pos x="0" y="0"></pos>
+        <pos x="0" y="0"></pos>
+        <pos x="1" y="0"></pos>
+        <pos x="1" y="0"></pos>
+        <ctrl x="0" y="0"></ctrl>
+        <ctrl x="0" y="0"></ctrl>
+        <ctrl x="1" y="0"></ctrl>
+        <ctrl x="1" y="0"></ctrl>
+      </bezier2>
+    </velocityLimit>
+  </moveSpeed>
+  
+  
+  <followTarget>
+    <followRotation>true</followRotation>
+    <followScale>true</followScale>
+  </followTarget>
+
+  <scaleBezier>
+    <bezier>
+      <pos x="0" y="1"></pos>
+      <pos x="0.5" y="2"></pos>
+      <pos x="0.5" y="2"></pos>
+      <pos x="1.0" y="1"></pos>
+      <ctrl x="0.2" y="1"></ctrl>
+      <ctrl x="0.35" y="2"></ctrl>
+      <ctrl x="0.7" y="2"></ctrl>
+      <ctrl x="0.9" y="1"></ctrl>
+    </bezier>
+  </scaleBezier>
+  
+  
+  <rotationSpeed>
+    <type>TwoBezier</type>
+    <min x="1" y="1" z="1"></min>
+    <max x="2" y="1" z="1"></max>
+    <bezier1>
+      <pos x="0" y="10"></pos>
+      <pos x="0.3" y="60"></pos>
+      <pos x="0.3" y="60"></pos>
+      <pos x="1.0" y="20"></pos>
+      <ctrl x="0" y="20"></ctrl>
+      <ctrl x="0.35" y="60"></ctrl>
+      <ctrl x="0.36" y="60"></ctrl>
+      <ctrl x="1" y="20"></ctrl>
+    </bezier1>
+    <bezier2>
+      <pos x="0" y="0"></pos>
+      <pos x="0.3" y="60"></pos>
+      <pos x="0.3" y="60"></pos>
+      <pos x="1.0" y="-80"></pos>
+      <ctrl x="0" y="20"></ctrl>
+      <ctrl x="0.35" y="60"></ctrl>
+      <ctrl x="0.36" y="60"></ctrl>
+      <ctrl x="1" y="-80"></ctrl>
+    </bezier2>
+  </rotationSpeed>
+  
+  
+
+  
+  <mat id="0">
+    <diffuseTextureName>sponza_flag.jpg</diffuseTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>true</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>ADD</blendMode>
+  </mat>
+ 
+</particle>

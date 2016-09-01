@@ -1,0 +1,35 @@
+<root egret3d="scene3d">
+    <mesh link="sponza_column_c.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="spnza_bricks_a.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_floor_b2.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_roof.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_ceiling_a.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_details.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="background.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="vase.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_arch.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_column_b2.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_column_b1.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_column_a.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="vase_round.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="vase_hanging.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="chain_texture.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="vase_plant.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_floor_a1.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_floor_a2.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="spnza_bricks_c2.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="spnza_bricks_c1.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="spnza_bricks_b.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_floor_b1.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="lion.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_flagpole.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+    <mesh link="sponza_flag.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="13.78,25.90,4.99" />
+    <mesh link="sponza_flag07.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="13.78,25.90,4.99" />
+    <mesh link="sponza_flag06.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="13.78,25.90,4.99" />
+    <mesh link="sponza_flag05.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="13.78,25.90,4.99" />
+    <mesh link="sponza_flag04.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="13.78,25.90,4.99" />
+    <mesh link="sponza_flag03.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="13.78,25.90,4.99" />
+    <mesh link="sponza_flag02.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="13.78,25.90,4.99" />
+    <mesh link="sponza_flag01.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="13.78,25.90,4.99" />
+    <mesh link="sky.esm" rotation="0.00,-0.00,0.00" scaling="1.00,1.00,1.00" translation="0.00,0.00,0.00" />
+</root>

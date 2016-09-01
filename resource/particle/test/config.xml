@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<particle xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <version>1</version>
+  <id>0</id>
+  <property>
+    <particleCount>1000</particleCount>
+    <bounds x="10" y="10" z="10" />
+    <colorType>Const</colorType>
+    <colorConst1>0xffff7f3f</colorConst1>
+    <gravity>0</gravity>
+    <prewarm>false</prewarm>
+    <transform>
+      <rotation x="0" y="0" z="0" />
+      <scale x="1" y="1" z="1" />
+      <position x="0" y="0" z="0" />
+    </transform>
+    <render>
+      <renderMode>Billboard</renderMode>
+      <cameraScale>0</cameraScale>
+      <lengthScale>1</lengthScale>
+      <speedScale>0</speedScale>
+    </render>
+  </property>
+  <emission>
+    <rate>10</rate>
+    <type>Const</type>
+  </emission>
+  <life>
+    <duration>5</duration>
+    <type>Const</type>
+    <max>5</max>
+    <min>5</min>
+    <delay>0</delay>
+    <loop>true</loop>
+  </life>
+  <shape>
+    <type>Cone</type>
+    <randomDirection>false</randomDirection>
+    <cone coneHeight="5" coneRadiusBottom="1" coneRadiusTop="3.3315382" type="Volume" />
+  </shape>
+  <rotationBirth>
+    <type>Const</type>
+    <min>0</min>
+    <max>0</max>
+  </rotationBirth>
+  <scaleBirth>
+    <type>Const</type>
+    <min>1</min>
+    <max>1</max>
+  </scaleBirth>
+  <geometry>
+    <type>Plane</type>
+    <plane width="1" height="1" />
+  </geometry>
+  <moveSpeed>
+    <type>Const</type>
+    <min>5</min>
+    <max>5</max>
+  </moveSpeed>
+  <mat id="0" name="Egret3D/d/E3D_D_AlphaBlending">
+    <diffuseTextureName>test.png</diffuseTextureName>
+    <normalTextureName />
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0xffffff</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>ADD</blendMode>
+  </mat>
+</particle>

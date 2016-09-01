@@ -1,0 +1,30 @@
+{"frames": [
+
+{
+	"filename": "blog_writing_button_96px_1123805_easyicon.net.png",
+	"frame": {"x":1,"y":1,"w":96,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
+	"sourceSize": {"w":96,"h":96},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "blog_writing_button_96px_1131561_easyicon.net.png",
+	"frame": {"x":1,"y":99,"w":96,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
+	"sourceSize": {"w":96,"h":96},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "aa.png",
+	"format": "RGBA8888",
+	"size": {"w":128,"h":256},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:75bf7ed1233484a735edd220e8ba69d9:85a6fe6aef32dfe19600732526a885d9:e7a4c316296f2f5789cc67267f130ce1$"
+}
+}

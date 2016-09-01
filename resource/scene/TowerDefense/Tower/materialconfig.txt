@@ -1,0 +1,8 @@
+model texture
+01:Tower_01
+Tower_01a:Tower_01
+Tower_01b:Tower_01
+Tower_02a:Tower_01
+Tower_02b:Tower_01
+02:Tower_02
+water:water

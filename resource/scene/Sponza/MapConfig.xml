@@ -1,0 +1,945 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scene>
+  <version>1</version>
+  <cameraAnims>
+    <eca>Camera/Camera001.eca</eca>
+    <eca>Camera/Camera002.eca</eca>
+    <eca>Camera/Camera003.eca</eca>
+    <eca>Camera/Camera004.eca</eca>
+    <eca>Camera/Camera005.eca</eca>
+  </cameraAnims>
+  <mesh name="Mesh/sponza_column_c.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="0" />
+  </mesh>
+  <mesh name="Mesh/spnza_bricks_a.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="1" />
+  </mesh>
+  <mesh name="Mesh/sponza_floor_b2.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="2" />
+  </mesh>
+  <mesh name="Mesh/sponza_roof.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="3" />
+  </mesh>
+  <mesh name="Mesh/sponza_ceiling_a.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="4" />
+  </mesh>
+  <mesh name="Mesh/sponza_details.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="5" />
+  </mesh>
+  <mesh name="Mesh/background.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="6" />
+  </mesh>
+  <mesh name="Mesh/vase.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="7" />
+  </mesh>
+  <mesh name="Mesh/sponza_arch.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="8" />
+  </mesh>
+  <mesh name="Mesh/sponza_column_b2.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="9" />
+  </mesh>
+  <mesh name="Mesh/sponza_column_b1.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="10" />
+  </mesh>
+  <mesh name="Mesh/sponza_column_a.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="11" />
+  </mesh>
+  <mesh name="Mesh/vase_round.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="12" />
+  </mesh>
+  <mesh name="Mesh/vase_hanging.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="13" />
+  </mesh>
+  <mesh name="Mesh/chain_texture.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="14" />
+  </mesh>
+  <mesh name="Mesh/vase_plant.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="15" />
+  </mesh>
+  <mesh name="Mesh/sponza_floor_a1.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="16" />
+  </mesh>
+  <mesh name="Mesh/sponza_floor_a2.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="17" />
+  </mesh>
+  <mesh name="Mesh/spnza_bricks_c2.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="18" />
+  </mesh>
+  <mesh name="Mesh/spnza_bricks_c1.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="19" />
+  </mesh>
+  <mesh name="Mesh/spnza_bricks_b.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="20" />
+  </mesh>
+  <mesh name="Mesh/sponza_floor_b1.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="21" />
+  </mesh>
+  <mesh name="Mesh/lion.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="22" />
+    <lightIds>0,1,2</lightIds>
+  </mesh>
+  <mesh name="Mesh/sponza_flagpole.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="23" />
+  </mesh>
+  <mesh name="Mesh/sponza_flag.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="24" />
+    <skinClip>SkinAnim/sponza_flag.eam</skinClip>
+  </mesh>
+  <mesh name="Mesh/sponza_flag01.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="24" />
+    <skinClip>SkinAnim/sponza_flag01.eam</skinClip>
+  </mesh>
+  <mesh name="Mesh/sponza_flag02.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="24" />
+    <skinClip>SkinAnim/sponza_flag02.eam</skinClip>
+  </mesh>
+  <mesh name="Mesh/sponza_flag03.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="24" />
+    <skinClip>SkinAnim/sponza_flag03.eam</skinClip>
+  </mesh>
+  <mesh name="Mesh/sponza_flag04.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="24" />
+    <skinClip>SkinAnim/sponza_flag04.eam</skinClip>
+  </mesh>
+  <mesh name="Mesh/sponza_flag05.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="24" />
+    <skinClip>SkinAnim/sponza_flag05.eam</skinClip>
+  </mesh>
+  <mesh name="Mesh/sponza_flag06.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="24" />
+    <skinClip>SkinAnim/sponza_flag06.eam</skinClip>
+  </mesh>
+  <mesh name="Mesh/sponza_flag07.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="24" />
+    <skinClip>SkinAnim/sponza_flag07.eam</skinClip>
+  </mesh>
+  <mesh name="Mesh/sky.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="25" />
+  </mesh>
+  <mesh name="Mesh/halo.esm" billboard="false">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="26" />
+  </mesh>
+  <mat id="0">
+    <diffuseTextureName>Textures/sponza_column_c_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/sponza_column_c_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap02.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="1">
+    <diffuseTextureName>Textures/spnza_bricks_a_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/spnza_bricks_a_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <shadowTextureName>Sponzalightmap01.jpg</shadowTextureName>
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap01.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="2">
+    <diffuseTextureName>Textures/sponza_floor_a_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/sponza_floor_a_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="3">
+    <diffuseTextureName>Textures/sponza_roof_diff.jpg</diffuseTextureName>
+    <normalTextureName/>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap01.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="4">
+    <diffuseTextureName>Textures/sponza_ceiling_a_diff.jpg</diffuseTextureName>
+    <normalTextureName/>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap02.jpg"></lightmapMethod>
+    </methods>
+
+  </mat>
+  <mat id="5">
+    <diffuseTextureName>Textures/sponza_details_diff.jpg</diffuseTextureName>
+    <normalTextureName/>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap02.jpg"></lightmapMethod>
+    </methods>
+
+  </mat>
+  <mat id="6">
+    <diffuseTextureName>Textures/background.jpg</diffuseTextureName>
+    <normalTextureName>Textures/background_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap02.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="7">
+    <diffuseTextureName>Textures/vase_dif.jpg</diffuseTextureName>
+    <normalTextureName>Textures/vase_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap02.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="8">
+    <diffuseTextureName>Textures/sponza_arch_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/sponza_arch_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="9">
+    <diffuseTextureName>Textures/sponza_column_b_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/sponza_column_b_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="10">
+    <diffuseTextureName>Textures/sponza_column_b_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/sponza_column_b_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="11">
+    <diffuseTextureName>Textures/sponza_column_a_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/sponza_column_a_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="12">
+    <diffuseTextureName>Textures/vase_round.jpg</diffuseTextureName>
+    <normalTextureName>Textures/vase_round_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="13">
+    <diffuseTextureName>Textures/vase_hanging.jpg</diffuseTextureName>
+    <normalTextureName/>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="14">
+    <diffuseTextureName>Textures/chain_texture.png</diffuseTextureName>
+    <normalTextureName>Textures/chain_texture_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>true</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>ALPHA</blendMode>
+    <cutAlpha>0.005</cutAlpha>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="15">
+    <diffuseTextureName>Textures/vase_plant.png</diffuseTextureName>
+    <normalTextureName/>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>ALPHA</blendMode>
+    <cutAlpha>0.005</cutAlpha>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  
+  <mat id="16">
+    <diffuseTextureName>Textures/sponza_floor_a_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/sponza_floor_a_ddn.jpg</normalTextureName>
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  </mat>
+  
+  <mat id="17">
+    <diffuseTextureName>Textures/sponza_floor_a_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/sponza_floor_a_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+    
+  
+</mat>
+  <mat id="18">
+    <diffuseTextureName>Textures/spnza_bricks_a_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/spnza_bricks_a_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+
+  </mat>
+  <mat id="19">
+    <diffuseTextureName>Textures/spnza_bricks_a_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/spnza_bricks_a_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+  
+</mat>
+  <mat id="20">
+    <diffuseTextureName>Textures/spnza_bricks_a_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/spnza_bricks_a_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+
+  </mat>
+  <mat id="21">
+    <diffuseTextureName>Textures/sponza_floor_a_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/sponza_floor_a_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap03.jpg"></lightmapMethod>
+    </methods>
+
+  </mat>
+  <mat id="22" passName="diffuse">
+    <diffuseTextureName>Textures/lion.jpg</diffuseTextureName>
+    <normalTextureName>Textures/lion_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xC8C800</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x9d3400</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>20</specularLevel>
+    <gloss>20</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="false" texture="Textures/Sponzalightmap02.jpg" ></lightmapMethod>
+      <aoMethod  texture="Textures/Sponzalightmap02.jpg" ></aoMethod>
+    </methods>
+  </mat>
+  
+  <mat id="23">
+    <diffuseTextureName>Textures/sponza_flagpole_diff.jpg</diffuseTextureName>
+    <normalTextureName>Textures/sponza_flagpole_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>5</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true" texture="Textures/Sponzalightmap01.jpg"></lightmapMethod>
+    </methods>
+    
+  </mat>
+  <mat id="24">
+    <diffuseTextureName>Textures/sponza_flag.jpg</diffuseTextureName>
+    <normalTextureName/>
+    <specularTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>5</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    
+  </mat>
+  <mat id="25">
+    <diffuseTextureName>Textures/sky.jpg</diffuseTextureName>
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0x3f3f3f</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>5</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    
+  </mat>
+   <mat id="26">
+    <diffuseTextureName>Textures/halo.png</diffuseTextureName>
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0xffffff</specularColor>
+    <alpha>1</alpha>
+    <specularLevel>1</specularLevel>
+    <gloss>1</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>5</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>true</repeat>
+    <bothside>true</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>ALPHA</blendMode>
+    <cutAlpha>0.005</cutAlpha>
+	<methods>
+      <alphaMaskMethod texture="Textures/halomask.jpg"></alphaMaskMethod>
+      <uvRollMethod uSpeed="0.00002" vSpeed="0"></uvRollMethod>
+    </methods>
+  </mat>
+
+  <env directLight="open" pointLight="open">
+    <light id="0">
+      <type>directlight</type>
+      <direction x="-0.5" y="-0.6" z="0.2" />
+      <diffuseColor>0x808080</diffuseColor>
+      <ambientColor>0x000000</ambientColor>
+      <intensity>1.0</intensity>
+      <halfIntensity>0.0</halfIntensity>
+    </light>
+
+    <light id="1">
+      <type>pointlight</type>
+      <position x="20" y="2" z="-0.4" />
+      <diffuseColor>0xffff00</diffuseColor>
+      <ambientColor>0x000000</ambientColor>
+      <falloff>0.0</falloff>
+      <radius>10.0</radius>
+      <intensity>0.5</intensity>
+    </light>
+    <light id="2">
+      <type>pointlight</type>
+      <position x="-20" y="2" z="-0.4" />
+      <diffuseColor>0xffff00</diffuseColor>
+      <ambientColor>0x000000</ambientColor>
+      <falloff>0.0</falloff>
+      <radius>10.0</radius>
+      <intensity>0.5</intensity>
+    </light>
+
+    <fog>
+      <color>0x0000ff</color>
+      <near>500</near>
+      <far>2000</far>
+    </fog>
+
+  </env>
+</scene>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <version>1</version>
+  <cameraAnims />
+ 
+  <node type="Mesh" insID="75742" parent="-1" name="chengyu" path="chengyu/body_13.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="2" />
+    <skinClip path="chengyu/attack_1.eam" name="attack_1" />
+    <skinClip path="chengyu/idle_1.eam" name="idle_1" />
+    <skinClip path="chengyu/run_1.eam" name="run_1" />
+    <skinClip path="chengyu/skill_1.eam" name="skill_1" />
+  </node>
+
+  <node type="Mesh" insID="75743" parent="-1" name="sunce" path="sunce/body_6.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="3" />
+    <skinClip path="sunce/attack1.eam" name="attack1" />
+    <skinClip path="sunce/idle_1.eam" name="idle_1" />
+    <skinClip path="sunce/run_1.eam" name="run_1" />
+    <skinClip path="sunce/skill_4.eam" name="skill_4" />
+  </node>
+  
+  <mat id="2" name="Egret3D/d/E3D_D_AlphaBlending">
+    <diffuseTextureName>chengyu/hero_13.png</diffuseTextureName>
+    <normalTextureName/>
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0x605a5a</ambientColor>
+    <specularColor>0x1f4f78</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+  </mat>
+
+  <mat id="3" name="Egret3D/d/E3D_D_AlphaBlending">
+    <diffuseTextureName>sunce/hero_06.png</diffuseTextureName>
+    <normalTextureName/>
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0x605a5a</ambientColor>
+    <specularColor>0x1f4f78</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+  </mat>
+  
+  <env directLight="open" pointLight="close">
+    <light id="1">
+      <type>directlight</type>
+      <direction x="-0.5" y="0.6" z="0.2" />
+      <diffuseColor>0xffffff</diffuseColor>
+      <ambientColor>0x000000</ambientColor>
+      <intensity>0.5</intensity>
+      <halfIntensity>0</halfIntensity>
+      <falloff>0</falloff>
+      <radius>0</radius>
+    </light>
+  </env>
+</scene>

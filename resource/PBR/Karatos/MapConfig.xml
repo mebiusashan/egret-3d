@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <version>1</version>
+  <cameraAnims />
+  <node type="Object3D" insID="16228" parent="-1" name="zhanshen">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+  </node>
+  <node type="Mesh" insID="16232" parent="16228" name="abc" path="Model/1_____.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="1" />
+  </node>
+  <mat id="1" name="Egret3D/d/E3D_D_Normal">
+    <diffuseTextureName>Texture/Kratos_Albedo.png</diffuseTextureName>
+    <normalTextureName />
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0x808080</diffuseColor>
+    <ambientColor>0x1a1a1a</ambientColor>
+    <specularColor>0x1f4f78</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>true</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+  </mat>
+  <env directLight="close" pointLight="close" />
+</scene>

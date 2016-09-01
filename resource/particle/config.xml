@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<particle xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <version>1</version>
+  <property>
+    <particleCount>40</particleCount>
+    <bounds x="10" y="10" z="10" />
+    <colorType>Const</colorType>
+    <colorConst1>0xffffffff</colorConst1>
+    <gravity>0</gravity>
+    <prewarm>false</prewarm>
+    <transform>
+      <rotation x="0" y="0" z="0" />
+      <scale x="1" y="1" z="1" />
+      <position x="0" y="0" z="0" />
+    </transform>
+    <renderMode>Billboard</renderMode>
+  </property>
+  <emission>
+    <rate>10</rate>
+    <type>Const</type>
+  </emission>
+  <life>
+    <duration>5</duration>
+    <type>Const</type>
+    <max>5</max>
+    <min>5</min>
+    <delay>0</delay>
+    <loop>true</loop>
+  </life>
+  <shape>
+    <type>Cube</type>
+    <randomDirection>false</randomDirection>
+    <cube width="0" height="0" depth="0" />
+  </shape>
+  <rotationBirth>
+    <type>Const</type>
+    <min>0</min>
+    <max>0</max>
+  </rotationBirth>
+  <scaleBirth>
+    <type>Const</type>
+    <min>2</min>
+    <max>2</max>
+  </scaleBirth>
+  <geometry>
+    <type>Plane</type>
+    <plane width="1" height="1" />
+  </geometry>
+  <moveSpeed>
+    <type>Const</type>
+    <min>20</min>
+    <max>20</max>
+    <velocityOver>
+      <type>OneBezier</type>
+      <worldSpace>false</worldSpace>
+      <xBezier1 />
+      <yBezier1>
+        <pos x="0" y="0" />
+        <pos x="0.5095057" y="6.75675774" />
+        <pos x="0.5095057" y="6.75675774" />
+        <pos x="1" y="10" />
+        <ctrl x="0.169835225" y="41.9345551" />
+        <ctrl x="0.339670479" y="-18.4848537" />
+        <ctrl x="0.6730038" y="31.05652" />
+        <ctrl x="0.8365019" y="-19.9421539" />
+      </yBezier1>
+      <zBezier1 />
+    </velocityOver>
+  </moveSpeed>
+  <followTarget>
+    <followRotation>true</followRotation>
+    <followScale>true</followScale>
+  </followTarget>
+  <mat id="0" name="Egret3D/d/E3D_D_AlphaBlending">
+    <diffuseTextureName>sponza_flag.jpg</diffuseTextureName>
+    <normalTextureName />
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0x808080</diffuseColor>
+    <ambientColor>0x1a1a1a</ambientColor>
+    <specularColor>0x1f4f78</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>ALPHA</blendMode>
+  </mat>
+</particle>

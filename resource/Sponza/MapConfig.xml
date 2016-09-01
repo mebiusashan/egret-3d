@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <version>1</version>
+  <cameraAnims />
+  <node type="Object3D" insID="9742" parent="-1" name="sponza01">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+  </node>
+
+  <node type="Mesh" insID="9786" parent="9742" name="sponza_roof1" path="Model/30_sponza_roof1.esm">
+    <pos x="2868.8125" y="3957.809" z="-742.5387" />
+    <rot rx="-0.7071068" ry="0" rz="0" rw="0.7071068" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="2" />
+  </node>
+
+  <node type="Mesh" insID="10014" parent="9742" name="sponza_bricks_a22" path="Model/36_sponza_bricks_a22.esm">
+    <pos x="-2805.01221" y="3315.24268" z="-133.869034" />
+    <rot rx="-0.7071068" ry="0" rz="0" rw="0.7071068" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="1" />
+  </node>
+
+  <mat id="1" name="Legacy Shaders/Lightmapped/Bumped Specular">
+    <diffuseTextureName>Texture/spnza_bricks_a_diff.jpg</diffuseTextureName>
+    <normalTextureName>Texture/spnza_bricks_a_ddn.jpg</normalTextureName>
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0x808080</diffuseColor>
+    <ambientColor>0x1a1a1a</ambientColor>
+    <specularColor>0x1f4f78</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>true</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true">
+        <texture path="Texture/Sponzalightmap01.png" attributeName="lightTexture" />
+      </lightmapMethod>
+    </methods>
+  </mat>
+  <mat id="2" name="Legacy Shaders/Lightmapped/Bumped Specular">
+    <diffuseTextureName>Texture/sponza_roof_diff.jpg</diffuseTextureName>
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0x808080</diffuseColor>
+    <ambientColor>0x1a1a1a</ambientColor>
+    <specularColor>0x1f4f78</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>true</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <methods>
+      <lightmapMethod usePower="true">
+        <texture path="Texture/Sponzalightmap01.png" attributeName="lightTexture" />
+      </lightmapMethod>
+    </methods>
+  </mat>
+  <env directLight="close" pointLight="close" />
+</scene>

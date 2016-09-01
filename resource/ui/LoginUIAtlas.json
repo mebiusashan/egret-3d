@@ -1,0 +1,57 @@
+{"frames": [
+
+{
+	"filename": "l_jdt_dise.png",
+	"frame": {"x":1,"y":89,"w":1500,"h":29},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1500,"h":29},
+	"sourceSize": {"w":1500,"h":29},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "l_jdt_hong.png",
+	"frame": {"x":173,"y":1,"w":1500,"h":29},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1500,"h":29},
+	"sourceSize": {"w":1500,"h":29},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "l_jdt_hong_tou.png",
+	"frame": {"x":1,"y":1,"w":84,"h":55},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":84,"h":55},
+	"sourceSize": {"w":84,"h":55},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "l_jdt_lan.png",
+	"frame": {"x":1,"y":58,"w":1500,"h":29},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1500,"h":29},
+	"sourceSize": {"w":1500,"h":29},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "l_jdt_lan_tou.png",
+	"frame": {"x":87,"y":1,"w":84,"h":55},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":84,"h":55},
+	"sourceSize": {"w":84,"h":55},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "LoginUIAtlas.png",
+	"format": "RGBA8888",
+	"size": {"w":2048,"h":128},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:5ccce4b0a2d90b13c50ff1f4dbc244d5:24cc5c651f2d0a69ba1bee7ba2db3552:deb426415592398f19530d2c35dc8685$"
+}
+}

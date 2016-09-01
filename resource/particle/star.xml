@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<particle>
+  <version>1</version>
+  <property>
+    <particleCount>400</particleCount>
+    <bounds x="10" y="10" z="10" />
+    <colorType>Const</colorType>
+    <colorConst1>0xffffffff</colorConst1>
+    <gravity>0</gravity>
+    <prewarm>false</prewarm>
+    <transform>
+      <rotation x="0" y="0" z="0" />
+      <scale x="1" y="1" z="1" />
+      <position x="0" y="0" z="0" />
+    </transform>
+    <render>
+      <renderMode>StretchedBillboard</renderMode>
+      <!--<renderMode>Billboard</renderMode>
+      <renderMode>Mesh</renderMode>-->
+    </render>
+  </property>
+  <emission>
+    <rate>4</rate>
+    <type>Const</type>
+    <bursts>
+      <item time="0.5" count="60"></item>
+      <item time="1.5" count="60"></item>
+      <item time="3.5" count="60"></item>
+    </bursts>
+  </emission>
+  <life>
+    <duration>4</duration>
+    <type>Const</type>
+    <max>5</max>
+    <min>5</min>
+    <delay>0</delay>
+    <loop>true</loop>
+  </life>
+  <shape>
+    <type>Point</type>
+    <randomDirection>false</randomDirection>
+    <cube width="0" height="0" depth="0" />
+    <sphereRadius>10</sphereRadius>
+    <hemiSphereRadius>20</hemiSphereRadius>
+    <cone coneHeight="10" coneRadiusBottom="4" coneRadiusTop="12"></cone>
+  </shape>
+  <rotationBirth>
+    <type>Const</type>
+    <max>0</max>
+    <min>0</min>
+  </rotationBirth>
+  <scaleBirth>
+    <type>Const</type>
+    <max>1</max>
+    <min>1</min>
+  </scaleBirth>
+  <geometry>
+    <type>Plane</type>
+    <plane width="5" height="10" />
+  </geometry>
+  <moveSpeed>
+    <type>Const</type>
+    <max>15</max>
+    <min>15</min>
+  </moveSpeed>
+  
+  <!--<followTarget>
+    <followRotation>true</followRotation>
+    <followScale>true</followScale>
+  </followTarget>-->
+  <mat id="0" name="Egret3D/d/E3D_D_AlphaBlending">
+    <diffuseTextureName>arrow2.png</diffuseTextureName>
+    <normalTextureName />
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0x808080</diffuseColor>
+    <ambientColor>0x1a1a1a</ambientColor>
+    <specularColor>0x1f4f78</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>ALPHA</blendMode>
+  </mat>
+</particle>

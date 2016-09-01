@@ -1,0 +1,16 @@
+{"t":"CommonUIAtlas.png",
+ "w":256,
+ "h":256,
+ "s":[
+["bg_cancel_01",219,1,16,16],
+["bg_cancel_02",237,1,16,16],
+["bg_mian_white",219,19,3,3],
+["dikuang_big",1,1,122,94],
+["fanya_a",1,97,71,32],
+["fanya_b",1,131,71,32],
+["ty_anniu_a",125,1,92,30],
+["ty_anniu_b",125,33,92,30],
+["ty_anniu_c",125,65,92,30],
+["zhuangtaikuang",1,165,42,22]
+ ]
+}

@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<scene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <version>1</version>
+  <cameraAnims />
+  <node type="Mesh" insID="7858" parent="8508" name="Xielong_boss" path="Model/Xielong_boss.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="9100000" />
+    <skinClip path="AnimationClip/Xielong_boss_guochang.eam" name="Xielong_boss_guochang.eam" />
+  </node>
+  <node type="Object3D" insID="7872" parent="8508" name="Dummy001">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+    <propertyAnim path="ProAnim/Dummy001.epa" name="Dummy001.epa" />
+  </node>
+  <node type="Object3D" insID="7900" parent="-1" name="j10413">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+  </node>
+  <node type="Camera3D" insID="7904" parent="7872" name="剧情摄像机" fov="35">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0.7071068" rz="0" rw="-0.7071068" />
+    <scale sx="1" sy="1" sz="1" />
+  </node>
+  <node type="Object3D" insID="7914" parent="8090" name="bl_hou">
+    <pos x="1500" y="100" z="50" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+  </node>
+  <node type="Object3D" insID="8090" parent="8508" name="story_fx_j10413">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+  </node>
+  <node type="Object3D" insID="8180" parent="8508" name="zuoji">
+    <pos x="-1071.62976" y="-103.573563" z="-108.977036" />
+    <rot rx="0.0573038943" ry="0.7167269" rz="-0.02873813" rw="0.694401145" />
+    <scale sx="1.00000024" sy="1" sz="1" />
+  </node>
+  <node type="Object3D" insID="8508" parent="7900" name="long">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+  </node>
+  <node type="Object3D" insID="8538" parent="7914" name="smoke_lan bai">
+    <pos x="20" y="20" z="0" />
+    <rot rx="0" ry="0.7071068" rz="0" rw="-0.7071068" />
+    <scale sx="1" sy="-0.4" sz="1" />
+  </node>
+  <node type="Mesh" insID="8554" parent="8508" name="binglong" path="Model/binglong.esm">
+    <pos x="0" y="0" z="0" />
+    <rot rx="0" ry="0" rz="0" rw="1" />
+    <scale sx="1" sy="1" sz="1" />
+    <mat id="140100000" />
+    <skinClip path="AnimationClip/binglong_guochang.eam" name="binglong_guochang.eam" />
+  </node>
+  <node type="Object3D" insID="8696" parent="7914" name="xzfc_lan bai">
+    <pos x="0" y="0" z="0" />
+    <rot rx="-0.7071068" ry="3.09086232E-08" rz="0.7071068" rw="-3.09086232E-08" />
+    <scale sx="1" sy="1" sz="1" />
+  </node>
+  <mat id="9100000" name="Egret3D/d/E3D_D_Normal_stream">
+    <diffuseTextureName>Texture/Xielong_boss_d.png</diffuseTextureName>
+    <normalTextureName />
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0xffffff</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <uvRectangle x="0" y="0" width="128" height="128" />
+    <methods>
+      <streamerMethod uSpeed="0.0004" vSpeed="0.0002" texture="Texture/lg_zi.png" />
+    </methods>
+  </mat>
+  <mat id="140100000" name="Egret3D/d/E3D_D_Normal_stream">
+    <diffuseTextureName>Texture/binglong_d.png</diffuseTextureName>
+    <normalTextureName />
+    <specularTextureName />
+    <shadowTextureName />
+    <diffuseColor>0xffffff</diffuseColor>
+    <ambientColor>0xffffff</ambientColor>
+    <specularColor>0xffffff</specularColor>
+    <alpha>1</alpha>
+    <cutAlpha>0</cutAlpha>
+    <specularLevel>1</specularLevel>
+    <gloss>80</gloss>
+    <ambientPower>1</ambientPower>
+    <diffusePower>1</diffusePower>
+    <normalPower>1</normalPower>
+    <castShadow>false</castShadow>
+    <acceptShadow>false</acceptShadow>
+    <smooth>true</smooth>
+    <repeat>false</repeat>
+    <bothside>false</bothside>
+    <drawMode>4</drawMode>
+    <cullMode>1029</cullMode>
+    <blendMode>NORMAL</blendMode>
+    <uvRectangle x="0" y="0" width="128" height="128" />
+    <methods>
+      <streamerMethod uSpeed="0.0004" vSpeed="0.0002" texture="Texture/lg_blue_2.png" />
+    </methods>
+  </mat>
+  <env directLight="close" pointLight="close" />
+</scene>
