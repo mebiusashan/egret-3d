@@ -390,6 +390,7 @@
 
         protected updateVisibleChange(change: boolean): void {
             this._visibleChange = change;
+            this._visibleInvalid = change;
             for (var i: number = 0; i < this.childs.length; ++i) {
                 this.childs[i].updateVisibleChange(change);
             }

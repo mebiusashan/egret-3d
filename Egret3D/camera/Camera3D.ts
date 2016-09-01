@@ -184,7 +184,7 @@
                     this.eyeMatrix = this.eyeMatrix || new EyesMatrix();
                     break;
             }
-
+            this._orthProjectMatrix.ortho(this._viewPort.width, this._viewPort.height, this._near, this._far);
             this.frustum.updateFrustum(this);
         }
 

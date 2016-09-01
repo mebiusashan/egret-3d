@@ -35,7 +35,7 @@ return mat4(
 }
 void main(void){
 	
-    float devicePixelRatio = uniform_materialSource[19];
+    float devicePixelRatio = 1.0;//uniform_materialSource[19];
     mat4 mvMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); 
     mat4 po = buildMat4Quat(attribute_rotate.xyzw); 
     mat4 oth = uniform_orthProectMatrix; 

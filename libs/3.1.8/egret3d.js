@@ -18974,6 +18974,7 @@ var egret3d;
         };
         DisplayObject.prototype.updateVisibleChange = function (change) {
             this._visibleChange = change;
+            this._visibleInvalid = change;
             for (var i = 0; i < this.childs.length; ++i) {
                 this.childs[i].updateVisibleChange(change);
             }
@@ -46275,6 +46276,7 @@ var egret3d;
                         this.eyeMatrix = this.eyeMatrix || new egret3d.EyesMatrix();
                         break;
                 }
+                this._orthProjectMatrix.ortho(this._viewPort.width, this._viewPort.height, this._near, this._far);
                 this.frustum.updateFrustum(this);
             },
             enumerable: true,
