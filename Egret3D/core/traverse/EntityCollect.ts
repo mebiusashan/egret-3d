@@ -49,12 +49,13 @@
         * @language zh_CN
         * 尝试将一个渲染对象，进行视锥体裁剪，放入到渲染队列中
         * @param root 渲染根节点
+        * @param cameraCulling 是否使用相机裁剪
         * @version Egret 3.0
         * @platform Web,Native
         */
-        private addRenderList(renderItem: IRender, camera: Camera3D) {
+        private addRenderList(renderItem: IRender, camera: Camera3D, cameraCulling:boolean = true) {
 
-            if (renderItem.enableCulling) {
+            if (renderItem.enableCulling && cameraCulling) {
                 if (!camera.isVisibleToCamera(renderItem)) {
                     return;
                 }
@@ -116,14 +117,18 @@
 
             if (this.rootScene.quad) {
                 var box: BoundBox = camera.frustum.box;
-                var quadList: Array<IQuadNode> = this.rootScene.quad.getNodesByAABB(box.min.x, box.min.z, box.max.x, box.max.z);
+                //var now: number = new Date().getTime();
+                var quadList: Array<IQuadNode> = this.rootScene.quad.getNodesByAABB(box.min.x, box.min.y, box.max.x, box.max.y);
                  
                 this.appendQuadList(quadList, camera);
+                //console.log("tree time: " + (new Date().getTime() - now));
                 //var time4: number = new Date().getTime();
                 //console.log("200/" + quadList.length + "/" + this.renderList.length, "time:" + (time2 - time1) + "/" + (time4 - time2) + "(" + (time3 - time2) + "," + (time4 - time3) + ")");
             }
             else {
+                //var now: number = new Date().getTime();
                 this.applyRender(this.rootScene.root, camera);
+                //console.log("frustum time: " + (new Date().getTime() - now));
             }
 
             var listLen: number;
@@ -154,7 +159,7 @@
                     continue;
                 mesh = <Mesh>node;
                 if (mesh && mesh.visible && mesh["material"])
-                    this.addRenderList(mesh, camera);
+                    this.addRenderList(mesh, camera, false);
             }
         }
 

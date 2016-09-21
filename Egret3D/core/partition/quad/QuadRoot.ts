@@ -124,7 +124,7 @@ module egret3d {
             var numTriangles: number = this._quadTree.getNodesIntersectingtAABox(this._collisionNodesIdx, this._segBox);
 
             // 检查那个三角与点(x,y)相交
-            var minDistance: number = Number.MAX_VALUE;
+            var minDistance: number = 0xffffffff;
             var curDistance: number = 0;
             var minTriangle: Navi3DTriangle;
             var quadNode: IQuadNode;

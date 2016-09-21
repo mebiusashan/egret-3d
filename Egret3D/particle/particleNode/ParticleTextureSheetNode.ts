@@ -160,7 +160,17 @@
 
         }
 
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._animationState = null;
+            this._floatCompressData1 = this._floatCompressData2 = null;
+            this._sheetData = null;
+            this._sheetFloatData = null;
 
+        }
 
 
     }

@@ -12,9 +12,9 @@
 
         public type: string = "";
 
-        public insID: string = "";
+        public insID: number = 0;
 
-        public parent: string = "";
+        public parent: number = 0;
 
         public name: string = "";
 
@@ -142,6 +142,8 @@
          */
         public sz: number = 1;
 
+        public skeletonAnimation: number = 0;
+
         //public texture: string = "";
         //public width: number = 0;
         //public height: number = 0;
@@ -160,5 +162,7 @@
         public object3d: Object3D;
 
         public childs: Array<any> = [];
+
+        public boneBind: any = {};
     }
 }

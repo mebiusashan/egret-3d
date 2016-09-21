@@ -104,17 +104,26 @@
        }
 
         private getMousePickList(): Quad[] {
-            var pickList: Quad[];
             var i: number;
             this._mouseList.length = 0;
-            for (i = 0; i < this._finalist.length; i++) {
-                //update by zoon
-                if (this._finalist[i].mouseEnable && this._finalist[i].aabb.inner(Input.mouseX, Input.mouseY)) {
-                    //mouse down
-                    this._mouseList.push(this._finalist[i]);
+            var quad: Quad;
+            if (this._finalist) {
+                for (i = 0; i < this._finalist.length; i++) {
+                    quad = this._finalist[i];
+                    if (quad.globalVisible && quad.mouseEnable && quad.aabb.inner(Input.mouseX, Input.mouseY)) {
+                        //mouse down
+                        this._mouseList.push(quad);
+                    }
                 }
             }
-            return pickList = SortUtil.sortAB(this._mouseList);
+            //已经排序了不需要排序
+            //return pickList = SortUtil.sortAB(this._mouseList);
+
+
+            //todo
+            //???        是否需要颠倒
+            this._mouseList.reverse();
+            return this._mouseList;
         }
     }
 }

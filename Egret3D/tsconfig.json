@@ -113,7 +113,8 @@
         "core/node/BillBoard.ts",
         "core/node/Sky.ts",
         "core/node/Wireframe.ts",
-
+        "core/node/terrain/LODQuad.ts",
+        "core/node/terrain/Terrain.ts",
         
         "gui/BitmapFont.ts",
         "gui/DisplayObject.ts",
@@ -186,10 +187,20 @@
         "loader/parser/EPA/EPAVersion.ts",
         "loader/parser/XML/XMLParser.ts",
 
+        "loader/parser/map/MapParserUtils.ts",
+        "loader/parser/map/MapParser.ts",
+
+        "loader/parser/map/binary/MapBinParser.ts",
+
+        "loader/parser/map/json/MapJsonParser.ts",
+        "loader/parser/map/json/MapJsonParser_1.ts",
+
+        "loader/parser/map/xml/MapXmlParser.ts",
+        "loader/parser/map/xml/MapXmlParser_1.ts",
+
+
         "loader/parser/map/MapLoader.ts",
         "loader/parser/map/MapNodeData.ts",
-        "loader/parser/map/MapXmlParser.ts",
-        "loader/parser/map/MapJsonParser.ts",
         "loader/parser/map/MapConfigParser.ts",
         "loader/parser/map/MatMethodData.ts",
         "loader/parser/map/MatSphereData.ts",
@@ -197,6 +208,9 @@
         "loader/parser/map/HUDData.ts",
 
         "loader/parser/ParserUtils.ts",
+
+        "loader/Role.ts",
+        "loader/RoleLoader.ts",
 
 
         "material/pass/MethodData.ts",
@@ -230,8 +244,9 @@
         "material/pass/DiffusePass.ts",
         "material/pass/FakePBRPass.ts",
         "material/pass/ShadowPass.ts",
-        "material/pass/CubePass.ts",
-        "material/pass/MatCapPass.ts",
+        "material/pass/NormalPass.ts",
+        "material/pass/PositionPass.ts",
+        "material/pass/PickPass.ts",
         
         "material/pass/PassUtil.ts",
         
@@ -284,6 +299,10 @@
         "loader/parser/particle/ParticleJsonParser.ts",
         "loader/parser/particle/ParticleParser.ts",
         "particle/ParticleEmitter.ts",
+        "particle/EffectGroup.ts",
+        "loader/EffectGroupLoader.ts",
+
+        "pick/PickSystem.ts",
 
         "scene/Scene3D.ts",
         "scene/TreeBase.ts",
@@ -330,14 +349,15 @@
         "VRView3D.ts",
         "Egret3DCanvas.ts",
         "Egret3DEngine.ts",
-        
+
         "post/IPost.ts",
+
+        "post/AmbientOcclusion.ts",
+
         "post/postPass/MainPass.ts",
+        "post/postPass/DeferredShadingProcessing.ts",
         "post/postPass/BloomPass.ts",
         "post/postPass/GaussPass.ts",
-
         "post/PostProcessing.ts"
-        
-
-]      
+    ]      
 }	

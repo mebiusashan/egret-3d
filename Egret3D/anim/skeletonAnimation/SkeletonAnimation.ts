@@ -43,10 +43,8 @@ module egret3d {
         private _currentAnimName: string;
         private _isPlay: boolean = false;
         private _animTime: number = 0;
-        private _skeleton: Skeleton = null;
         private _animStateNames: string[] = [];
         private _animStates: SkeletonAnimationState[] = [];
-        private _skeletonMatrixData: Float32Array = null;
         private _blendSpeed: number = 0;//300;
         private _blendSkeleton: SkeletonPose = null;
         private _blendList: SkeletonAnimationState[] = [];
@@ -60,16 +58,12 @@ module egret3d {
         private _movePosObject3D: Object3D = null;
         private _movePosition: Vector3D = new Vector3D();
         private _resetMovePos: boolean = true;
+        private _currentSkeletonPose: SkeletonPose = null;
+        private _oldTime: number = 0;
 
-        constructor(skeleton: Skeleton) {
+        constructor() {
             super();
             this._isPlay = false;
-            this._skeleton = skeleton;
-            this._skeletonMatrixData = new Float32Array(this._skeleton.jointNum * 8);
-            for (var i: number = 0; i < this._skeleton.jointNum; ++i) {
-                this._skeletonMatrixData[i * 8 + 3] = 1;
-                this._skeletonMatrixData[i * 8 + 7] = 1;
-            }
         }
 
 
@@ -85,8 +79,6 @@ module egret3d {
             var animState: SkeletonAnimationState = new SkeletonAnimationState(animationClip.animationName);
 
             animState.skeletonAnimation = this;
-
-            animState.skeleton = this._skeleton;
 
             animState.addAnimationClip(animationClip);
 
@@ -117,7 +109,6 @@ module egret3d {
                     return;
                 }
             }
-            animState.skeleton = this._skeleton;
             this._animStates.push(animState);
             this._animStateNames.push(animState.name);
         }
@@ -132,7 +123,6 @@ module egret3d {
         public removeAnimState(animState: SkeletonAnimationState): void {
             for (var i = 0; i < this._animStates.length; i++) {
                 if (this._animStates[i].name == animState.name) {
-                    animState.skeleton = null;
                     this._animStates.slice(i, 1);
                     this._animStateNames.slice(i, 1);
                     return;
@@ -235,6 +225,12 @@ module egret3d {
         */
         public update(time: number, delay: number, geometry: Geometry): void {
 
+            if (this._oldTime == time) {
+                return;
+            }
+
+            this._oldTime = time;
+
             if (!this._isPlay) {
                 return;
             }
@@ -307,10 +303,13 @@ module egret3d {
         * @platform Web,Native
         */
         public activeState(time: number, delay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D) {
+            if (this._currentSkeletonPose) {
+                this._currentSkeletonPose.updateGPUCacheData(geometry.geometry.skeleton, geometry.geometry.skeletonGPUData, this._movePosition);
+            }
             if (usage.uniform_time) {
                 context3DProxy.uniform1f(usage.uniform_time.uniformIndex, this.animTime);
             }
-            context3DProxy.uniform4fv(usage.uniform_PoseMatrix.uniformIndex, this._skeletonMatrixData);
+            context3DProxy.uniform4fv(usage.uniform_PoseMatrix.uniformIndex, geometry.geometry.skeletonGPUData);
         }
 
         /**
@@ -321,7 +320,7 @@ module egret3d {
         */
         public clone(): SkeletonAnimation {
 
-            var skeletonAnimation: SkeletonAnimation = new SkeletonAnimation(this._skeleton);
+            var skeletonAnimation: SkeletonAnimation = new SkeletonAnimation();
 
             skeletonAnimation._blendSpeed = this._blendSpeed;
 
@@ -343,7 +342,7 @@ module egret3d {
         * @platform Web,Native
         */
         public get jointNum(): number {
-            return this._skeleton.joints.length;
+            return 48;
         }
 
         /**
@@ -449,7 +448,7 @@ module egret3d {
 
                 this.updateMovePos(currentSkeletonA);
 
-                currentSkeletonA.updateGPUCacheData(this._skeleton, this._skeletonMatrixData, this._movePosition);
+                this._currentSkeletonPose = currentSkeletonA;
             }
             else {
 
@@ -471,7 +470,7 @@ module egret3d {
 
                 this.updateMovePos(this._blendSkeleton);
 
-                this._blendSkeleton.updateGPUCacheData(this._skeleton, this._skeletonMatrixData, this._movePosition);
+                this._currentSkeletonPose = this._blendSkeleton;
             }
         }
 
@@ -625,11 +624,7 @@ module egret3d {
 
                     this._temp_quat.fromMatrix(jointPose.worldMatrix);
 
-                    this._temp_quat.toEulerAngles(this._temp_vec3);
-
-                    object3D.rotationX = this._temp_vec3.x;
-                    object3D.rotationY = this._temp_vec3.y;
-                    object3D.rotationZ = this._temp_vec3.z;
+                    object3D.orientation = this._temp_quat;
 
                     ///object3D.scaleX = jointPose.worldMatrix.scale.x;
                     ///object3D.scaleY = jointPose.worldMatrix.scale.y;

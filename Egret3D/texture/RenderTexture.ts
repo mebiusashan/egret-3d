@@ -30,6 +30,7 @@
         constructor(width: number = 512, height: number = 512, frameBufferFormat: FrameBufferFormat = FrameBufferFormat.UNSIGNED_BYTE_RGB) {
             super();
             this.useMipmap = false;
+            this.smooth = false;
             this.width = width;
             this.height = height;
             this.frameBufferFormat = frameBufferFormat;

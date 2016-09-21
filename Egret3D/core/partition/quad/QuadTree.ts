@@ -109,6 +109,7 @@ module egret3d {
             var i: number = 0;
             var count: number = nodes.length;
             while (i < count) {
+                nodes[i].calcGlobalQuadAABB();
                 this._quadNodes.push(nodes[i]);
                 i++;
             }

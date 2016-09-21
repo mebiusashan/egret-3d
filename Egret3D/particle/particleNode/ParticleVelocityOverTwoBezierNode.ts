@@ -130,6 +130,19 @@
         }
 
 
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._floatCompressDataX1 = this._floatCompressDataY1 = this._floatCompressDataZ1 = null;
+            this._floatCompressDataX2 = this._floatCompressDataY2 = this._floatCompressDataZ2 = null;
+
+            this._node = null;
+            this._animationState = null;
+        }
+
+
 
     }
 } 

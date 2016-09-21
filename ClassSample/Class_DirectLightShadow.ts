@@ -47,7 +47,7 @@
             //this.plane.lightGroup = this.lights;
 
             // 渲染阴影
-            this.plane.material.castShadow = true;
+            //this.plane.material.castShadow = true;
             // 接受阴影 
             this.plane.material.acceptShadow = true;
             this.view1.addChild3D(this.plane);
@@ -59,15 +59,11 @@
             this.view1.addChild3D(this.cube);
             this.cube.y = 50;
             //this.cube.x = -1900;
-            this.view1.addChild3D(ShadowCast.instance.directLight);
-            // 打开渲染阴影的视锥体
-            ShadowCast.instance.shadowCamera.frustum.wireframe.visible = true;
 
-            var cam: Camera3D = new Camera3D(CameraType.orthogonal);
-            cam.updateViewport(0, 0, 1000, 1000);
-            this.view1.addChild3D(cam);
-            this.cam = cam;
-            this.cam.frustum.wireframe.visible = true;
+            // 打开渲染阴影的视锥体
+            //this.view1.addChild3D(ShadowCast.instance.directLight);
+            //ShadowCast.instance.shadowCamera.frustum.visible = true;
+
             for (var i: number = 0; i < 10; ++i) {
                 var m: Mesh = new Mesh(new CubeGeometry());
                 this.view1.addChild3D(m);
@@ -75,11 +71,13 @@
                 m.material.castShadow = true;
             }
 
+            var texture: ITexture = ShadowCast.instance.shadowRender.renderTexture;
+            var gui: QuadStage = this.view1.getGUIStage();
+            gui.registerTexture(texture);
 
             var quat: Quad = new Quad();
-            quat.texture = ShadowCast.instance.shadowRender.renderTexture;
+            quat.texture = texture;
             this.view1.addGUI(quat);
-
             this.ctl.lookAtObject = this.cube;
         }
 

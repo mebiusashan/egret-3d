@@ -1175,23 +1175,9 @@
         * @platform Web,Native
         */
         public makeTransform(pos: Vector3D, scale: Vector3D, rot: Quaternion) {
-            
+            this.appendScale(scale.x, scale.y, scale.z);
             rot.toMatrix3D(MathUtil.CALCULATION_MATRIX);
-
-            this.rawData[0] = MathUtil.CALCULATION_MATRIX.rawData[0] * scale.x;
-            this.rawData[1] = MathUtil.CALCULATION_MATRIX.rawData[1] * scale.y;
-            this.rawData[2] = MathUtil.CALCULATION_MATRIX.rawData[2] * scale.z;
-            this.rawData[3] = 0;
-
-            this.rawData[4] = MathUtil.CALCULATION_MATRIX.rawData[4] * scale.x;
-            this.rawData[5] = MathUtil.CALCULATION_MATRIX.rawData[5] * scale.y;
-            this.rawData[6] = MathUtil.CALCULATION_MATRIX.rawData[6] * scale.z;
-            this.rawData[7] = 0;
-
-            this.rawData[8] = MathUtil.CALCULATION_MATRIX.rawData[8] * scale.x;
-            this.rawData[9] = MathUtil.CALCULATION_MATRIX.rawData[9] * scale.y;
-            this.rawData[10] = MathUtil.CALCULATION_MATRIX.rawData[10] * scale.z;
-            this.rawData[11] = 0;
+            this.append(MathUtil.CALCULATION_MATRIX);
 
             this.rawData[12] = pos.x;
             this.rawData[13] = pos.y;

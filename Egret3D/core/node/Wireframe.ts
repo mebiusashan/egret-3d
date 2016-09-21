@@ -13,7 +13,7 @@
      * @version Egret 3.0
      * @platform Web,Native
      */
-    export class Wireframe extends Mesh {
+    export class Wireframe extends IRender {
 
         /**
          * @language zh_CN
@@ -21,7 +21,12 @@
          * @platform Web,Native
          */
         constructor() {
-            super(new Geometry(), new ColorMaterial(0xff0000));
+            super();
+            this.type = "wireframe";
+            this.geometry = new Geometry();
+            this.material = new ColorMaterial(0xff0000);
+            this.addSubMaterial(0, this.material);
+
             this.material.drawMode = DrawMode.LINES;
             this.geometry.vertexFormat = VertexFormat.VF_POSITION | VertexFormat.VF_NORMAL | VertexFormat.VF_COLOR | VertexFormat.VF_UV0;
         }

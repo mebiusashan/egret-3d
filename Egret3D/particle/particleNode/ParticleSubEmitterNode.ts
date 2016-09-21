@@ -120,7 +120,7 @@
         * @param animTime 动画当前时间（单位为ms）
         * @param delay  这一帧的时间跨度
         * @param geometry 几何对象
-        * 顶点数据是否需要重新upload
+        * 判定是否需要发射子粒子
         * @version Egret 3.0
         * @platform Web,Native
         */
@@ -132,8 +132,9 @@
             //卡顿了就不发射子粒子了
             this.ignoreEmit = delay > 25;
             //非循环的粒子生命周期达上限
-            var loop: boolean = this._animationState.emitter.data.life.loop;
-            var maxLife: number = this._animationState.loopTime + this._animationState.emitter.data.life.duration;
+            var particleData: ParticleData = this._animationState.emitter.data;
+            var loop: boolean = particleData.life.loop;
+            var maxLife: number = this._animationState.loopTime + particleData.life.duration + particleData.life.delay;
             if (!loop && (animTime * 0.001 >= maxLife)) {
                 return;
             }
@@ -145,7 +146,7 @@
 
             var positionOffsetIndex: number = this._animationState.emitter.positionNode.offsetIndex;
             var timeOffsetIndex: number = this._animationState.emitter.timeNode.offsetIndex;
-            var particleTime: number = animTime * 0.001 - this._animationState.emitter.data.life.delay;
+            var particleTime: number = animTime * 0.001 - particleData.life.delay;
             var verticesData: any = geometry.sharedVertexBuffer ? geometry.sharedVertexBuffer.arrayBuffer : geometry.vertexArray;
             //没有跟随对象，使用自己
             var followTarget: Object3D = this._animationState.followTarget || this._animationState.emitter;
@@ -259,6 +260,30 @@
         public activeState(time: number, animTime: number, delay: number, animDelay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy) {
 
         }
+
+
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._animationState = null;
+
+            this._birthPhase && this._birthPhase.dispose();
+            this._birthPhase = null;
+            this._collisionPhase && this._collisionPhase.dispose();
+            this._collisionPhase = null;
+            this._deathPhase && this._deathPhase.dispose();
+            this._deathPhase = null;
+
+            this._lifeCircles = null;
+            this._orientation = null;
+            this._parent = null;
+
+
+        }
+
+
     }
 
 
@@ -268,19 +293,47 @@
 
     export class ParticleSubEmitterNodePhase {
 
+        /**
+        * @private 
+        */
+        private _phase: number;
         public playing: DoubleArray = new DoubleArray();
         public recycle: DoubleArray = new DoubleArray();
 
         constructor(phase: number) {
-
+            this._phase = phase;
         }
 
+        /**
+        * @private 
+        */
         public importSubEmitter(subEmitter: ParticleEmitter): void {
             if (this.playing.getKeys().indexOf(subEmitter) >= 0)
                 return;
             this.playing.put(subEmitter, []);
             this.recycle.put(subEmitter, []);
         }
+
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            var emitter: ParticleEmitter;
+
+            for (emitter of this.playing.getValues()) {
+                emitter.dispose();
+            }
+            for(emitter of this.recycle.getValues()) {
+                emitter.dispose();
+            }
+
+            this.playing.clear();
+            this.recycle.clear();
+
+            this.playing = this.recycle = null;
+        }
+
+
 
     }
 

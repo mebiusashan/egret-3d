@@ -19,9 +19,6 @@
      */
     export class View3D {
 
-        //public stage: Stage = new Stage();
-        //protected _QuadPool: QuadPool = new QuadPool();
-
         protected _viewPort: Rectangle = new Rectangle();
         protected _camera: Camera3D;
         protected _scene: Scene3D = new Scene3D();
@@ -179,6 +176,8 @@
             this._camera.aspectRatio = this._viewPort.width / this._viewPort.height;
             this._camera.updateViewport(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
 
+            if (this._quadStage)
+                this._quadStage.changeCamera();
         }
         
         /**
@@ -465,6 +464,12 @@
         public a: number = 0;
         public update(time: number, delay: number) {
             this._camera.viewPort = this._viewPort;
+            //------------------
+            this.updateObject3D(this._scene.root, time, delay);
+
+            Egret3DCanvas.context3DProxy.viewPort(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
+            Egret3DCanvas.context3DProxy.setScissorRectangle(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
+
             this._entityCollect.update(this._camera);
 
             if (Egret3DEngine.instance.debug) {
@@ -483,18 +488,9 @@
                 }
             }
 
-            //------------------
-            this.updateObject3D(this._scene.root, time, delay);
-            //this._numberEntity = this._entityCollect.renderList.length;
-            //for (this._index = 0; this._index < this._numberEntity; this._index++) {
-            //    this._renderItem = this._entityCollect.renderList[this._index];
-            //    this._renderItem.update(time, delay, this._camera);
-            //}
-            //------------------
-            //this._render.update(time, delay, this._entityCollect, this._camera);
-
-            Egret3DCanvas.context3DProxy.viewPort(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
-            Egret3DCanvas.context3DProxy.setScissorRectangle(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
+            if (PickSystem.instance.enablePick) {
+                PickSystem.instance.update(this._entityCollect, this._camera, time, delay, this._viewPort);
+            }
 
             if (ShadowCast.enableShadow) {
                 ShadowCast.instance.update(this._entityCollect,this._camera, time, delay, this._viewPort);
@@ -513,9 +509,9 @@
             if (this._postList.length > 0){
                 this._postProcessing.postItem = this._postList; 
                 this._postProcessing.drawFrameBuffer(time, delay, Egret3DCanvas.context3DProxy, this._entityCollect, this._camera, this._viewPort);
-                this._postHUD.diffuseTexture = this._postProcessing.endTexture;
+                //this._postHUD.diffuseTexture = this._postProcessing.endTexture;
                 //this._postHUD.viewPort = this._viewPort ;
-                this._postHUD.draw(Egret3DCanvas.context3DProxy);
+                //this._postHUD.draw(Egret3DCanvas.context3DProxy);
             } else {
                 this._render.draw(time, delay, Egret3DCanvas.context3DProxy, this._entityCollect, this._camera, this._viewPort);
             }

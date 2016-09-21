@@ -91,5 +91,12 @@
         */
         public upload() {
         }
+
+        /**
+        * @private
+        */
+        public dispose(): void {
+        }
+
     }
 } 

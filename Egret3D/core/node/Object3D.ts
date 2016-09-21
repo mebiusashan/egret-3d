@@ -162,15 +162,6 @@
 
         /**
         * @language zh_CN
-        * 是否关闭
-        * @private
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public isDisable: boolean = false;
-
-        /**
-        * @language zh_CN
         * 是否可见
         * @version Egret 3.0
         * @platform Web,Native
@@ -220,7 +211,7 @@
         * @platform Web,Native
         */
         public get currentBound(): Bound {
-            if (this.mouseChilder) {
+            if (this.mouseChildren) {
                 return this.bound.childBound;
             }
             return this.bound;
@@ -251,7 +242,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public mouseChilder: boolean = false;
+        public mouseChildren: boolean = false;
 
         /**
         * @language zh_CN
@@ -261,7 +252,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public enableCulling: boolean = false;
+        public enableCulling: boolean = true;
 
         /**
         * @language zh_CN
@@ -295,6 +286,9 @@
         * @platform Web,Native
         */
         public set position(vec: Vector3D) {
+            if (this._pos.x == vec.x && this._pos.y == vec.y && this._pos.z == vec.z) {
+                return;
+            }
             this.updateTransformChange(true);
             this._pos.copyFrom(vec);
         }
@@ -320,6 +314,10 @@
         * @platform Web,Native
         */
         public set rotation(value: Vector3D) {
+            if (this._rot.x == value.x && this._rot.y == value.y && this._rot.z == value.z) {
+                return;
+            }
+
             this._rot.x = value.x;
             this._rot.y = value.y;
             this._rot.z = value.z;
@@ -338,6 +336,13 @@
         * @platform Web,Native
         */
         public set orientation(value: Quaternion) {
+            if (this._orientation.x == value.x &&
+                this._orientation.y == value.y &&
+                this._orientation.z == value.z &&
+                this._orientation.w == value.w) {
+                return;
+            }
+
             this._orientation.copyFrom(value);
             this._orientation.toEulerAngles(this._rot);
             this._angle = this._orientation.toAxisAngle(this._axis);
@@ -353,6 +358,9 @@
         * @platform Web,Native
         */
         public set orientationX(value: number) {
+            if (this._orientation.x == value) {
+                return;
+            }
             this._orientation.x = value;
             this._orientation.toEulerAngles(this._rot);
             this._angle = this._orientation.toAxisAngle(this._axis);
@@ -368,6 +376,9 @@
         * @platform Web,Native
         */
         public set orientationY(value: number) {
+            if (this._orientation.y == value) {
+                return;
+            }
             this._orientation.y = value;
             this._orientation.toEulerAngles(this._rot);
             this._angle = this._orientation.toAxisAngle(this._axis);
@@ -383,6 +394,9 @@
         * @platform Web,Native
         */
         public set orientationZ(value: number) {
+            if (this._orientation.z == value) {
+                return;
+            }
             this._orientation.z = value;
             this._orientation.toEulerAngles(this._rot);
             this._angle = this._orientation.toAxisAngle(this._axis);
@@ -398,6 +412,9 @@
         * @platform Web,Native
         */
         public set orientationW(value: number) {
+            if (this._orientation.w == value) {
+                return;
+            }
             this._orientation.w = value;
             this._orientation.toEulerAngles(this._rot);
             this._angle = this._orientation.toAxisAngle(this._axis);
@@ -438,6 +455,11 @@
         * @platform Web,Native
         */
         public set scale(val: Vector3D) {
+            if (this._sca.x == val.x &&
+                this._sca.y == val.y &&
+                this._sca.z == val.z) {
+                return;
+            }
             this.updateTransformChange(true);
             this._sca = val;
         }
@@ -451,12 +473,12 @@
         * @platform Web,Native
         */
         public set x(value: number) {
-            this.updateTransformChange(true);
-
             if (this._pos.x == value)
                 return;
 
             this._pos.x = value;
+            this.updateTransformChange(true);
+
         }
         
         /**
@@ -468,12 +490,12 @@
         * @platform Web,Native
         */
         public set y(value: number) {
-            this.updateTransformChange(true);
-
             if (this._pos.y == value)
                 return;
 
             this._pos.y = value;
+            this.updateTransformChange(true);
+
         }
         
         /**
@@ -485,12 +507,12 @@
         * @platform Web,Native
         */
         public set z(value: number) {
-            this.updateTransformChange(true);
-
             if (this._pos.z == value)
                 return;
 
             this._pos.z = value;
+            this.updateTransformChange(true);
+
         }
                 
         /**
@@ -502,14 +524,13 @@
         * @platform Web,Native
         */
         public set rotationX(value: number) {
-            this.updateTransformChange(true);
-
             if (this._rot.x == value)
                 return;
 
             this._rot.x = value;
             this._orientation.fromEulerAngles(this._rot.x, this._rot.y, this._rot.z);
             this._angle = this._orientation.toAxisAngle(this._axis);
+            this.updateTransformChange(true);
         }
                         
         /**
@@ -521,14 +542,13 @@
         * @platform Web,Native
         */
         public set rotationY(value: number) {
-            this.updateTransformChange(true);
-
             if (this._rot.y == value)
                 return;
 
             this._rot.y = value;
             this._orientation.fromEulerAngles(this._rot.x, this._rot.y, this._rot.z);
             this._angle = this._orientation.toAxisAngle(this._axis);
+            this.updateTransformChange(true);
         }
                         
         /**
@@ -540,14 +560,12 @@
         * @platform Web,Native
         */
         public set rotationZ(value: number) {
-            this.updateTransformChange(true);
-
             if (this._rot.z == value)
                 return;
-
             this._rot.z = value;
             this._orientation.fromEulerAngles(this._rot.x, this._rot.y, this._rot.z);
             this._angle = this._orientation.toAxisAngle(this._axis);
+            this.updateTransformChange(true);
         }
                                 
         /**
@@ -559,12 +577,12 @@
         * @platform Web,Native
         */
         public set scaleX(value: number) {
-            this.updateTransformChange(true);
-
             if (this._sca.x == value)
                 return;
 
             this._sca.x = value;
+            this.updateTransformChange(true);
+
         }
                                         
         /**
@@ -577,12 +595,12 @@
         * @platform Web,Native
         */
         public set scaleY(value: number) {
-            this.updateTransformChange(true);
-
             if (this._sca.y == value)
                 return;
 
             this._sca.y = value;
+            this.updateTransformChange(true);
+
         }
                                         
         /**
@@ -595,12 +613,12 @@
         * @platform Web,Native
         */
         public set scaleZ(value: number) {
-            this.updateTransformChange(true);
-
             if (this._sca.z == value)
                 return;
 
             this._sca.z = value;
+            this.updateTransformChange(true);
+
         }
                                                 
         /**
@@ -1552,43 +1570,20 @@
 
         /**
         * @language zh_CN
-        * 返回对象的屏幕坐标
-        * 获取当前物体的屏幕坐标值，一般用来指定屏幕相关的ui绑定及其他功能
-        * @param camera 对象渲染的摄像机
-        * @returns 对象的屏幕坐标 
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        //public getScreenPosition(camera: Camera3D): Vector3D {
-        //    this._mat.copyFrom(camera.viewProjectionMatrix);
-        //    this._mat.append(this.modelMatrix);
-        //    return this._mat.transformVector(Context3DProxy.globalPosition);
-        //}
-        
-        /**
-        * @language zh_CN
         * 释放所有数据
         * 是否内存中的相关数据连接引用，移除逻辑运算，从主渲染刘表中挪出
         * @version Egret 3.0
         * @platform Web,Native
         */
         public dispose() {
-            if (this.parent)
+            if (this.parent) {
                 this.parent.removeChild(this);
-
-            //if (this.geometry) {
-            //    this.geometry.dispose();
-            //    this.geometry = null;
-            //}
-
-            //if (this.material) {
-            //    this.material.dispose();
-            //    this.material = null;
-            //}
+            }
 
             for (var i: number = 0; i < this.childs.length; i++) {
                 this.childs[i].dispose();
             }
+            this.childs.length = 0;
         }
 
         public get root(): Object3D {

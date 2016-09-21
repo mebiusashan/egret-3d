@@ -33,7 +33,6 @@
 
             var uvSpriteSheetMethod: UVSpriteSheetMethod = new UVSpriteSheetMethod(34,6,6,3.0);
             this.matPlane.diffusePass.addMethod(uvSpriteSheetMethod);
-            this.matPlane.smooth = false; 
             uvSpriteSheetMethod.start(true);
 
             var loadDiffuse: URLLoader = new URLLoader("resource/squen/test1.png");
@@ -43,6 +42,7 @@
 
         protected onLoadDiffuse(e:LoaderEvent3D) {
             this.matPlane.diffuseTexture = e.loader.data;
+            this.matPlane.diffuseTexture.smooth = false;
         }
 
 

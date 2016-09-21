@@ -110,6 +110,24 @@
 
         /**
          * @language zh_CN
+         * 检测x y 是否在当前矩形内
+         * @param x  x 坐标。 
+         * @param y  y 坐标。
+         * @returns boolean 是否在当前矩形内
+         * @version Egret 3.0
+         * @platform Web,Native
+         */
+        public static pointInRect(x: number, y: number, lt_x: number, lt_y: number, rb_x: number, rb_y: number): boolean {
+            if (x < lt_x || x > rb_x ||
+                y < lt_y || y > rb_y) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * @language zh_CN
          * 是否相等
          * @param rectangle  比较的对象
          * @returns boolean 相等返回ture
@@ -198,5 +216,17 @@
             }
             return target;
         }
+
+
+        public setTo(x: number, y: number, width: number, height: number): void {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+
+
+
+
     }
 } 

@@ -359,19 +359,20 @@
         * @platform Web,Native
         */
         static use: boolean = false;
+        private localActive: boolean = false; 
         public activeState(time: number, delay: number, passUsage: PassUsage, contextProxy: Context3DProxy) {
 
             if (passUsage.attributeDiry)
                 this.upload(passUsage, contextProxy);
-            
-            for (var j: number = 0; j < 8;j++) {
-                Context3DProxy.gl.disableVertexAttribArray(j);
-            }
-            for (var i: number = 0; i < passUsage["attributeList"].length; i++) {
-                var attribute: GLSL.Attribute = passUsage["attributeList"][i];
-                if (attribute.uniformIndex >= 0)
-                    contextProxy.vertexAttribPointer(attribute.uniformIndex, attribute.size, attribute.dataType, attribute.normalized, attribute.stride, attribute.offsetBytes);
-            }
+
+            var active: boolean = contextProxy.activeAttribPointer(this.geometry.vertexFormat, passUsage["attributeList"].length); 
+           // if (active) {
+                for (var i: number = 0; i < passUsage["attributeList"].length; i++) {
+                    var attribute: GLSL.Attribute = passUsage["attributeList"][i];
+                    if (attribute.uniformIndex >= 0)
+                        contextProxy.vertexAttribPointer(attribute.uniformIndex, attribute.size, attribute.dataType, attribute.normalized, attribute.stride, attribute.offsetBytes);
+                }
+            //}
         }
 
     }

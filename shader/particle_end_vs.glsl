@@ -33,8 +33,27 @@ vec3 calcParticleMove(vec3 distanceXYZ){
 		if(distanceLimit < Tiny){
 			return vec3(0.0);
 		}
+
+		
+
 		if(distanceCurrent > distanceLimit){
-			distanceXYZ *= distanceLimit / distanceCurrent;
+			//float ratio = (distanceCurrent - distanceLimit) * (1.0 - particleStateData.velocityLimitDampen) + distanceLimit;
+			//distanceXYZ *= ratio / distanceCurrent;
+
+			float nowFrame = currentTime / 0.017;
+			float dampen = 1.0 - particleStateData.velocityLimitDampen;
+			float startDistance = (distanceCurrent - distanceLimit) / nowFrame;
+			float distanceResult = 0.0;
+			float tempDistance = startDistance;
+			for(int i = 1; i < 600; i++){
+				distanceResult += tempDistance;
+				tempDistance *= dampen;
+				if(float(i) > nowFrame)
+					break;
+			}
+
+			distanceXYZ *= (distanceResult + distanceLimit) / distanceCurrent;
+
 		}
 	}
 	return distanceXYZ;
@@ -114,9 +133,9 @@ void main(void) {
 		velocityMultiVec3 = velocityLocalVec3 + velocityWorldVec3;
 		//限制速度（计算平均速度）
 		velocityMultiVec3 = calcParticleMove(velocityMultiVec3);
-		
-		//重力默认为全局坐标系
+		//重力
 		velocityMultiVec3.y -= 4.9 * currentTime * currentTime * particleStateData.gravity;// 0.5 * g * t * t;
+		
 		
 		//是否需要修改local position指向运动方向，直接修改localPosition
 		vec3 origPosition = position_emitter;

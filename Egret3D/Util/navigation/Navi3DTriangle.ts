@@ -165,6 +165,12 @@ module egret3d {
         }
 
         /**
+        * @private
+        */
+        public calcGlobalQuadAABB(): void {
+        }
+
+        /**
         * @language zh_CN
         * 该quad是否是三角形（实现IQuadNode的接口）
         * @version Egret 3.0
@@ -324,8 +330,7 @@ module egret3d {
             list = list || new Array<Navi3DEdge>();
             list.length = 0;
             var edge: Navi3DEdge;
-            for (edge of this._edges)
-            {
+            for (edge of this._edges) {
                 if (edge.testMask(edgeMask)) {
                     list.push(edge);
                 }
@@ -482,7 +487,7 @@ module egret3d {
         }
 
 
-        
+
         /**
         * @language zh_CN
         * @private

@@ -98,6 +98,48 @@
             this.mimapData = new Array<MipmapData>();
         }
 
+        /**
+        * @language zh_CN
+        * 释放接口
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose(): void {
+            if (this.texture) {
+                Context3DProxy.gl.deleteTexture(this.texture);
+                this.texture = null;
+            }
+
+            if (this.image_front) {
+                this.image_front.dispose();
+                this.image_front = null;
+            }
+
+            if (this.image_back) {
+                this.image_back.dispose();
+                this.image_back = null;
+            }
+
+            if (this.image_left) {
+                this.image_left.dispose();
+                this.image_left = null;
+            }
+
+            if (this.image_right) {
+                this.image_right.dispose();
+                this.image_right = null;
+            }
+
+            if (this.image_up) {
+                this.image_up.dispose();
+                this.image_up = null;
+            }
+
+            if (this.image_down) {
+                this.image_down.dispose();
+                this.image_down = null;
+            }
+        } 
  
     }
 }

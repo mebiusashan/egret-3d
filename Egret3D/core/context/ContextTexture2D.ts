@@ -118,5 +118,27 @@
         }
 
 
+        /**
+        * @language zh_CN
+        * 释放接口
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose(): void {
+            if (this.textureBuffer) {
+                Context3DProxy.gl.deleteTexture(this.textureBuffer);
+                this.textureBuffer = null;
+            }
+
+            if (this.frameBuffer) {
+                Context3DProxy.gl.deleteFramebuffer(this.frameBuffer);
+                this.frameBuffer = null;
+            }
+
+            if (this.renderbuffer) {
+                Context3DProxy.gl.deleteRenderbuffer(this.renderbuffer);
+                this.renderbuffer = null;
+            }
+        }
     }
 }

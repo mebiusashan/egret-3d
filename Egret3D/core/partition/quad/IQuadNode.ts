@@ -35,5 +35,13 @@ module egret3d {
         */
         aabb: QuadAABB;
 
+        /**
+        * @language zh_CN
+        * 计算全局的quadtree的数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        calcGlobalQuadAABB(): void;
+
     }
 }

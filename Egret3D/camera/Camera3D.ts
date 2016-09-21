@@ -109,7 +109,7 @@
          * @version Egret 3.0
          * @platform Web,Native
          */
-        public frustum: Frustum = new Frustum();
+        public frustum: Frustum;
 
         private _viewPort: Rectangle = new Rectangle();
 
@@ -143,8 +143,9 @@
 
         protected _animation: any = [];
 
-        protected _projectChange: boolean = true ;
+        protected orthProjectChange: boolean = true ;
 
+        protected _mat: Matrix4_4 = new Matrix4_4();
         /**
          * @language zh_CN        
          * constructor
@@ -154,10 +155,10 @@
          */
         constructor(cameraType: CameraType = CameraType.perspective) {
             super();
+            this.frustum = new Frustum(this);
             this._orthProjectMatrix.ortho(this._viewPort.width, this._viewPort.height, this._near, this._far);
             this.cameraType = cameraType;
             CameraManager.instance.addCamera(this);
-            this.addChild(this.frustum.wireframe);
         }
 
         /**
@@ -185,7 +186,7 @@
                     break;
             }
             this._orthProjectMatrix.ortho(this._viewPort.width, this._viewPort.height, this._near, this._far);
-            this.frustum.updateFrustum(this);
+            this.frustum.updateFrustum();
         }
 
         /**
@@ -211,7 +212,7 @@
         public tap(cameraType: CameraType, vrType: VRType = null) {
             if (cameraType == CameraType.VR) {
                 this.eyeMatrix.update(this);
-                this._projectChange = true;
+                this.orthProjectChange = true;
                 if (vrType == VRType.left) {
                     this.viewMatrix.copyFrom(this.eyeMatrix.leftEyeMatrix);
                 } else if (vrType == VRType.right) {
@@ -357,8 +358,8 @@
 
         public get orthProjectionMatrix(): Matrix4_4 {
             //this.updataOrth(this._orthProjectMatrix);
-            if (this._projectChange) {
-                this._projectChange = false;
+            if (this.orthProjectChange) {
+                this.orthProjectChange = false;
                 this._orthProjectMatrix.ortho(this._viewPort.width, this._viewPort.height, this._near, this._far);
             }
            
@@ -410,6 +411,7 @@
                 width == this._viewPort.width && height == this._viewPort.height) {
                 return;
             }
+            this.orthProjectChange = true;
             this._viewPort.x = x;
             this._viewPort.y = y;
             this._viewPort.width = width;
@@ -422,16 +424,6 @@
                     break;
             }
         }
-
-        ///**
-        //* @private
-        //* @language zh_CN
-        //* @version Egret 3.0
-        //* @platform Web,Native
-        //*/
-        //public updateOrthProjectMatrix() {
-        //    this._orthProjectMatrix.ortho(this._viewPort.width, this._viewPort.height, this._near, this._far);
-        //}
 
         /**
          * @language zh_CN
@@ -447,9 +439,10 @@
             this._lookAtPosition.copyFrom(target);
             this._up.copyFrom(up);
             this._viewMatrix.lookAt(this._pos, this._lookAtPosition, this._up);
-            this._viewMatrix.invert();
+            this._mat.copyFrom(this._viewMatrix);
+            this._mat.invert();
 
-            var prs: Vector3D[] = this._viewMatrix.decompose(Orientation3D.QUATERNION);
+            var prs: Vector3D[] = this._mat.decompose(Orientation3D.QUATERNION);
             this._tempQuat.x = prs[1].x;
             this._tempQuat.y = prs[1].y;
             this._tempQuat.z = prs[1].z;
@@ -461,7 +454,7 @@
             this._viewMatrix.copyFrom(this._modelMatrix3D);
             this._viewMatrix.invert();
 
-            this.frustum.update(this);
+            this.frustum.update();
         }
 
         /**
@@ -559,7 +552,12 @@
         public isVisibleToCamera(renderItem: IRender): boolean {
             //尝试刷新modelMatrix的值，有可能changed为true
             renderItem.modelMatrix;
-            return renderItem.bound.inBound(this.frustum);
+            this.modelMatrix;
+            if (renderItem.bound) {
+                return renderItem.bound.inBound(this.frustum);
+            }
+
+            return true;
         }
 
         /**

@@ -28,6 +28,8 @@
 
         public lightDict: any = {};
 
+        public skeletonAnimationDict: any = {};
+
         public directLight: boolean = false;
         public pointLight: boolean = false;
 
@@ -36,16 +38,17 @@
         public taskDict: any = {};
 
         constructor(data: any, type: string) {
-            switch (type) {
-                case "xml":
-                    new MapXmlParser(data, this);
-                    break;
-                case "json":
-                    new MapJsonParser(data, this);
-                    break;
-            }
+            MapParserUtils.mapParser(type, data, this);
         }
 
+        public calculateSkeletonAnimationTask(data: any) {
+            for (var i: number = 0; i < data.clips; ++i) {
+                var clip: any = data.clips[i];
+                if (clip.path) {
+                    this.taskDict[data.path] = 0;
+                }
+            }
+        }
 
         public calculateMatTask(data: MatSphereData) {
             if (data.diffuseTextureName != "") {

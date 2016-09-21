@@ -186,7 +186,6 @@
             var shaderList: string[];
             for (var d: number = 0; d < this.methodList.length;d++ ) {
                 var method: MethodBase = this.methodList[d];
-                
 
                 for (shaderPhase in method.vsShaderList) {
                     shaderList = method.vsShaderList[shaderPhase];
@@ -293,7 +292,10 @@
             }
             this.initOthreMethods();
             //pre Phase end ---------------------------------------------------
+            this.phaseEnd(animation);
+        }
 
+        protected phaseEnd(animation: IAnimation) {
             var shaderList: string[];
             //---vs---shadering
             //base Phase
@@ -326,11 +328,8 @@
                 else
                     this.addMethodShaders(this._passUsage.vertexShader, ["end_vs"]);
             }
-
             //---vs---shadering-------------------------------------------------
-
-            //---fs---shadering
-
+            //---fs---shadering-------------------------------------------------
             shaderList = this._fs_shader_methods[ShaderPhaseType.base_fragment];
             if (shaderList && shaderList.length > 0) {
                 this.addMethodShaders(this._passUsage.fragmentShader, shaderList);
@@ -382,8 +381,8 @@
                 shaderList = this._fs_shader_methods[ShaderPhaseType.multi_end_fragment];
                 if (shaderList && shaderList.length > 0)
                     this.addMethodShaders(this._passUsage.fragmentShader, shaderList);
-            //else 
-            //    this.addMethodShaders(this._passUsage.fragmentShader, ["matCap_TextureAdd_fs"]);
+                //else 
+                //    this.addMethodShaders(this._passUsage.fragmentShader, ["matCap_TextureAdd_fs"]);
 
                 //end
                 shaderList = this._fs_shader_methods[ShaderPhaseType.end_fragment];
@@ -397,10 +396,7 @@
                     }
                 }
             }
-         
-          
             //---fs---shadering-------------------------------------------------
-
         }
 
         /**
@@ -454,9 +450,21 @@
         public draw(time: number, delay: number, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D, subGeometry: SubGeometry, animation: IAnimation) {
             if (this._materialData.materialDataNeedChange) {
                 //this._materialData.materialDataNeedChange = false;
-                this._materialData.materialSourceData[0] = (this._materialData.diffuseColor >> 16 & 0xff) / 255.0;
-                this._materialData.materialSourceData[1] = (this._materialData.diffuseColor >> 8 & 0xff) / 255.0;
-                this._materialData.materialSourceData[2] = (this._materialData.diffuseColor & 0xff) / 255.0;
+                var tintValue: number = this._materialData.tintColor;
+                var tintAlpha: number = Math.floor(tintValue / 0x1000000);
+                var tintRed: number = (tintValue & 0xff0000) / 0x10000;
+                var tintGreen: number = (tintValue & 0xff00) / 0x100;
+                var tintBlue: number = (tintValue & 0xff);
+
+                tintAlpha /= 0x80;
+                tintRed /= 0x80;
+                tintGreen /= 0x80;
+                tintBlue /= 0x80;
+
+
+                this._materialData.materialSourceData[0] = tintRed * (this._materialData.diffuseColor >> 16 & 0xff) / 255.0;
+                this._materialData.materialSourceData[1] = tintGreen * (this._materialData.diffuseColor >> 8 & 0xff) / 255.0;
+                this._materialData.materialSourceData[2] = tintBlue * (this._materialData.diffuseColor & 0xff) / 255.0;
 
                 this._materialData.materialSourceData[3] = (this._materialData.ambientColor >> 16 & 0xff) / 255.0;
                 this._materialData.materialSourceData[4] = (this._materialData.ambientColor >> 8 & 0xff) / 255.0;
@@ -466,7 +474,7 @@
                 this._materialData.materialSourceData[7] = (this._materialData.specularColor >> 8 & 0xff) / 255.0;
                 this._materialData.materialSourceData[8] = (this._materialData.specularColor & 0xff) / 255.0;
 
-                this._materialData.materialSourceData[9] = this._materialData.alpha;
+                this._materialData.materialSourceData[9] = tintAlpha * this._materialData.alpha;
                 this._materialData.materialSourceData[10] = this._materialData.cutAlpha;
                 this._materialData.materialSourceData[11] = this._materialData.gloss;
                 this._materialData.materialSourceData[12] = this._materialData.specularLevel;
@@ -543,8 +551,6 @@
                 if (sampler2D.texture.useMipmap)
                     sampler2D.texture.useMipmap = this._materialData.useMipmap;
                 sampler2D.texture.repeat = this._materialData.repeat;
-                sampler2D.texture.smooth = this._materialData.smooth;
-
                 sampler2D.texture.activeState(context3DProxy);
                 this._materialData.textureStateChage = false; 
             }

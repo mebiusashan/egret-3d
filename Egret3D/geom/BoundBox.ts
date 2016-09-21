@@ -331,6 +331,10 @@
             this.center.copyFrom(this.min);
             var tmp: Vector3D = this.center.add(c);
             this.center.copyFrom(tmp);
+
+            for (var i: number = 0; i < 8; ++i) {
+                this._bound.geometry.setVerticesForIndex(i, VertexFormat.VF_POSITION, [this.vexData[i * 3 + 0], this.vexData[i * 3 + 1], this.vexData[i * 3 + 2]], 1);
+            }
         }
 
         /**
@@ -346,8 +350,8 @@
         }
 
         protected updateAABB() {
-            this.min.copyFrom(new Vector3D(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE));
-            this.max.copyFrom(new Vector3D(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE));
+            this.min.copyFrom(new Vector3D(MathUtil.MAX_VALUE, MathUtil.MAX_VALUE, MathUtil.MAX_VALUE));
+            this.max.copyFrom(new Vector3D(-MathUtil.MAX_VALUE, -MathUtil.MAX_VALUE, -MathUtil.MAX_VALUE));
             for (var i: number = 0; i < this.vexData.length; i += this.vexLength) {
                 if (this.max.x < this.vexData[i]) {
                     this.max.x = this.vexData[i];

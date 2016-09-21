@@ -129,6 +129,16 @@
             //##FilterEnd##
         }
 
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._constValue = null;
+            this._animationState = null;
+            this._node = null;
+        }
+
 
     }
 } 

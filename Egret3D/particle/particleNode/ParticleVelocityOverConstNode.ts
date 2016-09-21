@@ -12,7 +12,7 @@
     export class ParticleVelocityOverConstNode extends AnimationNode {
         private _overValue: Vec3ConstRandomValueShape;
         private attribute_velocityOver: GLSL.VarRegister;
-        private particleAnimationState: ParticleAnimationState;
+        private _animationState: ParticleAnimationState;
         constructor() {
             super();
             //##FilterBegin## ##Particle##
@@ -60,7 +60,7 @@
         */
         public build(geometry: Geometry, count: number) {
             //##FilterBegin## ##Particle##
-            this.particleAnimationState = <ParticleAnimationState>this.state;
+            this._animationState = <ParticleAnimationState>this.state;
 
             var vertices: number = geometry.vertexCount / count;
             var index: number = 0;
@@ -96,6 +96,14 @@
             //##FilterEnd##
         }
 
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._overValue = null;
+            this._animationState = null;
+        }
 
 
     }

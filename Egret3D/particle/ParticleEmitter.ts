@@ -16,7 +16,7 @@
         private _positionNode: ParticlePosition;
 
         private _geometryShape: Geometry;
-        private particleAnimation: ParticleAnimation;
+        private _particleAnimation: ParticleAnimation;
         private _particleState: ParticleAnimationState;
         private _subEmitterNode: ParticleSubEmitterNode;
         private _isEmitterDirty: boolean = true;
@@ -26,7 +26,7 @@
         private _data: ParticleData;
         private _externalGeometry: Geometry;
 
-        private _genaretor: ParticleLifeGenerator;
+        private _generator: ParticleLifeGenerator;
 
         /**
         * @language zh_CN
@@ -45,12 +45,12 @@
 
             this._data = data;
             this._externalGeometry = data.property.geometry;
-            this.animation = this.particleAnimation = new ParticleAnimation(this);
-            this.animation.particleAnimationController = this.particleAnimation;
-            this._particleState = this.particleAnimation.particleAnimationState;
+            this.animation = this._particleAnimation = new ParticleAnimation(this);
+            this.animation.particleAnimationController = this._particleAnimation;
+            this._particleState = this._particleAnimation.particleAnimationState;
 
-            this._genaretor = new ParticleLifeGenerator();
-            this.particleAnimation.emit = this;
+            this._generator = new ParticleLifeGenerator();
+            this._particleAnimation.emit = this;
 
             this.buildParticle();
             //##FilterEnd##
@@ -60,7 +60,7 @@
         * @private
         */
         public get generator(): ParticleLifeGenerator {
-            return this._genaretor;
+            return this._generator;
         }
 
         /**
@@ -261,10 +261,10 @@
         protected initialize() {
             //##FilterBegin## ##Particle##
             //clean
-            this.particleAnimation.particleAnimationState.clean();
-            this._genaretor.generator(this._data);
+            this._particleAnimation.particleAnimationState.clean();
+            this._generator.generator(this._data);
 
-            var count: number = this._genaretor.planes.length;
+            var count: number = this._generator.planes.length;
 
             this.geometry = new Geometry();
             this.geometry.buildDefaultSubGeometry();
@@ -287,19 +287,10 @@
             this.geometry.vertexCount = count * this._geometryShape.vertexCount;
             this.geometry.indexCount = count * this._geometryShape.indexCount;
 
+            this._geometryShape.getVertexForIndex(0, vf, vertexArray, this._geometryShape.vertexCount);
             for (var i: number = 0; i < count; ++i) {
-                for (var j: number = 0; j < this._geometryShape.vertexCount; ++j) {
-
-                    vertexIndex = i * this._geometryShape.vertexCount + j;
-                    vertexArray.length = 0;
-
-                    //for (var k: number = 0; k < this.geometry.vertexAttLength; ++k) {
-                    //    this.geometry.vertexArray[vertexIndex * this.geometry.vertexAttLength + k] = 0;
-                    //}
-
-                    this._geometryShape.getVertexForIndex(j, vf, vertexArray);
-                    this.geometry.setVerticesForIndex(vertexIndex, vf, vertexArray);
-                }
+                vertexIndex = i * this._geometryShape.vertexCount;
+                this.geometry.setVerticesForIndex(vertexIndex, vf, vertexArray, this._geometryShape.vertexCount);
             }
 
             for (var i: number = 0; i < count; ++i) {
@@ -309,7 +300,7 @@
             }
 
             //最后根据节点功能，填充模型
-            this.particleAnimation.particleAnimationState.fill(this.geometry, count);
+            this._particleAnimation.particleAnimationState.fill(this.geometry, count);
             //##FilterEnd##
         }
 
@@ -338,7 +329,7 @@
             //subEmitter
             this._subEmitterNode = new ParticleSubEmitterNode();
             this._subEmitterNode.initNode(null, this);
-            this.particleAnimation.particleAnimationState.addNode(this._subEmitterNode);
+            this._particleAnimation.particleAnimationState.addNode(this._subEmitterNode);
 
 
             //velocity
@@ -484,7 +475,7 @@
 
             //
             for (var i: number = 0, count: number = nodes.length; i < count; i++) {
-                this.particleAnimation.particleAnimationState.addNode(nodes[i]);
+                this._particleAnimation.particleAnimationState.addNode(nodes[i]);
             }
 
             //##FilterEnd##
@@ -494,7 +485,7 @@
             //##FilterBegin## ##Particle##
             //加入自定义节点
             for (var i: number = 0; i < this._userNodes.length; i++) {
-                this.particleAnimation.particleAnimationState.addNode(this._userNodes[i]);
+                this._particleAnimation.particleAnimationState.addNode(this._userNodes[i]);
             }
             //##FilterEnd##
         }
@@ -503,9 +494,9 @@
             //##FilterBegin## ##Particle##
             //永远是最后一个加入
             var endNode: ParticleEndNode = new ParticleEndNode();
-            this.particleAnimation.particleAnimationState.addNode(endNode);
+            this._particleAnimation.particleAnimationState.addNode(endNode);
             //计算加入动画后，会获取的节点信息，重新计算 geometry 结构
-            this.particleAnimation.particleAnimationState.calculate(this.geometry);
+            this._particleAnimation.particleAnimationState.calculate(this.geometry);
             //##FilterEnd##
         }
 
@@ -591,6 +582,39 @@
             return newParticle;
         }
 
+
+        /**
+        * @language zh_CN
+        * 释放所有数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose(): void {
+            super.dispose();
+            if (this._generator) {
+                this._generator.dispose();
+                this._generator = null;
+            }
+
+            this._timeNode = null;
+            this._positionNode = null;
+
+            this._geometryShape = null;
+            this._externalGeometry = null;
+            this._particleAnimation = null;
+
+            if (this._particleState) {
+                this._particleState.dispose();
+                this._particleState = null;
+            }
+
+            this._subEmitterNode = null;
+
+            this._userNodes = null;
+            this._data = null;
+
+
+        }
 
 
     }

@@ -181,6 +181,7 @@
                 }
             }
 
+
             var textureURL: string = mesh.geometry.subGeometrys[0].textureDiffuse;
 
             var textureLoad: URLLoader = new URLLoader(url + textureURL);
@@ -211,7 +212,10 @@
                     cloneMesh.x = -80 * 5 + x * 80;
                     this.view1.addChild3D(cloneMesh);
                     this.meshs.push(cloneMesh);
+                    cloneMesh.bound.visible = true;
                 }
+
+                this.cameraCtl.lookAtObject = cloneMesh;
             }
 
         }

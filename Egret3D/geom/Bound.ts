@@ -51,6 +51,37 @@
         */
         public owner: Object3D;
 
+        protected _bound: Wireframe = new Wireframe();
+
+        /**
+        * @language zh_CN
+        * 是否可见
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set visible(value: boolean) {
+            if (value) {
+                if (!this._bound.parent) {
+                    this.owner.addChild(this._bound);
+                }
+            }
+            else {
+                if (this._bound.parent) {
+                    this._bound.parent.removeChild(this._bound);
+                }
+            }
+        }
+
+        /**
+        * @language zh_CN
+        * 是否可见
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get visible(): boolean {
+            return this._bound.parent ? true : false;
+        }
+
         protected matrix: Matrix4_4 = new Matrix4_4();
         protected temp: Vector3D = new Vector3D();
 
@@ -63,6 +94,12 @@
         */
         constructor(owner: Object3D) {
             this.owner = owner;
+            
+            this._bound.material.diffuseColor = 0xffffff;
+            this._bound.name = "Bound";
+            this._bound.geometry.vertexCount = 8;
+            this._bound.geometry.indexCount = 24;
+            this._bound.geometry.setVertexIndices(0, [0, 1, 1, 2, 2, 3, 0, 3, 4, 5, 5, 6, 6, 7, 4, 7, 0, 4, 1, 5, 3, 7, 2, 6]);
         }
 
         /**

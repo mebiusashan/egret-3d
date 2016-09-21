@@ -14,7 +14,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public shaderPhaseTypes: { [passID: number]: ShaderPhaseType[] } = {}; 
+        public shaderPhaseTypes: { [passID: number]: ShaderPhaseType[] } = {};
 
         /**
         * @language zh_CN
@@ -80,7 +80,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public drawMode: number = DrawMode.TRIANGLES; 
+        public drawMode: number = DrawMode.TRIANGLES;
 
         /**
         * @language zh_CN
@@ -141,7 +141,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public lightTexture: ITexture = CheckerboardTexture.texture ;
+        public lightTexture: ITexture = CheckerboardTexture.texture;
 
 
         /**
@@ -273,21 +273,12 @@
 
         /**
         * @language zh_CN
-        * 是否平滑 。
-        * @default true
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public smooth: boolean = true; 
-
-        /**
-        * @language zh_CN
         * 混合模式 。
         * @default BlendMode.NORMAL
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public blendMode: BlendMode = BlendMode.NORMAL; 
+        public blendMode: BlendMode = BlendMode.NORMAL;
 
         /**
         * @language zh_CN
@@ -312,7 +303,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public alphaBlending: boolean = false; 
+        public alphaBlending: boolean = false;
 
         /**
         * @language zh_CN
@@ -343,12 +334,22 @@
 
         /**
         * @language zh_CN
+        * 色相。
+        * @default 8.0
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public tintColor: number = 0x80808080;
+
+        /**
+        * @language zh_CN
         * 材质球的高光强度。
         * @default 8.0
         * @version Egret 3.0
         * @platform Web,Native
         */
         public specularLevel: number = 4.0;
+
 
         /**
         * @language zh_CN
@@ -368,7 +369,7 @@
         */
         public cutAlpha: number = 0;
 
-       
+
 
         /**
         * @language zh_CN
@@ -407,15 +408,15 @@
         */
         //public roughness: number = 1.0; 
 
-        
-       /**
-        * @language zh_CN
-        * 反射颜色的强度值，出射光照的出射率。
-        * @default 1.0
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public albedo: number = 0.95; 
+
+        /**
+         * @language zh_CN
+         * 反射颜色的强度值，出射光照的出射率。
+         * @default 1.0
+         * @version Egret 3.0
+         * @platform Web,Native
+         */
+        public albedo: number = 0.95;
 
         /**
         * @language zh_CN
@@ -424,8 +425,8 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public specularScale: number = 1.0; 
-        public normalScale: number = 1.0; 
+        public specularScale: number = 1.0;
+        public normalScale: number = 1.0;
 
         /**
         * @language zh_CN
@@ -471,7 +472,7 @@
         * @platform Web,Native
         */
         public materialDataNeedChange: boolean = true;
-        
+
 
         /**
         * @language zh_CN
@@ -480,7 +481,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public textureChange: boolean = false; 
+        public textureChange: boolean = false;
 
         /**
         * @language zh_CN
@@ -489,7 +490,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public textureStateChage: boolean = true; 
+        public textureStateChage: boolean = true;
 
         /**
         * @language zh_CN
@@ -521,7 +522,7 @@
         /**
          * @language zh_CN
          */
-        public directLightData: Float32Array; 
+        public directLightData: Float32Array;
         /**
          * @language zh_CN
          */
@@ -570,7 +571,6 @@
             data.castShadow = this.castShadow;
             data.acceptShadow = this.acceptShadow;
             data.depthTest = this.depthTest;
-            data.smooth = this.smooth;
             data.blendMode = this.blendMode;
             data.blend_src = this.blend_src;
             data.blend_dest = this.blend_dest;
@@ -578,10 +578,10 @@
             data.ambientColor = this.ambientColor;
             data.diffuseColor = this.diffuseColor;
             data.specularColor = this.specularColor;
-           
+
             data.cutAlpha = this.cutAlpha;
             data.alpha = this.alpha;
-           
+
             data.specularLevel = this.specularLevel;
             data.gloss = this.gloss;
             data.albedo = this.albedo;

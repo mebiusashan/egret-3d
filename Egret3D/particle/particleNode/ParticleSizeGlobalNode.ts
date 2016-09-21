@@ -53,6 +53,14 @@
             //##FilterEnd##
         }
 
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._floatCompressData = null;
+            this._node = null;
+        }
 
     }
 }  

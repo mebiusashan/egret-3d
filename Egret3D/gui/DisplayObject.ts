@@ -1,15 +1,16 @@
 ﻿module egret3d {
     /**
     * @private
+    * @class egret3d.gui.DisplayObject
+    * @classdesc 2D显示对象基础类
+    * @version Egret 3.0
+    * @platform Web,Native
     */
     export class DisplayObject extends EventDispatcher {
 
         public id: number;
         public name: string;
 
-        public stage: QuadStage;
-        public parent: DisplayObject;
-        public childs: DisplayObject[] = [];
         public aabb: Rectangle = new Rectangle();
         public pickResult: PickResult;
 
@@ -24,9 +25,10 @@
 
         public mouseInState: boolean = false;
 
-
-        public transform: Matrix4_4;
         protected _renderType: number = 0;// 0 是正常，1是文字
+        private _parent: DisplayObject;
+        private _stage: QuadStage;
+        private _childs: DisplayObject[] = [];
 
 
 
@@ -67,9 +69,51 @@
         protected _qut: Quaternion = new Quaternion();
         protected _vec: Vector3D = new Vector3D();
 
-        public init() {
+        constructor() {
+            super();
+        }
+        /**
+        * @language zh_CN
+        * 获得当前舞台引用
+        * @return 所在舞台对象，有可能为null
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get stage(): QuadStage {
+            return this._stage;
         }
 
+        /**
+        * @language zh_CN
+        * 获得子节点列表的引用
+        * @return DisplayObject的列表
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get childs(): DisplayObject[] {
+            return this._childs;
+        }
+
+
+        /**
+        * @language zh_CN
+        * 获得父亲节点，有可能为null
+        * @return DisplayObject 2d显示对象引用
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get parent(): DisplayObject {
+            return this._parent;
+        }
+
+
+        /**
+        * @language zh_CN
+        * 设定渲染类型，目前支持textfield和默认类型2种
+        * @param number渲染类型，1.0为文本类型，其他未默认类型
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set renderType(value: number) {
             if (value != this._renderType) {
                 this._renderTypeInvalid = true;
@@ -77,6 +121,14 @@
             }
         }
 
+
+        /**
+        * @language zh_CN
+        * 设定宽度
+        * @value 宽度的数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set width(value: number) {
             if (value != this._sca.z) {
                 this._sca.z = value;
@@ -86,6 +138,14 @@
 
         public get width(): number { return this._sca.z }
 
+
+        /**
+        * @language zh_CN
+        * 设定高度数据
+        * @param value 高度数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set height(value: number) {
             if (value != this._sca.w) {
                 this._sca.w = value;
@@ -95,6 +155,13 @@
 
         public get height(): number { return this._sca.w }
 
+        /**
+        * @language zh_CN
+        * 设定注册点x位置
+        * @param value 注册点x坐标数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set pivotX(value: number) {
             if (value != this._pivot.x) {
                 this._pivot.x = value;
@@ -104,6 +171,13 @@
 
         public get pivotX(): number { return this._pivot.x }
 
+        /**
+        * @language zh_CN
+        * 设定注册点y位置
+        * @param value 注册点y坐标数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set pivotY(value: number) {
             if (value != this._pivot.y) {
                 this._pivot.y = value;
@@ -113,6 +187,13 @@
 
         public get pivotY(): number { return this._pivot.y }
 
+        /**
+        * @language zh_CN
+        * 设定注册点z位置
+        * @param value 注册点z坐标数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set pivotZ(value: number) {
             if (value != this._pivot.z) {
                 this._pivot.z = value;
@@ -122,6 +203,13 @@
 
         public get mask(): Rectangle { return this._localMaskRect; }
 
+        /**
+        * @language zh_CN
+        * 设定遮罩范围
+        * @param value 遮罩范围，数据将被拷贝进来
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set mask(value: Rectangle) {
             if (value == null && this._localMaskRect == null)
                 return;
@@ -133,15 +221,17 @@
         public get pivotZ(): number { return this._pivot.z }
 
         protected calculateTransform() {
+            if (!this._transformChange)
+                return;
 
-            if (this.parent != null) {
-                var parentOrientation: Quaternion = this.parent.globalOrientation;
+            if (this._parent != null) {
+                var parentOrientation: Quaternion = this._parent.globalOrientation;
                 this._globalOrientation.multiply(parentOrientation, this._orientation);
                 this._globalOrientation.toEulerAngles(this._globalRot);
-                var parentScale: Vector3D = this.parent.globalScale;
+                var parentScale: Vector3D = this._parent.globalScale;
                 this._globalSca.copyFrom(parentScale.multiply(this._sca));
                 parentOrientation.transformVector(parentScale.multiply(this._pos), this._globalPos);
-                this._globalPos.copyFrom(this._globalPos.add(this.parent.globalPosition));
+                this._globalPos.copyFrom(this._globalPos.add(this._parent.globalPosition));
             }
             else {
                 this._globalOrientation.copyFrom(this._orientation);
@@ -152,29 +242,31 @@
             }
 
             this._transformChange = false;
-
             this.calculateMask();
+
             this.onUpdateTransform();
         }
 
 
         private calculateMask(): void {
-            if (this._transformChange) {
-                this.calculateTransform();
-            }
-            if (this.parent) {
+            this.calculateTransform();
+
+            if (!this._maskRectChange)
+                return;
+
+            if (this._parent) {
                 if (this._localMaskRect) {
                     this._globalMaskRect = this._globalMaskRect || new Rectangle();
                     this._globalMaskRect.x = this._localMaskRect.x * this._globalSca.x + this._globalPos.x;
                     this._globalMaskRect.y = this._localMaskRect.y * this._globalSca.y + this._globalPos.y;
                     this._globalMaskRect.width = this._localMaskRect.width * this._globalSca.x;
                     this._globalMaskRect.height = this._localMaskRect.height * this._globalSca.y;
-                    if (this.parent.globalMask)
-                        this._globalMaskRect.innerArea(this.parent.globalMask, this._globalMaskRect);
+                    if (this._parent.globalMask)
+                        this._globalMaskRect.innerArea(this._parent.globalMask, this._globalMaskRect);
                 } else {
-                    if (this.parent.globalMask) {
+                    if (this._parent.globalMask) {
                         this._globalMaskRect = this._globalMaskRect || new Rectangle();
-                        this._globalMaskRect.copyFrom(this.parent.globalMask);
+                        this._globalMaskRect.copyFrom(this._parent.globalMask);
                     } else {
                         this._globalMaskRect = null;
                     }
@@ -267,82 +359,123 @@
 
 
 
-
-        public addChild(display: DisplayObject): DisplayObject {
-            return this.doAddChildAt(display, Number.MAX_VALUE);
+        /**
+        * @language zh_CN
+        * 添加孩子节点
+        * @param object 被添加的孩子节点
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public addChild(object: DisplayObject): DisplayObject {
+            return this.doAddChildAt(object, MathUtil.MAX_VALUE);
         }
 
-        public addChildAt(display: DisplayObject, index: number): DisplayObject {
-            return this.doAddChildAt(display, index);
+        /**
+        * @language zh_CN
+        * 添加孩子节点至某个index位置
+        * @param object 被添加的孩子节点
+        * @param index 指定的层级关系index
+        * @return DisplayObject 如果添加成功，返回当前object对象
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public addChildAt(object: DisplayObject, index: number): DisplayObject {
+            return this.doAddChildAt(object, index);
         }
 
-        private doAddChildAt(display: DisplayObject, index: number): DisplayObject {
-            if (display == null)
+        private doAddChildAt(object: DisplayObject, index: number): DisplayObject {
+            if (object == null)
                 return null;
-            if (display.parent) {
+            if (object.parent) {
                 throw Error("This object is already the other child object.");
             }
-            if (this.childs.indexOf(display) >= 0) {
+            if (this._childs.indexOf(object) >= 0) {
                 throw Error("The same child object has been added.");
             }
             if (index < 0) {
                 throw Error("Child index can not be small than 0 !");
             }
 
-            if (index >= this.childs.length) {
-                this.childs.push(display);
+            if (index >= this._childs.length) {
+                this._childs.push(object);
             } else {
-                this.childs.splice(index, 0, display);
+                this._childs.splice(index, 0, object);
             }
 
-            display.parent = this;
-            this.stage && this.stage.setRenderListInvalid();
-            display.activeFromStage(this.stage);
-            return display;
+            object._parent = this;
+            this._stage && this._stage.setRenderListInvalid();
+            object.activeStage(this._stage);
+            return object;
         }
 
-
-        public removeChild(display: DisplayObject): DisplayObject {
-            return this.doRemoveChild(display);
+        /**
+        * @language zh_CN
+        * 移除某个孩子节点
+        * @param object 被移除的孩子节点
+        * @return DisplayObject 如果移除成功，返回当前object对象
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public removeChild(object: DisplayObject): DisplayObject {
+            return this.doRemoveChild(object);
         }
 
+        /**
+        * @language zh_CN
+        * 移除指定层级的孩子节点
+        * @param index 指定的层级
+        * @return DisplayObject 如果移除成功，返回当前object对象
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public removeChildAt(index: number): DisplayObject {
-            return this.doRemoveChild(this.childs[index]);
+            return this.doRemoveChild(this._childs[index]);
         }
 
 
-        private doRemoveChild(display: DisplayObject): DisplayObject {
-            if (display == null)
+        private doRemoveChild(object: DisplayObject): DisplayObject {
+            if (object == null)
                 return null;
-            var index: number = this.childs.indexOf(display);
+            var index: number = this._childs.indexOf(object);
             if (index == -1)
                 throw Error("The display isn't a child of this container!");
-            this.childs.splice(index, 1);
-            display.parent = null;
-            this.stage && this.stage.setRenderListInvalid();
-            this.activeFromStage(null);
-            return display;
+            this._childs.splice(index, 1);
+            object._parent = null;
+            this._stage && this._stage.setRenderListInvalid();
+            object.activeStage(null);
+            return object;
         }
 
-        public swapChildIndex(display: DisplayObject, index: number) {
-
-        }
-
-        public activeFromStage(stage: QuadStage): void {
-            this.updateStage(stage);
-            this.updateMaskChange(true);
-            this.updateTransformChange(true);
-            this.updateColorChange(true);
-            this.updateVisibleChange(true);
-        }
-
-        /*
-        * @private
+        /**
+        * @language zh_CN
+        * 交换孩子节点至指定的层级（未实现）
+        * @param object 外部传入的将要交换的节点
+        * @param index 指定的层级
+        * @version Egret 3.0
+        * @platform Web,Native
         */
-        private updateStage(stage: QuadStage): void {
-            this.stage = stage;
-            for (var i: number = 0, count: number = this.childs.length; i < count; i++) {
-                this.childs[i].updateStage(stage);
+        public swapChildIndex(object: DisplayObject, index: number) {
+
+        }
+
+        /**
+        * @language zh_CN
+        * 变更舞台信息，从舞台移除或者添加到舞台后触发
+        * @param stage 最新的舞台数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public activeStage(stage: QuadStage): void {
+            if (this._stage != stage) {
+                this._stage = stage;
+                this.updateMaskChange(true);
+                this.updateTransformChange(true);
+                this.updateColorChange(true);
+                this.updateVisibleChange(true);
+
+                for (var i: number = 0, count: number = this._childs.length; i < count; i++) {
+                    this._childs[i].activeStage(stage);
+                }
             }
         }
 
@@ -354,19 +487,62 @@
             return null;
         }
 
-        public getChildByName(index: number): DisplayObject {
+        public getChildByName(name: string): DisplayObject {
             return null;
         }
 
-        public update(time: number, delay: number, zIndex: number, geometry: Geometry, view3D: View3D, globalIndex: number) {
+        /**
+        * @language zh_CN
+        * 在渲染之前逻辑更新，每帧执行一次
+        * @param time 当前运行的总时间
+        * @param delay 振间隔时间
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public update(time: number, delay: number) {
+            this.globalPosition;
+            this.globalRotation;
+            this.globalScale;
+
+            this.globalColor;
+            this.globalVisible;
+            this.globalMask;
+
+            this.updateMouseAABB();
         }
 
+        protected updateMouseAABB(): void {
+            if (this.mouseEnable) {
+
+                var pos: Vector3D = this.globalPosition;
+                var sca: Vector3D = this.globalScale;
+
+                if (this._maskRectInvalid || this._transformInvalid) {
+                    //更新mouse aabb
+                    this.aabb.x = pos.x;
+                    this.aabb.y = pos.y;
+                    //inner mask
+                    this.aabb.width = this.width * sca.x;
+                    this.aabb.height = this.height * sca.y;
+                    if (this.globalMask) {
+                        this.aabb.innerArea(this.globalMask, this.aabb);
+                    }
+                } else {
+                    //不需要更新
+                }
+
+            } else {
+                this.aabb.setTo(0, 0, 0, 0);
+            }
+        }
 
         protected updateMaskChange(change: boolean) {
+            if (this._maskRectChange == change)
+                return;
             this._maskRectChange = change;
             this._maskRectInvalid = change;
-            for (var i: number = 0; i < this.childs.length; ++i) {
-                this.childs[i].updateMaskChange(change);
+            for (var i: number = 0; i < this._childs.length; ++i) {
+                this._childs[i].updateMaskChange(change);
             }
         }
 
@@ -378,28 +554,32 @@
         * @platform Web,Native
         */
         protected updateTransformChange(change: boolean) {
+            if (this._transformChange == change)
+                return;
             this._transformChange = change;
             this._transformInvalid = change;
-            for (var i: number = 0; i < this.childs.length; ++i) {
-                this.childs[i].updateTransformChange(change);
+            for (var i: number = 0; i < this._childs.length; ++i) {
+                this._childs[i].updateTransformChange(change);
             }
 
-            this.updateMaskChange(true);
+            this.updateMaskChange(change);
         }
 
 
         protected updateVisibleChange(change: boolean): void {
+            if (this._visibleChange == change)
+                return;
             this._visibleChange = change;
             this._visibleInvalid = change;
-            for (var i: number = 0; i < this.childs.length; ++i) {
-                this.childs[i].updateVisibleChange(change);
+            for (var i: number = 0; i < this._childs.length; ++i) {
+                this._childs[i].updateVisibleChange(change);
             }
         }
 
         public get globalVisible(): boolean {
             if (this._visibleChange) {
-                if (this.parent) {
-                    this._globalVisible = this._localVisible && this.parent.globalVisible;
+                if (this._parent) {
+                    this._globalVisible = this._localVisible && this._parent.globalVisible;
                 } else {
                     this._globalVisible = this._localVisible;
                 }
@@ -408,6 +588,13 @@
             return this._globalVisible;
         }
 
+        /**
+        * @language zh_CN
+        * 设置可见信息
+        * @param value 是否可见
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public set visible(value: boolean) {
             if (this._localVisible != value) {
                 this._localVisible = value;
@@ -427,10 +614,12 @@
         * @platform Web,Native
         */
         protected updateColorChange(change: boolean) {
-            this._colorInvalid = change;
+            if (this._colorChange == change)
+                return;
             this._colorChange = change;
-            for (var i: number = 0; i < this.childs.length; ++i) {
-                this.childs[i].updateColorChange(change);
+            this._colorInvalid = change;
+            for (var i: number = 0; i < this._childs.length; ++i) {
+                this._childs[i].updateColorChange(change);
             }
         }
 
@@ -528,11 +717,11 @@
         * @platform Web,Native
         */
         public set globalPosition(pos: Vector3D) {
-            if (this.parent) {
-                this.parent.globalOrientation.inverse(this._qut);
-                pos.subtract(this.parent.globalPosition, this._vec);
+            if (this._parent) {
+                this._parent.globalOrientation.inverse(this._qut);
+                pos.subtract(this._parent.globalPosition, this._vec);
                 this._qut.transformVector(this._vec, this._vec);
-                this._vec.divided(this.parent.globalScale, this._vec);
+                this._vec.divided(this._parent.globalScale, this._vec);
 
                 this.position = this._vec;
             }
@@ -662,8 +851,8 @@
         * @platform Web,Native
         */
         public set globalScale(sca: Vector3D) {
-            if (this.parent) {
-                sca.divided(this.parent.globalScale, this._vec);
+            if (this._parent) {
+                sca.divided(this._parent.globalScale, this._vec);
                 this.scale = this._vec;
             }
             else {
@@ -760,8 +949,8 @@
         * @platform Web,Native
         */
         public set globalOrientation(ori: Quaternion) {
-            if (this.parent) {
-                this.parent.globalOrientation.inverse(this._qut);
+            if (this._parent) {
+                this._parent.globalOrientation.inverse(this._qut);
                 this._qut.multiply(this._qut, ori);
                 this.orientation = this._qut;
             }
@@ -1214,8 +1403,8 @@
                 this._color.alpha = this._alphaNumber;
                 this._color.setColorRGB(this._rgbNumber);
 
-                if (this.parent) {
-                    this._globalColor.multiply(this.parent.globalColor);
+                if (this._parent) {
+                    this._globalColor.multiply(this._parent.globalColor);
                 } else {
                     this._globalColor.copyFrom(this._color);
                 }

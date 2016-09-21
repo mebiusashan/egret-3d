@@ -89,5 +89,15 @@
             //##FilterEnd##
         }
 
+
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._animationState = null;
+            this._limitValue = null;
+        }
+
     }
 } 

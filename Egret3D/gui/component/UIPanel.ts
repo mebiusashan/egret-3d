@@ -98,8 +98,8 @@
             return this._container.getChildByIndex(index);
         }
 
-        public getChildByName(index: number): DisplayObject {
-            return this._container.getChildByName(index);
+        public getChildByName(name: string): DisplayObject {
+            return this._container.getChildByName(name);
         }
     }
 }

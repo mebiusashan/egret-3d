@@ -56,6 +56,8 @@
                 this.texture2D.colorFormat = Context3DProxy.gl.RGBA;
                 this.texture2D.mimapData = new Array<MipmapData>();
                 this.texture2D.mimapData.push(new MipmapData(this._pixelArray, this.width, this.height));
+                this.texture2D.width = this.width; 
+                this.texture2D.height = this.height; 
                 this.useMipmap = false;
                 this.texture2D.dataFormat = Context3DProxy.gl.UNSIGNED_BYTE ;
                 context3D.upLoadTextureData(0, this );

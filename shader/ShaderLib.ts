@@ -911,7 +911,7 @@ module egret3d {
 			"); \n" +
 			"} \n" +
 			"void main(void){ \n" +
-			"float devicePixelRatio = uniform_materialSource[19]; \n" +
+			"float devicePixelRatio = 1.0; \n" +
 			"mat4 mvMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); \n" +
 			"mat4 po = buildMat4Quat(attribute_rotate.xyzw); \n" +
 			"mat4 oth = uniform_orthProectMatrix; \n" +
@@ -1448,7 +1448,18 @@ module egret3d {
 			"return vec3(0.0); \n" +
 			"} \n" +
 			"if(distanceCurrent > distanceLimit){ \n" +
-			"distanceXYZ *= distanceLimit / distanceCurrent; \n" +
+			"float nowFrame = currentTime / 0.017; \n" +
+			"float dampen = 1.0 - particleStateData.velocityLimitDampen; \n" +
+			"float startDistance = (distanceCurrent - distanceLimit) / nowFrame; \n" +
+			"float distanceResult = 0.0; \n" +
+			"float tempDistance = startDistance; \n" +
+			"for(int i = 1; i < 600; i++){ \n" +
+			"distanceResult += tempDistance; \n" +
+			"tempDistance *= dampen; \n" +
+			"if(float(i) > nowFrame) \n" +
+			"break; \n" +
+			"} \n" +
+			"distanceXYZ *= (distanceResult + distanceLimit) / distanceCurrent; \n" +
 			"} \n" +
 			"} \n" +
 			"return distanceXYZ; \n" +
@@ -1746,21 +1757,18 @@ module egret3d {
 			"}; \n" +
 			"float particle( ParticleData curParticle ){ \n" +
 			"float time = particleStateData.time - particleStateData.delay; \n" +
-			"if(time <= curParticle.bornTime){ \n" +
+			"currentTime = time - curParticle.bornTime; \n" +
+			"if(currentTime <= 0.0){ \n" +
 			"return currentTime = 0.0; \n" +
 			"} \n" +
 			"if(particleStateData.loop < TrueOrFalse){ \n" +
-			"float emitterDuring = particleStateData.duration - particleStateData.delay; \n" +
-			"if(curParticle.bornTime >= emitterDuring) \n" +
-			"{ \n" +
+			"if(curParticle.bornTime >= particleStateData.duration){ \n" +
 			"return currentTime = 0.0; \n" +
 			"} \n" +
-			"if(time >= curParticle.life + curParticle.bornTime) \n" +
-			"{ \n" +
+			"if(time >= curParticle.life + curParticle.bornTime){ \n" +
 			"return currentTime = 0.0; \n" +
 			"} \n" +
 			"} \n" +
-			"currentTime = time - curParticle.bornTime; \n" +
 			"currentTime = mod(currentTime, particleStateData.loopTime); \n" +
 			"if(currentTime >= curParticle.life){ \n" +
 			"return currentTime = 0.0; \n" +
@@ -2028,7 +2036,7 @@ module egret3d {
 			"attribute vec4 attribute_color; \n" +
 			"attribute vec3 attribute_offsetPosition; \n" +
 			"uniform mat4 uniform_cameraMatrix; \n" +
-			"uniform float uniform_particleState[23]; \n" +
+			"uniform float uniform_particleState[24]; \n" +
 			"uniform mat4 uniform_ViewMatrix; \n" +
 			"const float PI = 3.1415926 ; \n" +
 			"float currentTime = 0.0; \n" +
@@ -2070,6 +2078,7 @@ module egret3d {
 			"float gravity; \n" +
 			"float velocityOverWorldSpace; \n" +
 			"float velocityForceWorldSpace; \n" +
+			"float velocityLimitDampen; \n" +
 			"float cameraScale; \n" +
 			"float speedScale; \n" +
 			"float lengthScale; \n" +
@@ -2142,12 +2151,82 @@ module egret3d {
 			"particleStateData.gravity						= uniform_particleState[16]; \n" +
 			"particleStateData.velocityOverWorldSpace		= uniform_particleState[17]; \n" +
 			"particleStateData.velocityForceWorldSpace		= uniform_particleState[18]; \n" +
-			"particleStateData.cameraScale					= uniform_particleState[19]; \n" +
-			"particleStateData.speedScale					= uniform_particleState[20]; \n" +
-			"particleStateData.lengthScale					= uniform_particleState[21]; \n" +
-			"particleStateData.renderMode					= uniform_particleState[22]; \n" +
+			"particleStateData.velocityLimitDampen			= uniform_particleState[19]; \n" +
+			"particleStateData.cameraScale					= uniform_particleState[20]; \n" +
+			"particleStateData.speedScale					= uniform_particleState[21]; \n" +
+			"particleStateData.lengthScale					= uniform_particleState[22]; \n" +
+			"particleStateData.renderMode					= uniform_particleState[23]; \n" +
 			"mat4 modeViewMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); \n" +
 			"outPosition = localPosition = vec4(e_position, 1.0); \n" +
+			"} \n",
+
+			"pickPass_fs":
+			"void main() { \n" +
+			"gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n" +
+			"} \n",
+
+			"pickPass_skeleton_vs":
+			"attribute vec3 attribute_position; \n" +
+			"attribute vec3 attribute_normal; \n" +
+			"attribute vec4 attribute_color; \n" +
+			"attribute vec2 attribute_uv0; \n" +
+			"attribute vec4 attribute_boneIndex; \n" +
+			"attribute vec4 attribute_boneWeight; \n" +
+			"uniform mat4 uniform_ModelMatrix ; \n" +
+			"uniform mat4 uniform_ViewMatrix ; \n" +
+			"uniform mat4 uniform_ProjectionMatrix ; \n" +
+			"vec3 e_position = vec3(0.0, 0.0, 0.0); \n" +
+			"vec4 e_boneIndex = vec4(0.0, 0.0, 0.0, 0.0); \n" +
+			"vec4 e_boneWeight = vec4(0.0, 0.0, 0.0, 0.0); \n" +
+			"vec4 outPosition = vec4(0.0, 0.0, 0.0, 0.0); \n" +
+			"const int bonesNumber = 0; \n" +
+			"uniform vec4 uniform_PoseMatrix[bonesNumber]; \n" +
+			"mat4 buildMat4(int index){ \n" +
+			"vec4 quat = uniform_PoseMatrix[index * 2 + 0]; \n" +
+			"vec4 translation = uniform_PoseMatrix[index * 2 + 1]; \n" +
+			"float xy2 = 2.0 * quat.x * quat.y; \n" +
+			"float xz2 = 2.0 * quat.x * quat.z; \n" +
+			"float xw2 = 2.0 * quat.x * quat.w; \n" +
+			"float yz2 = 2.0 * quat.y * quat.z; \n" +
+			"float yw2 = 2.0 * quat.y * quat.w; \n" +
+			"float zw2 = 2.0 * quat.z * quat.w; \n" +
+			"float xx = quat.x * quat.x; \n" +
+			"float yy = quat.y * quat.y; \n" +
+			"float zz = quat.z * quat.z; \n" +
+			"float ww = quat.w * quat.w; \n" +
+			"mat4 matrix = mat4( \n" +
+			"xx - yy - zz + ww, xy2 + zw2, xz2 - yw2, 0, \n" +
+			"xy2 - zw2, -xx + yy - zz + ww, yz2 + xw2, 0, \n" +
+			"xz2 + yw2, yz2 - xw2, -xx - yy + zz + ww, 0, \n" +
+			"translation.x, translation.y, translation.z, 1 \n" +
+			"); \n" +
+			"return matrix; \n" +
+			"} \n" +
+			"void main(void){ \n" +
+			"e_boneIndex = attribute_boneIndex; \n" +
+			"e_boneWeight = attribute_boneWeight; \n" +
+			"vec4 temp_position = vec4(attribute_position, 1.0) ; \n" +
+			"mat4 m0 = buildMat4(int(e_boneIndex.x)); \n" +
+			"mat4 m1 = buildMat4(int(e_boneIndex.y)); \n" +
+			"mat4 m2 = buildMat4(int(e_boneIndex.z)); \n" +
+			"mat4 m3 = buildMat4(int(e_boneIndex.w)); \n" +
+			"outPosition = m0 * temp_position * e_boneWeight.x; \n" +
+			"outPosition += m1 * temp_position * e_boneWeight.y; \n" +
+			"outPosition += m2 * temp_position * e_boneWeight.z; \n" +
+			"outPosition += m3 * temp_position * e_boneWeight.w; \n" +
+			"e_position = outPosition.xyz; \n" +
+			"gl_Position = uniform_ProjectionMatrix * uniform_ViewMatrix * uniform_ModelMatrix * vec4(e_position, 1.0); \n" +
+			"} \n",
+
+			"pickPass_vs":
+			"attribute vec3 attribute_position; \n" +
+			"attribute vec4 attribute_color; \n" +
+			"attribute vec2 attribute_uv0; \n" +
+			"uniform mat4 uniform_ModelMatrix ; \n" +
+			"uniform mat4 uniform_ViewMatrix ; \n" +
+			"uniform mat4 uniform_ProjectionMatrix ; \n" +
+			"void main(void){ \n" +
+			"gl_Position = uniform_ProjectionMatrix * uniform_ViewMatrix * uniform_ModelMatrix * vec4(attribute_position, 1.0); \n" +
 			"} \n",
 
 			"pointLight_fragment":
@@ -2210,24 +2289,14 @@ module egret3d {
 			"void main() { \n" +
 			"vec3 shadowColor = vec3(1.0,1.0,1.0); \n" +
 			"float offset = uniform_ShadowColor.w; \n" +
-			"vec3 shadowDepth = varying_ShadowCoord.xyz / varying_ShadowCoord.w * 0.5 + 0.5; \n" +
-			"vec2 sample = clamp(shadowDepth.xy,0.0,1.0); \n" +
+			"vec2 sample = varying_ShadowCoord.xy / varying_ShadowCoord.w * 0.5 + 0.5; \n" +
+			"sample = clamp(sample,0.0,1.0); \n" +
 			"vec4 sampleDepth = texture2D(shadowMapTexture, sample).xyzw; \n" +
 			"float depth = varying_ShadowCoord.z; \n" +
-			"if( shadowDepth.y > 1.0){ \n" +
-			"sampleDepth.z = depth ; \n" +
-			"} \n" +
-			"if( shadowDepth.z > 1.0 - offset){ \n" +
-			"sampleDepth.z = depth ; \n" +
-			"} \n" +
-			"if( shadowDepth.x < 0.0 ){ \n" +
-			"sampleDepth.z = depth ; \n" +
-			"} \n" +
-			"if( shadowDepth.x >1.0 ){ \n" +
-			"sampleDepth.z = depth ; \n" +
-			"} \n" +
+			"if (sampleDepth.z != 0.0) { \n" +
 			"if( sampleDepth.z < depth - offset) { \n" +
 			"shadowColor = uniform_ShadowColor.xyz; \n" +
+			"} \n" +
 			"} \n" +
 			"diffuseColor.xyz = diffuseColor.xyz * shadowColor; \n" +
 			"} \n",
@@ -2614,9 +2683,9 @@ module egret3d {
 			"wa.wave_xyz_speed_0 = vec3(waveVSData[2]) ; \n" +
 			"wa.wave_xyz_speed_1 = vec3(waveVSData[3]) ; \n" +
 			"float tempTime = mod( time , 1000000.0 ); \n" +
-			"vec3 newPose1 = calcWave2(tempTime,e_position,60.0, 500.0, 20.0,vec3(1.0,0.0,1.0)); \n" +
-			"newPose1 += calcWave2(tempTime,e_position,130.0, 50.0, 20.0,vec3(1.0,0.0,-0.5)); \n" +
-			"newPose1 += calcWave2(tempTime,e_position,90.0, 80.0, 20.0,vec3(1.0,0.0,-1.5)); \n" +
+			"vec3 newPose1 = calcWave2(tempTime,e_position,40.0, 20.0, 10.0,vec3(1.0,0.0,1.0)); \n" +
+			"newPose1 += calcWave2(tempTime,e_position,20.0, 10.0, 10.0,vec3(1.0,0.0,-0.5)); \n" +
+			"newPose1 += calcWave2(tempTime,e_position,1.0, 1.0, 10.0,vec3(1.0,0.0,-1.5)); \n" +
 			"e_position = newPose1 ; \n" +
 			"mat4 mvMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); \n" +
 			"varying_mvPose = mvMatrix * vec4( e_position , 1.0 )  ; \n" +

@@ -96,8 +96,7 @@
             var colorConst2: Object = node.colorConst2;
             var gradients1: Object = node.colorGradients1;
             var gradients2: Object = node.colorGradients2;
-            var tintColor: Object = node.tintColor;
-            this.parseColorProperty(property, colorConst1, colorConst2, gradients1, gradients2, tintColor);
+            this.parseColorProperty(property, colorConst1, colorConst2, gradients1, gradients2);
             //gravity
             property.gravity = Number(node.gravity);
             //transform
@@ -130,7 +129,7 @@
          * @private
          * 解析颜色属性
          */
-        private parseColorProperty(property: ParticleDataProperty, c1: Object, c2: Object, cg1: Object, cg2: Object, tintColor: Object): void {
+        private parseColorProperty(property: ParticleDataProperty, c1: Object, c2: Object, cg1: Object, cg2: Object): void {
             if (c1) {
                 property.colorConst1 = Color.createColor(Number(c1));
             }
@@ -142,9 +141,6 @@
             }
             if (cg2) {
                 property.colorGradients2 = this.parseGradientsColor(cg2, property.colorGradients2);
-            }
-            if (tintColor) {
-                property.tintColor = Color.createColor(Number(tintColor));
             }
 
         }
@@ -335,6 +331,7 @@
                 velocityLimit.type = ParticleValueType[velocityLimitNode.type + ""];
                 velocityLimit.min = Number(velocityLimitNode.min);
                 velocityLimit.max = Number(velocityLimitNode.max);
+                velocityLimit.dampen = Number(velocityLimitNode.dampen);
 
                 velocityLimit.bezier1 = this.parseBezierData(velocityLimitNode.bezier1);
                 velocityLimit.bezier2 = this.parseBezierData(velocityLimitNode.bezier2);

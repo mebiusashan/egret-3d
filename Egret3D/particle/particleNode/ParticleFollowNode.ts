@@ -118,15 +118,14 @@
             //保留原来的geometryDirty为true的属性
             this.geometryDirty = this.geometryDirty;
             //非循环的粒子生命周期达上限
-            var loop: boolean = this._animationState.emitter.data.life.loop;
-            var maxLife: number = this._animationState.loopTime + this._animationState.emitter.data.life.duration;
+            var particleData: ParticleData = this._animationState.emitter.data;
+            var loop: boolean = particleData.life.loop;
+            var maxLife: number = this._animationState.loopTime + particleData.life.duration + particleData.life.delay;
             if (!loop && (animTime * 0.001 >= maxLife)) {
                 return;
             }
 
             //animTime += delay;
-
-
 
             var index: number = 0;
             var vertices: number = geometry.vertexCount / this._count;
@@ -134,7 +133,7 @@
             var changed: boolean = false;
 
             var timeOffsetIndex: number = this._animationState.emitter.timeNode.offsetIndex;
-            var particleTime: number = animTime * 0.001 - this._animationState.emitter.data.life.delay;
+            var particleTime: number = animTime * 0.001 - particleData.life.delay;
             var verticesData: any = geometry.sharedVertexBuffer ? geometry.sharedVertexBuffer.arrayBuffer : geometry.vertexArray;
             //没有跟随对象，使用自己
             var followTarget: Object3D = this._animationState.followTarget || this._animationState.emitter;
@@ -214,6 +213,18 @@
             }
             //##FilterEnd##
         }
+
+
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._animationState = null;
+            this._lifeCircles = null;
+        }
+
+
     }
 
 } 

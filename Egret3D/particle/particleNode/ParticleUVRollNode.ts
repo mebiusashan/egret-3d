@@ -65,6 +65,15 @@
         }
 
 
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._animationState = null;
+            this._methodData = null;
+            this._uvRollData = null;
+        }
 
 
     }

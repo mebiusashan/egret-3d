@@ -21,8 +21,6 @@
             particleUVRoll: "particleUVRoll",
         };
 
-        public id: string = "";
-
         /**
          * @language zh_CN
          * 特效的类型

@@ -15,7 +15,7 @@
          * @version Egret 3.0
          * @platform Web,Native
          */
-        public id: string = "";
+        public id: number = 0;
         /**
          * @language zh_CN
          * diffuse贴图的索引（name）
@@ -71,6 +71,14 @@
          * @platform Web,Native
          */
         public specularColor: number = 0;
+
+        /**
+         * @language zh_CN
+         * tintColor的颜色，0xaarrggbb格式
+         * @version Egret 3.0
+         * @platform Web,Native
+         */
+        public tintColor: number = 0x80808080;
 
         /**
          * @language zh_CN

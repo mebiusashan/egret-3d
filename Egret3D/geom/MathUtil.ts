@@ -25,6 +25,9 @@
         */
         public static DEGREES_TO_RADIANS: number = Math.PI / 180;
 
+        public static MAX_VALUE: number = 0x7fffffff;
+        public static MIN_VALUE: number = -0x7fffffff;
+
         /**
         * @private
         * 1角度为多少弧度

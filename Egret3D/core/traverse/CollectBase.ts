@@ -55,6 +55,7 @@
         * @param camera 当前摄像机
         */
         public update(camera: Camera3D) {
+            camera.modelMatrix;
             this.renderList = this._nodes;
             this.renderList.length = 0;
         }

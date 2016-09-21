@@ -108,22 +108,6 @@
             return value;
         }
 
-
-        public scaleBy(value: number): void {
-            if (this.posPoints.length == 0)
-                return;
-            if (this.posPoints) {
-                for (var i: number = 0, count: number = this.posPoints.length; i < count; i++) {
-                    this.posPoints[i].y *= value;
-                }
-            }
-            if (this.ctrlPoints) {
-                for (var i: number = 0, count: number = this.ctrlPoints.length; i < count; i++) {
-                    this.ctrlPoints[i].y *= value;
-                }
-            }
-        }
-
         public trySampler(): Float32Array {
             for (var i: number = 0, count: number = this.posPoints.length; i < count; i++) {
                 if (this.posPoints[i].y != 0 || this.ctrlPoints[i].y != 0) {
@@ -214,8 +198,8 @@
             ints.length = floats.length;
 
             var floatValue: number;
-            var max: number = - Number.MAX_VALUE;
-            var min: number = Number.MAX_VALUE;
+            var min: number = MathUtil.MAX_VALUE;
+            var max: number = - min;
 
             for (i = 0, count = floats.length; i < count; i++) {
                 floatValue = ints[i] = floats[i];

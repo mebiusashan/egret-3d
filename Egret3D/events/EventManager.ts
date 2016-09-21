@@ -85,7 +85,7 @@
                     continue;
                 }
                 var render: IRender = null;
-                var dis: number = Number.MAX_VALUE;
+                var dis: number = MathUtil.MAX_VALUE;
                 var temp_dis: number = 0;
                 var object3d: Mesh = null;
                 var mouseChilder: boolean = false;
@@ -97,8 +97,8 @@
                         render = ret[j];
                     }
 
-                    if (object3d.mouseChilder) {
-                        mouseChilder = object3d.mouseChilder;
+                    if (object3d.mouseChildren) {
+                        mouseChilder = object3d.mouseChildren;
                     }
                 }
 
@@ -110,7 +110,7 @@
 
                         if (mouseChilder) {
                             ret = Picker.pickObject3DList(canvas, view, ret, true, this._retRenderList);
-                            dis = Number.MAX_VALUE;
+                            dis = MathUtil.MAX_VALUE;
                             len = ret.length;
                             if (len <= 0) {
                                 if (render) {

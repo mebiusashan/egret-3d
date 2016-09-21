@@ -455,13 +455,14 @@
         /**
         * @private
         */
-        public draw(contextProxy: Context3DProxy) {
+        public draw(contextProxy: Context3DProxy,camera:Camera3D = null ) {
             if (!this.visible) {
                 return;
             }
             if (!this._passUsage.program3D) {
                 this.upload(contextProxy); 
             }
+
             contextProxy.setProgram(this._passUsage.program3D);
             contextProxy.bindVertexBuffer(this._vertexBuffer3D);
             contextProxy.bindIndexBuffer(this._indexBuffer3D);
@@ -498,6 +499,14 @@
 
             if (this._passUsage.uniform_ViewProjectionMatrix) {
                 contextProxy.uniformMatrix4fv(this._passUsage.uniform_ViewProjectionMatrix.uniformIndex, false, this.transformMatrix.rawData);
+            }
+
+            if (this._passUsage.uniform_ViewMatrix && camera) {
+                contextProxy.uniformMatrix4fv(this._passUsage.uniform_ViewMatrix.uniformIndex, false, camera.viewMatrix.rawData);
+            }
+
+            if (this._passUsage.uniform_ProjectionMatrix && camera) {
+                contextProxy.uniformMatrix4fv(this._passUsage.uniform_ProjectionMatrix.uniformIndex, false, camera.projectMatrix.rawData);
             }
 
             if (this._passUsage["uv_scale"] && this._passUsage["uv_scale"] != -1) {

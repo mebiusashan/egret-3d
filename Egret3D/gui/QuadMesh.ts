@@ -24,7 +24,7 @@
             QuadData.buildGeometry(this.geometry, start , QuadStage.moreQuad);
 
             this.guiMethod = new GUIMethod();
-
+            this.enableCulling = false;
             this.uiMaterial = this.material as TextureMaterial;
             this.uiMaterial.blendMode = BlendMode.ALPHA;
             this.uiMaterial.repeat = true ;

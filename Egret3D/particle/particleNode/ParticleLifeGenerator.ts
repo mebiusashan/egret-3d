@@ -9,8 +9,8 @@
         private _burstsClone: Point[];
 
         public planes: Point[];//(x, y) => (bornTime, lifeTime)
-        public loopTime: number;
-        public circleTime: number;
+        public loopTime: number;//没有加过delay
+        public circleTime: number;//加上了deley的数据
 
         //支持的非循环粒子，最大上限2000
         //循环的粒子，则上限由粒子中的particleCount设定
@@ -107,7 +107,7 @@
             if (rate == 0) {
                 //不发射粒子
                 while (this._burstsClone && this._burstsClone.length > 0 && this.planes.length < this._inputCount) {
-                    this.burstPlanes(0, Number.MAX_VALUE);
+                    this.burstPlanes(0, MathUtil.MAX_VALUE);
                 }
                 return;
             }
@@ -117,7 +117,7 @@
             var now: number = createInterval;
             var next: number = now + createInterval;
 
-            while (now < this._data.life.duration && this.planes.length < this._inputCount) {
+            while (now <= this._data.life.duration && this.planes.length < this._inputCount) {
                 this.tryCreatePlane(now);
 
                 next = now + createInterval;
@@ -212,7 +212,19 @@
         }
 
 
+        /**
+        * 销毁
+        * @private
+        */
+        public dispose(): void {
 
+            this._data = null;
+            this._node = null;
+            this._burstsClone = null;
+
+            this.planes = null;
+
+        }
 
 
 

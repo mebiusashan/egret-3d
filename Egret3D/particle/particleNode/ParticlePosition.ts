@@ -193,5 +193,17 @@
             //##FilterEnd##
         }
 
+
+
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._positions = null;
+            this._animationState = null;
+            this._node = null;
+        }
+
     }
 } 

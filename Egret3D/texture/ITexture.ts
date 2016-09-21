@@ -241,5 +241,21 @@
 
 
         }
+
+        /**
+        * @language zh_CN
+        * 释放接口
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose(): void {
+            if (this.texture2D) {
+                this.texture2D.dispose();
+            }
+
+            if (this.texture3D) {
+                this.texture3D.dispose();
+            }
+        }
     }
 }

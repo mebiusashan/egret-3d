@@ -16,7 +16,12 @@
     }
 
     /**
-    * @private
+    * @class egret3d.Quad
+    * @classdesc
+    * gui中基础的2d显示单元</p>
+    * 在这个class中，主要完成更新顶点数据。</p>
+    * @version Egret 3.0
+    * @platform Web,Native
     */
     export class Quad extends DisplayObject {
         protected _texture: Texture;
@@ -39,40 +44,34 @@
         //    return this._texture;
         //}
 
-        public update(time: number, delay: number, zIndex: number, geometry: Geometry, view3D: View3D, globalIndex: number) {
 
-            if (!geometry.sharedVertexBuffer)
+        /**
+        * @language zh_CN
+        * 在渲染之前逻辑更新顶点数据，只有发生数据变化才需要更新顶点
+        * @param zIndex 在geometry中下标
+        * @param geometry 当前quad所在geometry
+        * @param globalIndex 全局下标
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public updateVertices(zIndex: number, geometry: Geometry, globalIndex: number) {
+
+            if (!geometry.sharedVertexBuffer || !geometry.sharedVertexBuffer.arrayBuffer)
                 return;
-            //parent px&py&pz need add offest , rx&ry&rz need add , sx&sy&sz need add . on cpu ?
 
-            
-           
-
-            var index: number = 0;
             var pos: Vector3D = this.globalPosition;
             var rot: Vector3D = this.globalRotation;
             var sca: Vector3D = this.globalScale;
-            this.globalColor;
-            this.globalVisible;
-
-            var verticesData: Float32Array = geometry.sharedVertexBuffer.arrayBuffer;
-
-            this._renderTypeInvalid = this._renderTypeInvalid || this._transformInvalid;
 
             if (this._globalIndex != globalIndex) {
                 this._globalIndex = globalIndex;
-                this._colorInvalid = this._transformInvalid = this._renderTypeInvalid = this._textureInvalid = this._visibleChange = this._maskRectInvalid = true;
+                this._colorInvalid = this._transformInvalid = this._renderTypeInvalid = this._textureInvalid = this._visibleInvalid = this._maskRectInvalid = true;
             }
 
-            if (this.mouseEnable) {
-                this.aabb.x = pos.x;
-                this.aabb.y = pos.y;
-                this.aabb.width = this.width * sca.x;
-                this.aabb.height = this.height * sca.y;
-            }
-
+            var index: number = 0;
             var positionFrom: number;
             var positionOffset: number = geometry.vertexAttLength;
+            var verticesData: Float32Array = geometry.sharedVertexBuffer.arrayBuffer;
 
             if (this._transformInvalid) {
                 this._transformInvalid = false;
@@ -135,7 +134,7 @@
                     verticesData[index + 2] = quaternion.z;
                     verticesData[index + 3] = quaternion.w;
                 }
-                
+
             }
 
 
@@ -202,14 +201,14 @@
             if (this._maskRectInvalid) {
                 this._maskRectInvalid = false;
                 //____________________mask x y width height
-                var globalMask: Rectangle = this.globalMask;
-                if (globalMask) {
+                var maskRect: Rectangle = this.globalMask;
+                if (maskRect) {
                     var maskX: number, maskY: number, maskW: number, maskH: number;
 
-                    maskX = globalMask.x;      //                0;
-                    maskY = globalMask.y;      //                0;
-                    maskW = globalMask.width;  //                50;
-                    maskH = globalMask.height; //                600;
+                    maskX = maskRect.x;      //                0;
+                    maskY = maskRect.y;      //                0;
+                    maskW = maskRect.width;  //                50;
+                    maskH = maskRect.height; //                600;
 
                     positionFrom = zIndex * QuadData.quadVertexLen + QuadData.scaleOffest;
                     for (var i: number = 0; i < 4; i++) {
@@ -219,7 +218,7 @@
                         verticesData[index + 2] = maskW;
                         verticesData[index + 3] = maskH;
                     }
-                    
+
                 }
             }
 
@@ -241,18 +240,31 @@
             }
         }
 
+        /**
+        * @language zh_CN
+        * 在渲染之前清理某个下标位置的顶点数据，标记为null状态
+        * @param zIndex 在geometry中下标
+        * @param geometry 当前quad所在geometry
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+
         public static clear(zIndex: number, geometry: Geometry): void {
-            var verticesData: Float32Array = geometry.sharedVertexBuffer.arrayBuffer;
-            if (!verticesData)
-                return;
-            //empty
-            var index: number;
-            var positionFrom: number = zIndex * QuadData.quadVertexLen + QuadData.offsetOffest;
-            for (var i: number = 0; i < 4; i++) {
-                index = positionFrom + i * geometry.vertexAttLength;
-                verticesData[index + 2] = QuadNullType.NULL_QUAD;
+            if (geometry.sharedVertexBuffer && geometry.sharedVertexBuffer.arrayBuffer) {
+
+                var verticesData: Float32Array = geometry.sharedVertexBuffer.arrayBuffer;
+                //null 
+                var index: number;
+                var positionFrom: number = zIndex * QuadData.quadVertexLen + QuadData.offsetOffest;
+                for (var i: number = 0; i < 4; i++) {
+                    index = positionFrom + i * geometry.vertexAttLength;
+                    verticesData[index + 2] = QuadNullType.NULL_QUAD;
+                }
+
             }
+
         }
+
 
     }
 } 

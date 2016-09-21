@@ -106,5 +106,13 @@
             return this.attribute_time.offsetIndex;
         }
 
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._animationState = null;
+        }
+
     }
 } 

@@ -125,5 +125,17 @@
             //##FilterEnd##
         }
 
+
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._animationState = null;
+            this._node = null;
+            this._rotations = null;
+
+        }
+
     }
 } 

@@ -11,7 +11,7 @@
         private _debugHud: HUD = new HUD();
 
         constructor() {
-            this.mainPassRender = new MultiRender(PassType.diffusePass);
+            this.mainPassRender = new MultiRender( PassType.normalPass );
             this.mainPassRender.setRenderToTexture(2048, 2048, FrameBufferFormat.UNSIGNED_BYTE_RGB);
 
             this._debugHud.fsShader = "hud_H_fs";

@@ -29,6 +29,7 @@
                 for (var i: number = 0; i < list.length; i++) {
                     var listener: EventListener = list[i];
                     try {
+                        event3D.param = listener.param;
                         listener.handler.call(listener.thisObject, event3D);
                     } catch (error) {
                         if (window.console) {
@@ -50,12 +51,12 @@
          * @version Egret 3.0
          * @platform Web,Native
         */
-        public addEventListener(type: string, callback: Function, thisObject: any, priolity: number = 0): number {
+        public addEventListener(type: string, callback: Function, thisObject: any, param: any = null, priolity: number = 0): number {
             if (this.listeners[type] == null) {
                 this.listeners[type] = [];
             }
 
-            var listener: any = new EventListener(type, thisObject, callback, priolity);
+            var listener: any = new EventListener(type, thisObject, callback, param, priolity);
             listener.id = ++EventListener.event_id_count;
             this.listeners[type].push(listener);
             this.listeners[type].sort(function (listener1: EventListener, listener2: EventListener) {
@@ -78,7 +79,7 @@
 
                 for (var i: number = 0; i < this.listeners[type].length; i++) {
                     var listener: EventListener = this.listeners[type][i];
-                    if (listener.equalCurrentListener(type, thisObject, callback)) {
+                    if (listener.equalCurrentListener(type, thisObject, callback, listener.param)) {
                         listener.handler = null;
                         listener.thisObject = null;
                         this.listeners[type].splice(i, 1);
@@ -147,7 +148,7 @@
             if (thisObject && callback) {
                 for (var i: number = 0; i < this.listeners[type].length; i++) {
                     var listener: EventListener = this.listeners[type][i];
-                    if (listener.equalCurrentListener(type, thisObject, callback)) {
+                    if (listener.equalCurrentListener(type, thisObject, callback, listener.param)) {
                         return true;
                     }
                 }
@@ -176,13 +177,15 @@
         /**
         * @language zh_CN
         * @param type 事件的类型。
+        * @param thisObject handler 函数的对象
         * @param handler 处理事件的侦听器函数
+        * @param param 注册事件时指定的参数，事件响应时传出
         * @param  priority 事件侦听器的优先级。优先级由一个带符号的 32 位整数指定。数字越大，优先级越高。优先级为 n 的所有侦听器会在
         * 优先级为 n -1 的侦听器之前得到处理。如果两个或更多个侦听器共享相同的优先级，则按照它们的添加顺序进行处理。默认优先级为 0。
         * @version Egret 3.0
         * @platform Web,Native
         */
-        constructor(public type: string = null, public thisObject: any = null, public handler: Function = null, public priolity: number = 0) {
+        constructor(public type: string = null, public thisObject: any = null, public handler: Function = null, public param: any = null, public priolity: number = 0) {
         }
 
         /**
@@ -193,8 +196,8 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public equalCurrentListener(type: string, thisObject: any, handler: Function): boolean {
-            if (this.type == type && this.thisObject == thisObject && this.handler == handler) {
+        public equalCurrentListener(type: string, thisObject: any, handler: Function, param: any): boolean {
+            if (this.type == type && this.thisObject == thisObject && this.handler == handler && this.param == param) {
                 return true;
             }
             return false;

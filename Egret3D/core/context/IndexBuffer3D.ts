@@ -39,5 +39,19 @@
         constructor(buffer: WebGLBuffer) {
             this.buffer = buffer;
         }
+
+        /**
+        * @language zh_CN
+        * 释放接口
+        */
+        public dispose(): void {
+            if (this.buffer) {
+                Context3DProxy.gl.deleteBuffer(this.buffer);
+                this.buffer = null;
+            }
+            if (this.arrayBuffer) {
+                this.arrayBuffer.length = 0;
+            }
+        }
     }
 }

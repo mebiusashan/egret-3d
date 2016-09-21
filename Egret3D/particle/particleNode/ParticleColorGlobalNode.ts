@@ -140,7 +140,13 @@
             return a + time;
         }
 
-
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._colorSegment = null;
+        }
 
     }
 } 

@@ -78,9 +78,7 @@
                 clr1.g /= 256;
                 clr1.b /= 256;
 
-                this.processTintColor(clr1, this._node.tintColor);
                 for (var j: number = 0; j < vertices; ++j) {
-
                     index = i * vertices + j;
                     index = index * geometry.vertexAttLength + vertexColorOffset;
 
@@ -96,16 +94,6 @@
 
         //##FilterBegin## ##Particle##
 
-        /**
-        * @private
-        * 加成tintColor色
-        */
-        private processTintColor(src: Color, tintColor: Color): void {
-            src.a *= tintColor.a / 128;
-            src.r *= tintColor.r / 128;
-            src.g *= tintColor.g / 128;
-            src.b *= tintColor.b / 128;
-        }
         /**
         * @private
         * 根据每种出生颜色数据，相应获得一个颜色
@@ -126,6 +114,16 @@
         }
 
         //##FilterEnd##
+
+
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._node = null;
+        }
+
 
     }
 } 

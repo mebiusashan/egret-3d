@@ -80,6 +80,14 @@
             //##FilterEnd##
         }
 
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._rotation = null;
+        }
+
 
     }
 } 

@@ -1,5 +1,5 @@
 ﻿module egret3d {
-    
+
     /**
     * @class egret3d.Context3DProxy
     * @classdesc
@@ -20,7 +20,7 @@
     * @platform Web,Native
     */
     export class Context3DProxy {
-       
+
 
         /**
          * @language zh_CN
@@ -42,7 +42,7 @@
         * 一般情况下，当切换程序的时候，设备将会丢失，
         * 这个时候就需要快速重新申请设备，并将相应的资源buffer，texture重新提交至显卡
         */
-        public isLost: boolean = false ;
+        public isLost: boolean = false;
 
         //-------cache-------
         private DEPTH_TEST: boolean = false;
@@ -65,8 +65,8 @@
 
         private cacheVertexPoint: { [key: number]: number } = [];
 
-        private cacheVertexFormat: number = 0; 
-        
+        private cacheVertexFormat: number = 0;
+
         //--------------
 
 
@@ -78,27 +78,32 @@
         * 用于设置显卡的相关参数
         */
         public register() {
-
-    
-
             var extension;
-            extension = Context3DProxy.gl.getExtension('WEBGL_depth_texture') || Context3DProxy.gl.getExtension('MOZ_WEBGL_depth_texture') || Context3DProxy.gl.getExtension('WEBKIT_WEBGL_depth_texture');
-            extension = Context3DProxy.gl.getExtension('EXT_texture_filter_anisotropic') || Context3DProxy.gl.getExtension('MOZ_EXT_texture_filter_anisotropic') || Context3DProxy.gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
-            extension = Context3DProxy.gl.getExtension('WEBGL_compressed_texture_s3tc') || Context3DProxy.gl.getExtension('MOZ_WEBGL_compressed_texture_s3tc') || Context3DProxy.gl.getExtension('WEBKIT_WEBGL_compressed_texture_s3tc');
-            extension = Context3DProxy.gl.getExtension('WEBGL_compressed_texture_pvrtc') || Context3DProxy.gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc');
-            extension = Context3DProxy.gl.getExtension('WEBGL_compressed_texture_etc1');
-            extension = Context3DProxy.gl.getExtension('OES_element_index_uint');
+            Context3DProxy.gl.getExtension('WEBGL_depth_texture') || Context3DProxy.gl.getExtension('MOZ_WEBGL_depth_texture') || Context3DProxy.gl.getExtension('WEBKIT_WEBGL_depth_texture');
+            Context3DProxy.gl.getExtension('EXT_texture_filter_anisotropic') || Context3DProxy.gl.getExtension('MOZ_EXT_texture_filter_anisotropic') || Context3DProxy.gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
+            Context3DProxy.gl.getExtension('WEBGL_compressed_texture_pvrtc') || Context3DProxy.gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc');
+            Context3DProxy.gl.getExtension('WEBGL_compressed_texture_etc1');
+            Context3DProxy.gl.getExtension('OES_element_index_uint');
 
-            extension =  Context3DProxy.gl.getExtension('WEBGL_compressed_texture_s3tc');
-            extension =  Context3DProxy.gl.getExtension("OES_texture_float_linear");
-            extension = Context3DProxy.gl.getExtension("OES_texture_float");
-            extension = Context3DProxy.gl.getExtension("OES_texture_half_float");
-            extension = Context3DProxy.gl.getExtension("OES_texture_half_float_linear");
-            extension = Context3DProxy.gl.getExtension("OES_standard_derivatives");
-            extension = Context3DProxy.gl.getExtension("GL_OES_standard_derivatives");
-            extension = Context3DProxy.gl.getExtension("WEBGL_draw_buffers");
-            extension = Context3DProxy.gl.getExtension("WEBGL_depth_texture");
-            extension = Context3DProxy.gl.getExtension("WEBGL_lose_context");
+            Context3DProxy.gl.getExtension("OES_texture_float_linear");
+            Context3DProxy.gl.getExtension("OES_texture_float");
+            Context3DProxy.gl.getExtension("OES_texture_half_float");
+            Context3DProxy.gl.getExtension("OES_texture_half_float_linear");
+            Context3DProxy.gl.getExtension("OES_standard_derivatives");
+            Context3DProxy.gl.getExtension("GL_OES_standard_derivatives");
+            Context3DProxy.gl.getExtension("WEBGL_draw_buffers");
+            Context3DProxy.gl.getExtension("WEBGL_depth_texture");
+            Context3DProxy.gl.getExtension("WEBGL_lose_context");
+
+            extension = Context3DProxy.gl.getExtension('WEBGL_compressed_texture_s3tc') || Context3DProxy.gl.getExtension('MOZ_WEBGL_compressed_texture_s3tc') || Context3DProxy.gl.getExtension('WEBKIT_WEBGL_compressed_texture_s3tc');
+            if (extension) {
+                ContextConfig.ColorFormat_DXT1_RGB = extension.COMPRESSED_RGB_S3TC_DXT1_EXT;
+                ContextConfig.ColorFormat_DXT1_RGBA = extension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
+                ContextConfig.ColorFormat_DXT3_RGBA = extension.COMPRESSED_RGBA_S3TC_DXT3_EXT;
+                ContextConfig.ColorFormat_DXT5_RGBA = extension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
+            }
+
+
             //WEBGL_color_buffer_float
             //EXT_color_buffer_half_float
             //EXT_texture_filter_anisotropic
@@ -143,13 +148,6 @@
             ContextConfig.BLEND = Context3DProxy.gl.BLEND;
 
             ContextConfig.LEQUAL = Context3DProxy.gl.LEQUAL;
-
-            if (extension) {
-                ContextConfig.ColorFormat_DXT1_RGB = extension.COMPRESSED_RGB_S3TC_DXT1_EXT;
-                ContextConfig.ColorFormat_DXT1_RGBA = extension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
-                ContextConfig.ColorFormat_DXT3_RGBA = extension.COMPRESSED_RGBA_S3TC_DXT3_EXT;
-                ContextConfig.ColorFormat_DXT5_RGBA = extension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
-            }
 
             ContextSamplerType.TEXTURE_0 = Context3DProxy.gl.TEXTURE0;
             ContextSamplerType.TEXTURE_1 = Context3DProxy.gl.TEXTURE1;
@@ -240,8 +238,8 @@
         * @platform Web,Native
         */
         public uploadIndexBuffer(indexBuffer3D: IndexBuffer3D) {
-            Context3DProxy.gl.bindBuffer(Context3DProxy.gl.ARRAY_BUFFER, indexBuffer3D.buffer);
-            Context3DProxy.gl.bufferData(Context3DProxy.gl.ARRAY_BUFFER, indexBuffer3D.arrayBuffer, Context3DProxy.gl.DYNAMIC_DRAW);
+            Context3DProxy.gl.bindBuffer(Context3DProxy.gl.ELEMENT_ARRAY_BUFFER, indexBuffer3D.buffer);
+            Context3DProxy.gl.bufferData(Context3DProxy.gl.ELEMENT_ARRAY_BUFFER, indexBuffer3D.arrayBuffer, Context3DProxy.gl.DYNAMIC_DRAW);
         }
 
         /**
@@ -251,16 +249,16 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public creatVertexBuffer(vertexData: Float32Array, dawType: number = Context3DProxy.gl.STATIC_DRAW ): VertexBuffer3D {
+        public creatVertexBuffer(vertexData: Float32Array, dawType: number = Context3DProxy.gl.STATIC_DRAW): VertexBuffer3D {
 
             var vertexBuffer: WebGLBuffer = Context3DProxy.gl.createBuffer();
             Context3DProxy.gl.bindBuffer(Context3DProxy.gl.ARRAY_BUFFER, vertexBuffer);
-            Context3DProxy.gl.bufferData(Context3DProxy.gl.ARRAY_BUFFER, vertexData, dawType );
+            Context3DProxy.gl.bufferData(Context3DProxy.gl.ARRAY_BUFFER, vertexData, dawType);
 
             var vb: VertexBuffer3D = new VertexBuffer3D(vertexBuffer);
             vb.arrayBuffer = vertexData;
 
-           // vertexData.splice(0, vertexData.length);
+            // vertexData.splice(0, vertexData.length);
             //vertexData.splice(0, vertexData.length);
             return vb;
         }
@@ -272,8 +270,8 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public uploadVertexBuffer(vertexBuffer3D:VertexBuffer3D) {
-            Context3DProxy.gl.bindBuffer(Context3DProxy.gl.ARRAY_BUFFER, vertexBuffer3D.buffer );
+        public uploadVertexBuffer(vertexBuffer3D: VertexBuffer3D) {
+            Context3DProxy.gl.bindBuffer(Context3DProxy.gl.ARRAY_BUFFER, vertexBuffer3D.buffer);
             Context3DProxy.gl.bufferData(Context3DProxy.gl.ARRAY_BUFFER, vertexBuffer3D.arrayBuffer, Context3DProxy.gl.DYNAMIC_DRAW);
         }
 
@@ -300,20 +298,20 @@
         * @platform Web,Native
         */
         public upLoadTextureData(mipLevel: number, texture: ITexture) {
-            Context3DProxy.gl.bindTexture(Context3DProxy.gl.TEXTURE_2D, texture.texture2D.textureBuffer );
+            Context3DProxy.gl.bindTexture(Context3DProxy.gl.TEXTURE_2D, texture.texture2D.textureBuffer);
 
             if (texture.texture2D.internalFormat == InternalFormat.ImageData) {
                 Context3DProxy.gl.texImage2D(Context3DProxy.gl.TEXTURE_2D, 0, Context3DProxy.gl.RGBA, Context3DProxy.gl.RGBA, texture.texture2D.dataFormat, texture.texture2D.imageData);
-                delete texture.texture2D.imageData;
+                //delete texture.texture2D.imageData;
             }
             else if (texture.texture2D.internalFormat == InternalFormat.CompressData) {
                 this.upLoadCompressedTexture2D(mipLevel, texture.texture2D);
-               
+
             }
             else if (texture.texture2D.internalFormat == InternalFormat.PixelArray) {
                 Context3DProxy.gl.texImage2D(Context3DProxy.gl.TEXTURE_2D, mipLevel, texture.texture2D.colorFormat, texture.texture2D.mimapData[mipLevel].width, texture.texture2D.mimapData[mipLevel].height, texture.texture2D.border, texture.texture2D.colorFormat, texture.texture2D.dataFormat, texture.texture2D.mimapData[mipLevel].data);
             }
-            if( texture.useMipmap )
+            if (texture.useMipmap)
                 Context3DProxy.gl.generateMipmap(Context3DProxy.gl.TEXTURE_2D);
 
             //texture.activeState( this );
@@ -414,7 +412,7 @@
             ///Context3DProxy.gl.texParameteri(Context3DProxy.gl.TEXTURE_2D, Context3DProxy.gl.TEXTURE_WRAP_S, wrap_u_filter);
             ///Context3DProxy.gl.texParameteri(Context3DProxy.gl.TEXTURE_2D, Context3DProxy.gl.TEXTURE_WRAP_T, wrap_v_filter);
         }
-        
+
         /**
         * @language zh_CN
         * @private
@@ -431,14 +429,6 @@
 
             Context3DProxy.gl.bindTexture(Context3DProxy.gl.TEXTURE_2D, texture2D.textureBuffer);
 
-            var float: Float32Array = new Float32Array(32 * 32 * 4);
-            for (var i: number = 0; i < 32 * 32; i++) {
-                float[i] = 1.0;
-                float[i + 1] = 1.0;
-                float[i + 2] = 1.0;
-                float[i + 3] = 1.0;
-            }
-
             switch (format) {
                 case FrameBufferFormat.UNSIGNED_BYTE_RGB:
                     Context3DProxy.gl.texImage2D(Context3DProxy.gl.TEXTURE_2D, 0, Context3DProxy.gl.RGB, width, height, 0, Context3DProxy.gl.RGB, Context3DProxy.gl.UNSIGNED_BYTE, null);
@@ -447,10 +437,24 @@
                     Context3DProxy.gl.texImage2D(Context3DProxy.gl.TEXTURE_2D, 0, Context3DProxy.gl.RGBA, width, height, 0, Context3DProxy.gl.RGBA, Context3DProxy.gl.UNSIGNED_BYTE, null);
                     break;
                 case FrameBufferFormat.FLOAT_RGB:
+                    var float: Float32Array = new Float32Array(width * height * 4);
+                    for (var i: number = 0; i < width * height; i++) {
+                        float[i] = Math.random();
+                        float[i + 1] = Math.random();
+                        float[i + 2] = Math.random();
+                    }
                     Context3DProxy.gl.texImage2D(Context3DProxy.gl.TEXTURE_2D, 0, Context3DProxy.gl.RGB, width, height, 0, Context3DProxy.gl.RGB, Context3DProxy.gl.FLOAT, float);
                     break;
                 case FrameBufferFormat.FLOAT_RGBA:
+                    var float: Float32Array = new Float32Array(width * height * 4);
+                    for (var i: number = 0; i < width * height; i++) {
+                        float[i] = Math.random();
+                        float[i + 1] = Math.random();
+                        float[i + 2] = Math.random();
+                        float[i + 3] = Math.random();
+                    }
                     Context3DProxy.gl.texImage2D(Context3DProxy.gl.TEXTURE_2D, 0, Context3DProxy.gl.RGBA, width, height, 0, Context3DProxy.gl.RGBA, Context3DProxy.gl.FLOAT, float);
+
                     break;
             }
 
@@ -477,7 +481,7 @@
             Context3DProxy.gl.bindRenderbuffer(Context3DProxy.gl.RENDERBUFFER, null);
             return texture2D;
         }
-                
+
         /**
         * @language zh_CN
         * @private
@@ -502,9 +506,9 @@
 
             Context3DProxy.gl.framebufferTexture2D(Context3DProxy.gl.FRAMEBUFFER, Context3DProxy.gl.COLOR_ATTACHMENT0, Context3DProxy.gl.TEXTURE_2D, texture.textureBuffer, 0);
             Context3DProxy.gl.framebufferRenderbuffer(Context3DProxy.gl.FRAMEBUFFER, Context3DProxy.gl.DEPTH_ATTACHMENT, Context3DProxy.gl.RENDERBUFFER, texture.renderbuffer);
-       
+
         }
-                        
+
         /**
         * @language zh_CN
         * 设置渲染缓冲为屏幕
@@ -516,7 +520,7 @@
             Context3DProxy.gl.bindFramebuffer(Context3DProxy.gl.FRAMEBUFFER, null);
             Context3DProxy.gl.bindRenderbuffer(Context3DProxy.gl.RENDERBUFFER, null);
         }
-                                
+
         /**
         * @language zh_CN
         * 向显卡请求创建顶点shader对象 
@@ -534,7 +538,7 @@
             tmpShader.id = (Shader.ID_COUNT++).toString();
             return tmpShader;
         }
-                                        
+
         /**
         * @language zh_CN
         * 向显卡请求创建片段shader对象 
@@ -560,7 +564,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public clear(BUFFER_BIT:number) {
+        public clear(BUFFER_BIT: number) {
             Context3DProxy.gl.clear(BUFFER_BIT);
         }
 
@@ -577,7 +581,7 @@
         public clearColor(r: number, g: number, b: number, a: number) {
             Context3DProxy.gl.clearColor(r, g, b, a);
         }
-        
+
         ///**
         //* @language zh_CN
         //* 清除渲染区域的 深度
@@ -588,7 +592,7 @@
         //    Context3DProxy.gl.clear(Context3DProxy.gl.DEPTH_BUFFER_BIT);
         //}
 
-                
+
         /**
         * @language zh_CN
         * 清除渲染区域的 模板
@@ -627,7 +631,7 @@
             return Context3DProxy.gl.getUniformLocation(programe3D.program, name);
         }
 
-        
+
         /**
         * @language zh_CN
         * 传值给shader一个float
@@ -639,7 +643,7 @@
         public uniform1f(location: any, x: number): void {
             Context3DProxy.gl.uniform1f(location, x);
         }
-                
+
         /**
         * @language zh_CN
         * 传值给shader 一个vec3(float, float, float) 也可以是一个vec3数组
@@ -651,7 +655,7 @@
         public uniform1fv(location: any, v: any): void {
             Context3DProxy.gl.uniform1fv(location, v);
         }
-                
+
         /**
         * @language zh_CN
         * 传值给shader一个int
@@ -663,7 +667,7 @@
         public uniform1i(location: any, x: number): void {
             Context3DProxy.gl.uniform1i(location, x);
         }
-                
+
         /**
         * @language zh_CN
         * 传值给shader一个int数组
@@ -675,7 +679,7 @@
         public uniform1iv(location: any, v: Int32Array): void {
             Context3DProxy.gl.uniform1iv(location, v);
         }
-                
+
         /**
         * @language zh_CN
         * 传值给shader两个float
@@ -688,7 +692,7 @@
         public uniform2f(location: any, x: number, y: number): void {
             Context3DProxy.gl.uniform2f(location, x, y);
         }
-                        
+
         /**
         * @language zh_CN
         * 传值给shader vec(float, float)
@@ -700,7 +704,7 @@
         public uniform2fv(location: any, v: any): void {
             Context3DProxy.gl.uniform2fv(location, v);
         }
-                
+
         /**
         * @language zh_CN
         * 传值给shader 两个int值
@@ -713,7 +717,7 @@
         public uniform2i(location: any, x: number, y: number): void {
             Context3DProxy.gl.uniform2i(location, x, y);
         }
-                                
+
         /**
         * @language zh_CN
         * 传值给shader
@@ -725,7 +729,7 @@
         public uniform2iv(location: any, v: Int32Array): void {
             Context3DProxy.gl.uniform2iv(location, v);
         }
-                        
+
         /**
         * @language zh_CN
         * 传值给shader 3个float
@@ -739,7 +743,7 @@
         public uniform3f(location: any, x: number, y: number, z: number): void {
             Context3DProxy.gl.uniform3f(location, x, y, z);
         }
-                                        
+
         /**
         * @language zh_CN
         * 传值给shader vec3(float, float, float)
@@ -751,7 +755,7 @@
         public uniform3fv(location: any, v: any): void {
             Context3DProxy.gl.uniform3fv(location, v);
         }
-                                
+
         /**
         * @language zh_CN
         * 传值给shader 3个int
@@ -765,7 +769,7 @@
         public uniform3i(location: any, x: number, y: number, z: number): void {
             Context3DProxy.gl.uniform3i(location, x, y, z);
         }
-                                                
+
         /**
         * @language zh_CN
         * 传值给shader vec3(int, int, int)
@@ -777,7 +781,7 @@
         public uniform3iv(location: any, v: Int32Array): void {
             Context3DProxy.gl.uniform3iv(location, v);
         }
-                                        
+
         /**
         * @language zh_CN
         * 传值给shader 4个float值
@@ -792,7 +796,7 @@
         public uniform4f(location: any, x: number, y: number, z: number, w: number): void {
             Context3DProxy.gl.uniform4f(location, x, y, z, w);
         }
-                                                        
+
         /**
         * @language zh_CN
         * 传值给shader vec(float, float, float, float)
@@ -804,7 +808,7 @@
         public uniform4fv(location: any, v: any): void {
             Context3DProxy.gl.uniform4fv(location, v);
         }
-                                                
+
         /**
         * @language zh_CN
         * 传值给shader 4个int值
@@ -819,7 +823,7 @@
         public uniform4i(location: any, x: number, y: number, z: number, w: number): void {
             Context3DProxy.gl.uniform4i(location, x, y, z, w);
         }
-                                                                
+
         /**
         * @language zh_CN
         * 传值给shader vec4(int, int, int, int)
@@ -829,7 +833,7 @@
         public uniform4iv(location: any, v: Int32Array): void {
             Context3DProxy.gl.uniform4iv(location, v);
         }
-                                                                
+
         /**
         * @language zh_CN
         * 传值给shader 2 * 2矩阵 
@@ -842,7 +846,7 @@
         public uniformMatrix2fv(location: any, transpose: boolean, value: any): void {
             Context3DProxy.gl.uniformMatrix2fv(location, transpose, value);
         }
-                                                                        
+
         /**
         * @language zh_CN
         * 传值给shader 3 * 3矩阵 
@@ -855,7 +859,7 @@
         public uniformMatrix3fv(location: any, transpose: boolean, value: any): void {
             Context3DProxy.gl.uniformMatrix3fv(location, transpose, value);
         }
-                                                                        
+
         /**
         * @language zh_CN
         * 传值给shader 4 * 4矩阵 
@@ -880,7 +884,7 @@
         public setBlendFactors(src: number, dst: number) {
             if (this.blend_Factors_src == src && this.blend_Factors_dst == dst) return;
             this.blend_Factors_src = src;
-            this.blend_Factors_dst = dst ;
+            this.blend_Factors_dst = dst;
             Context3DProxy.gl.blendFunc(src, dst);
         }
 
@@ -900,7 +904,7 @@
             Context3DProxy.gl.cullFace(mode);
         }
 
- 
+
         /**
         * @language zh_CN
         * 开启 深度测试模式
@@ -909,7 +913,7 @@
         */
         public enableDepth() {
             if (this.DEPTH_TEST) return;
-            this.DEPTH_TEST = true; 
+            this.DEPTH_TEST = true;
             Context3DProxy.gl.enable(ContextConfig.DEPTH_TEST);
         }
 
@@ -1009,7 +1013,7 @@
         public depthFunc(compareMode: number = 0) {
             if (this.depthCompareMode == compareMode) return;
             this.depthCompareMode = compareMode;
-              Context3DProxy.gl.depthFunc(compareMode);
+            Context3DProxy.gl.depthFunc(compareMode);
         }
 
         /**
@@ -1068,37 +1072,24 @@
 
         /**
         * @language zh_CN
-        * 关闭顶点着色器变量索引
-        * @param index 变量索引
+        * 要激活着色器上的顶点信息
+        * @param vertexFormat 顶点格式
+        * @param formatLen 顶点要激活的长度
         * @version Egret 3.0
         * @platform Web,Native
         */
-        //public activeAttribPointer(pointIndexTotal:any, vertexFormat:number ): boolean {
-        //    var i: string;
-
-        //    //for (i in this.cacheVertexPoint) {
-        //    //    if (this.cacheVertexPoint[i] != null && pointIndexTotal[this.cacheVertexPoint[i]] == null ) {
-        //    //        Context3DProxy.gl.disableVertexAttribArray(pointIndexTotal[i]);
-        //    //        this.cacheVertexPoint[i] = null;
-        //    //    }
-        //    //}
-
-        //    //for (var j: number = 0; j < 8;j++) {
-        //    //    Context3DProxy.gl.disableVertexAttribArray(j);
-        //    //}
-
-        //    //for (i in pointIndexTotal) {
-        //    //    if (pointIndexTotal[i] >= 0)
-        //    //        Context3DProxy.gl.enableVertexAttribArray(pointIndexTotal[i]);
-        //    //}
-
-        //    //this.cacheVertexPoint = pointIndexTotal; 
-
-        //    if (this.cacheVertexFormat == vertexFormat)
-        //        return false;
-        //    this.cacheVertexFormat = vertexFormat; 
-        //    return true;
-        //}
+        public activeAttribPointer(vertexFormat: number, formatLen: number): boolean {
+            //if (this.cacheVertexFormat != vertexFormat) {
+            for (var j: number = 0; j < 8; j++) {
+                Context3DProxy.gl.disableVertexAttribArray(j);
+            }
+            this.cacheVertexFormat = vertexFormat;
+            //for (var j: number = 0; j < formatLen; j++) {
+            //Context3DProxy.gl.enableVertexAttribArray(j);
+            // }
+            //  }
+            return this.cacheVertexFormat == vertexFormat;
+        }
 
         /**
         * @language zh_CN
@@ -1168,7 +1159,7 @@
             Context3DProxy.gl.activeTexture(samplerIndex);
             Context3DProxy.gl.bindTexture(Context3DProxy.gl.TEXTURE_CUBE_MAP, texture.texture);
             Context3DProxy.gl.uniform1i(uniLocation, index);
-        } 
+        }
 
         /**
         * @language zh_CN
@@ -1213,13 +1204,13 @@
             Context3DProxy.gl.bindBuffer(Context3DProxy.gl.ARRAY_BUFFER, vertexBuffer.buffer);
         }
 
-         /**
-        * @language zh_CN
-        * 绑定顶点索引Buffer
-        * @param vertexBuffer
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
+        /**
+       * @language zh_CN
+       * 绑定顶点索引Buffer
+       * @param vertexBuffer
+       * @version Egret 3.0
+       * @platform Web,Native
+       */
         public bindIndexBuffer(indexBuffer: IndexBuffer3D) {
             Context3DProxy.gl.bindBuffer(Context3DProxy.gl.ELEMENT_ARRAY_BUFFER, indexBuffer.buffer);
         }
@@ -1248,7 +1239,7 @@
         * @platform Web,Native
         */
         public drawElement(type: number, offset: number, length: number) {
-            Context3DProxy.gl.drawElements(type, length, Context3DProxy.gl.UNSIGNED_SHORT, offset );
+            Context3DProxy.gl.drawElements(type, length, Context3DProxy.gl.UNSIGNED_SHORT, offset);
         }
 
         /**

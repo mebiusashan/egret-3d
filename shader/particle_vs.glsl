@@ -5,7 +5,7 @@ attribute vec4 attribute_color;
 attribute vec3 attribute_offsetPosition;
 
 uniform mat4 uniform_cameraMatrix;
-uniform float uniform_particleState[23];
+uniform float uniform_particleState[24];
 
 uniform mat4 uniform_ViewMatrix;
 
@@ -37,28 +37,29 @@ void e_discard(){
 }
 
 struct ParticleStateData{
-	float time;						//���ӵ�ǰʱ��
-	float loop;						//�Ƿ�ѭ��
-	float worldSpace;				//�Ƿ�ʹ�������ռ�����
+	float time;						
+	float loop;						
+	float worldSpace;				
 
-	float scaleX;					//x����
-	float scaleY;					//y����
-	float scaleZ;					//z����
-	float rotationX;				//x��ת
-	float rotationY;				//y��ת
-	float rotationZ;				//z��ת
+	float scaleX;					
+	float scaleY;					
+	float scaleZ;					
+	float rotationX;				
+	float rotationY;				
+	float rotationZ;				
 	float rotationW;
 
-	float positionX;				//xƽ��
-	float positionY;				//yƽ��
-	float positionZ;				//zƽ��
+	float positionX;				
+	float positionY;				
+	float positionZ;				
 
-	float loopTime;					//һ�����ڵ�ʱ��
-	float delay;					//�ӳٷ���ʱ��
-	float duration;					//������ʱ��
-	float gravity;					//������С
-	float velocityOverWorldSpace;	//�����ٶ��Ƿ�Ϊ�����ռ�����
-	float velocityForceWorldSpace;	//���ٶ��Ƿ�Ϊ�����ռ�����
+	float loopTime;					
+	float delay;					
+	float duration;					
+	float gravity;					
+	float velocityOverWorldSpace;	
+	float velocityForceWorldSpace;	
+	float velocityLimitDampen;
 
 	float cameraScale;
 	float speedScale;
@@ -153,10 +154,12 @@ void main(void) {
 	particleStateData.gravity						= uniform_particleState[16];
 	particleStateData.velocityOverWorldSpace		= uniform_particleState[17];
 	particleStateData.velocityForceWorldSpace		= uniform_particleState[18];
-	particleStateData.cameraScale					= uniform_particleState[19];
-	particleStateData.speedScale					= uniform_particleState[20];
-	particleStateData.lengthScale					= uniform_particleState[21];
-	particleStateData.renderMode					= uniform_particleState[22];
+	particleStateData.velocityLimitDampen			= uniform_particleState[19];
+
+	particleStateData.cameraScale					= uniform_particleState[20];
+	particleStateData.speedScale					= uniform_particleState[21];
+	particleStateData.lengthScale					= uniform_particleState[22];
+	particleStateData.renderMode					= uniform_particleState[23];
 
     //varying_mvPose = mvMatrix * vec4( e_position , 1.0 ) ; 
 	mat4 modeViewMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); 

@@ -27,7 +27,7 @@
             this.node.rotationY = -50;
             this.node.position = new Vector3D(400, -100, 200);
            
-            var geom: PlaneGeometry = new PlaneGeometry(40, 40);
+            var geom: CubeGeometry = new CubeGeometry(40, 20, 80);
             var position: Vector3D = new Vector3D();
 
             var plane: Mesh;
@@ -47,15 +47,15 @@
             this._egret3DCanvas.start();
             this._egret3DCanvas.addEventListener(Event3D.ENTER_FRAME, this.update, this);
 
-            //this.view1.scene.createQuadTree();
+            this.view1.scene.createQuadTree();
 
         }
-
         public update(e: Event3D) {
             //this.cameraCtl.update();
 
             this.view1.camera3D.rotationX += 0.1;
             this.view1.camera3D.rotationY += 0.1;
+
         }
     }
 }

@@ -23,6 +23,10 @@
         private _plane: Array<Plane3D>;
 
         private _frustum: Wireframe = new Wireframe();
+        private camera: Camera3D;
+
+        private nearCenter: Vector3D = new Vector3D();
+        private farCenter: Vector3D = new Vector3D();
 
         /**
         * @language zh_CN
@@ -61,7 +65,8 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        constructor() {
+        constructor(camera: Camera3D = null) {
+            this.camera = camera;
             this._vertex = new Array<Vector3D>();
             for (var i: number = 0; i < this._vtxNum; ++i) {
                 this._vertex.push(new Vector3D());
@@ -82,11 +87,39 @@
             this.center = new Vector3D();
             this._frustum.material.diffuseColor = 0xffffff;
             this._frustum.name = "CameraFrustum";
-            this._frustum.visible = false;
 
             this._frustum.geometry.vertexCount = 8;
             this._frustum.geometry.indexCount = 24;
             this._frustum.geometry.setVertexIndices(0, [0, 1, 1, 2, 2, 3, 0, 3, 4, 5, 5, 6, 6, 7, 4, 7, 0, 4, 1, 5, 3, 7, 2, 6]);
+        }
+
+        /**
+        * @language zh_CN
+        * 是否可见
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set visible(value: boolean) {
+            if (value) {
+                if (!this._frustum.parent) {
+                    this.camera.addChild(this._frustum);
+                }
+            }
+            else {
+                if (this._frustum.parent) {
+                    this._frustum.parent.removeChild(this._frustum);
+                }
+            }
+        }
+
+        /**
+        * @language zh_CN
+        * 是否可见
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get visible(): boolean {
+            return this._frustum.parent ? true : false;
         }
 
         /**
@@ -220,16 +253,16 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public updateFrustum(camera: Camera3D) {
-            switch (camera.cameraType) {
+        public updateFrustum() {
+            switch (this.camera.cameraType) {
                 case CameraType.perspective:
-                    this.makeFrustum(camera.fieldOfView, camera.aspectRatio, camera.near, camera.far);
+                    this.makeFrustum(this.camera.fieldOfView, this.camera.aspectRatio, this.camera.near, this.camera.far);
                     break;
                 case CameraType.orthogonal:
-                    this.makeOrthoFrustum(camera.viewPort.width, camera.viewPort.height, camera.near, camera.far);
+                    this.makeOrthoFrustum(this.camera.viewPort.width, this.camera.viewPort.height, this.camera.near, this.camera.far);
                     break;
                 case CameraType.orthogonalToCenter:
-                    this.makeOrthoToCenterFrustum(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height, camera.near, camera.far);
+                    this.makeOrthoToCenterFrustum(this.camera.viewPort.x, this.camera.viewPort.y, this.camera.viewPort.width, this.camera.viewPort.height, this.camera.near, this.camera.far);
                     break;
             }
 
@@ -245,19 +278,19 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public update(camera: Camera3D) {
+        public update() {
 
             /// 摄像机变化之后的顶点也变化;
             var mat: Matrix4_4 = Matrix4_4.helpMatrix ;
-            mat.copyFrom(camera.modelMatrix);
+            mat.copyFrom(this.camera.modelMatrix);
 
             //this._frustum.modelMatrix = mat;
 
             for (var i: number = 0; i < this._vtxNum; ++i) {
                 mat.transformVector(this._vertex[i], this._tempVertices[i]);
             }
-            this.box.max.x = this.box.max.y = this.box.max.z = -Number.MAX_VALUE;
-            this.box.min.x = this.box.min.y = this.box.min.z = Number.MAX_VALUE;
+            this.box.max.x = this.box.max.y = this.box.max.z = -MathUtil.MAX_VALUE;
+            this.box.min.x = this.box.min.y = this.box.min.z = MathUtil.MAX_VALUE;
 
             for (var i: number = 0; i < this._tempVertices.length; ++i) {
                 if (this.box.max.x < this._tempVertices[i].x) {
@@ -294,19 +327,17 @@
                 this._plane[i].normalize();
             }
 
-            var nearCenter: Vector3D = new Vector3D();
-            nearCenter.copyFrom(this._tempVertices[0].subtract(this._tempVertices[2]));
-            nearCenter.scaleBy(0.5);
-            nearCenter.copyFrom(this._tempVertices[2].add(nearCenter));
+            this.nearCenter.copyFrom(this._tempVertices[0].subtract(this._tempVertices[2]));
+            this.nearCenter.scaleBy(0.5);
+            this.nearCenter.copyFrom(this._tempVertices[2].add(this.nearCenter));
 
-            var farCenter: Vector3D = new Vector3D();
-            farCenter.copyFrom(this._tempVertices[4].subtract(this._tempVertices[6]));
-            farCenter.scaleBy(0.5);
-            farCenter.copyFrom(this._tempVertices[6].add(farCenter));
+            this.farCenter.copyFrom(this._tempVertices[4].subtract(this._tempVertices[6]));
+            this.farCenter.scaleBy(0.5);
+            this.farCenter.copyFrom(this._tempVertices[6].add(this.farCenter));
 
-            this.center.copyFrom(farCenter.subtract(nearCenter));
+            this.center.copyFrom(this.farCenter.subtract(this.nearCenter));
             this.center.scaleBy(0.5);
-            this.center.copyFrom(nearCenter.add(this.center));
+            this.center.copyFrom(this.nearCenter.add(this.center));
         }
         
         /**

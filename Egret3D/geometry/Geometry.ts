@@ -227,7 +227,8 @@
         /**
         * @private
         */
-        public skeleton: Skeleton;
+        private _skeleton: Skeleton;
+        public skeletonGPUData: Float32Array;
 
         /**
         * @language zh_CN
@@ -316,6 +317,13 @@
         */
         private _bufferDiry: boolean = true;
 
+        public set bufferDiry(value: boolean) {
+            this._bufferDiry = value;
+        }
+
+        public get bufferDiry(): boolean {
+            return this._bufferDiry;
+        }
         /**
         * @language zh_CN
         * 顶点的数量
@@ -331,6 +339,24 @@
         * @platform Web,Native
         */
         public _indexCount: number = 0;
+
+        private _totalIndexCount: number = 0;
+
+        public set skeleton(skeleton: Skeleton) {
+            if (!skeleton) {
+                return;
+            }
+            this._skeleton = skeleton;
+            this.skeletonGPUData = new Float32Array(skeleton.jointNum * 8);
+            for (var i: number = 0; i < skeleton.jointNum; ++i) {
+                this.skeletonGPUData[i * 8 + 3] = 1;
+                this.skeletonGPUData[i * 8 + 7] = 1;
+            }
+        }
+
+        public get skeleton(): Skeleton {
+            return this._skeleton;
+        }
 
         /**
         * @language zh_CN
@@ -352,12 +378,21 @@
             if (this._vertexCount == value) {
                 return;
             }
-            var data: Float32Array = new Float32Array(value * this.vertexAttLength);
+            var dataCount: number = value * this.vertexAttLength;
+
+            var data: Float32Array = null;
             if (this.vertexArray) {
                 if (this.vertexCount < value) {
+                    data = new Float32Array(dataCount);
                     data.set(this.vertexArray);
+                    delete this.vertexArray;
                 }
-                delete this.vertexArray;
+                else {
+                    data = this.vertexArray;
+                }
+            }
+            else {
+                data = new Float32Array(dataCount);
             }
             this.vertexArray = data;
             this._vertexCount = value;
@@ -380,20 +415,21 @@
         * @platform Web,Native
         */
         public set indexCount(value: number) {
-            if (this._indexCount == value) {
+            this._indexCount = value;
+            this._faceCount = value / 3;
+
+            if (this._totalIndexCount >= value) {
                 return;
             }
 
             var data: Uint16Array = new Uint16Array(value);
             if (this.indexArray) {
-                if (this.indexCount < value) {
-                    data.set(this.indexArray);
-                }
+                data.set(this.indexArray);
                 delete this.indexArray;
             }
             this.indexArray = data;
-            this._indexCount = value;
-            this._faceCount = value / 3;
+
+            this._totalIndexCount = value;
         }
 
         public _faceCount: number = 0;
@@ -552,9 +588,8 @@
                 this.sharedIndexBuffer = context3DProxy.creatIndexBuffer(this.indexArray);
                 this.sharedVertexBuffer = context3DProxy.creatVertexBuffer(this.vertexArray, drawType); 
             } else {
-                //this.sharedVertexBuffer.arrayBuffer.set(this.verticesData);
-                //this.sharedVertexBuffer.arrayBuffer = this.verticesData;
                 context3DProxy.uploadVertexBuffer(this.sharedVertexBuffer);
+                context3DProxy.uploadIndexBuffer(this.sharedIndexBuffer);
             }
         }
 
@@ -564,10 +599,11 @@
         * @param index 顶点索引
         * @param vf 得到顶点的需要的数据格式
         * @param target 得到数据返回目标可以为null
+        * @param count 得到顶点个数 默认一个
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public getVertexForIndex(index: number, vf: VertexFormat, target: Array<number> = null): Array<number> {
+        public getVertexForIndex(index: number, vf: VertexFormat, target: Array<number> = null, count: number = 1): Array<number> {
             if (!target) {
                 target = new Array<number>();
             }
@@ -575,72 +611,117 @@
             if (index < 0 || index >= this.vertexCount) {
                 return target;
             }
-            var offset: number = 0;
-            if (this.vertexFormat & VertexFormat.VF_POSITION) {
+            for (var i: number = 0; i < count; ++i) {
+                var offset: number = 0;
                 if (vf & VertexFormat.VF_POSITION) {
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
-                }
-                offset += Geometry.positionSize;
-            }
-
-            if (this.vertexFormat & VertexFormat.VF_NORMAL) {
-                if (vf & VertexFormat.VF_NORMAL) {
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
-                }
-                offset += Geometry.normalSize;
-            }
-
-            if (this.vertexFormat & VertexFormat.VF_TANGENT) {
-                if (vf & VertexFormat.VF_TANGENT) {
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
-                }
-                offset += Geometry.tangentSize;
-            }
-
-            if (this.vertexFormat & VertexFormat.VF_COLOR) {
-                if (vf & VertexFormat.VF_COLOR) {
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 3]);
-                }
-                offset += Geometry.colorSize;
-            }
-
-            if (this.vertexFormat & VertexFormat.VF_UV0) {
-                if (vf & VertexFormat.VF_UV0) {
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
-                }
-                offset += Geometry.uvSize;
-            }
-
-            if (this.vertexFormat & VertexFormat.VF_UV1) {
-                if (vf & VertexFormat.VF_UV1) {
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
-                    target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
-                }
-                offset += Geometry.uv2Size;
-            }
-
-            if (this.vertexFormat & VertexFormat.VF_SKIN) {
-                if (vf & VertexFormat.VF_SKIN) {
-                    for (var j = 0; j < Geometry.skinSize; ++j) {
-                        target.push(this.vertexArray[index * this.vertexAttLength + offset + j]);
+                    if (this.vertexFormat & VertexFormat.VF_POSITION) {
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
+                    }
+                    else {
+                        target.push(0, 0, 0);
                     }
                 }
-                offset += Geometry.skinSize;
+                if (this.vertexFormat & VertexFormat.VF_POSITION) {
+                    offset += Geometry.positionSize;
+                }
+
+                if (vf & VertexFormat.VF_NORMAL) {
+                    if (this.vertexFormat & VertexFormat.VF_NORMAL) {
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
+                    }
+                    else {
+                        target.push(0, 0, 0);
+                    }
+                }
+
+                if (this.vertexFormat & VertexFormat.VF_NORMAL) {
+                    offset += Geometry.normalSize;
+                }
+
+                if (vf & VertexFormat.VF_TANGENT) {
+                    if (this.vertexFormat & VertexFormat.VF_TANGENT) {
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
+                    }
+                    else {
+                        target.push(0, 0, 0);
+                    }
+                }
+
+                if (this.vertexFormat & VertexFormat.VF_TANGENT) {
+                    offset += Geometry.tangentSize;
+
+                }
+
+                if (vf & VertexFormat.VF_COLOR) {
+                    if (this.vertexFormat & VertexFormat.VF_COLOR) {
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 2]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 3]);
+                    }
+                    else {
+                        target.push(0, 0, 0, 0);
+                    }
+                }
+
+                if (this.vertexFormat & VertexFormat.VF_COLOR) {
+                    offset += Geometry.colorSize;
+                }
+
+                if (vf & VertexFormat.VF_UV0) {
+                    if (this.vertexFormat & VertexFormat.VF_UV0) {
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
+                    }
+                    else {
+                        target.push(0, 0);
+                    }
+                }
+                if (this.vertexFormat & VertexFormat.VF_UV0) {
+                    offset += Geometry.uvSize;
+                }
+
+
+                if (vf & VertexFormat.VF_UV1) {
+                    if (this.vertexFormat & VertexFormat.VF_UV1) {
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 0]);
+                        target.push(this.vertexArray[index * this.vertexAttLength + offset + 1]);
+                    }
+                    else {
+                        target.push(0, 0);
+                    }
+                }
+                if (this.vertexFormat & VertexFormat.VF_UV1) {
+                    offset += Geometry.uv2Size;
+                }
+
+                if (vf & VertexFormat.VF_SKIN) {
+                    if (this.vertexFormat & VertexFormat.VF_SKIN) {
+                        for (var j = 0; j < Geometry.skinSize; ++j) {
+                            target.push(this.vertexArray[index * this.vertexAttLength + offset + j]);
+                        }
+                    }
+                    else {
+                        target.push(0, 0, 0, 0, 0, 0, 0, 0);
+                    }
+                }
+                if (this.vertexFormat & VertexFormat.VF_SKIN) {
+                    offset += Geometry.skinSize;
+                }
+
+                index++;
             }
-        
+           
             return target;
         }
 
+       
         /**
         * @language zh_CN
         * 由顶点索引根据格式设置顶点数据
@@ -653,9 +734,7 @@
         */
         public setVerticesForIndex(index: number, vf: VertexFormat, src: Array<number>, vertexCount: number = 1) {
             if (index + vertexCount > this.vertexCount) {
-                if (index + vertexCount > this.vertexCount) {
-                    this.vertexCount = index + vertexCount;
-                }
+                this.vertexCount = index + vertexCount;
             }
 
             this._bufferDiry = true;
@@ -663,12 +742,12 @@
             var srcOffset: number = 0;
             for (var i: number = 0; i < vertexCount; ++i) {
                 offset = 0;
+
                 if (this.vertexFormat & VertexFormat.VF_POSITION) {
                     if (vf & VertexFormat.VF_POSITION) {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                         this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
-                        srcOffset += Geometry.positionSize;
                     }
                     else {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
@@ -677,13 +756,15 @@
                     }
                     offset += Geometry.positionSize;
                 }
+                if (vf & VertexFormat.VF_POSITION) {
+                    srcOffset += Geometry.positionSize;
+                }
 
                 if (this.vertexFormat & VertexFormat.VF_NORMAL) {
                     if (vf & VertexFormat.VF_NORMAL) {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                         this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
-                        srcOffset += Geometry.normalSize;
                     }
                     else {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
@@ -692,13 +773,15 @@
                     }
                     offset += Geometry.normalSize;
                 }
+                if (vf & VertexFormat.VF_NORMAL) {
+                    srcOffset += Geometry.normalSize;
+                }
 
                 if (this.vertexFormat & VertexFormat.VF_TANGENT) {
                     if (vf & VertexFormat.VF_TANGENT) {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                         this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
-                        srcOffset += Geometry.tangentSize;
                     }
                     else {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
@@ -707,6 +790,9 @@
                     }
                     offset += Geometry.tangentSize;
                 }
+                if (vf & VertexFormat.VF_TANGENT) {
+                    srcOffset += Geometry.tangentSize;
+                }
 
                 if (this.vertexFormat & VertexFormat.VF_COLOR) {
                     if (vf & VertexFormat.VF_COLOR) {
@@ -714,7 +800,6 @@
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                         this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
                         this.vertexArray[index * this.vertexAttLength + offset + 3] = src[srcOffset + 3];
-                        srcOffset += Geometry.colorSize;
                     }
                     else {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = 1;
@@ -724,12 +809,14 @@
                     }
                     offset += Geometry.colorSize;
                 }
+                if (vf & VertexFormat.VF_COLOR) {
+                    srcOffset += Geometry.colorSize;
+                }
 
                 if (this.vertexFormat & VertexFormat.VF_UV0) {
                     if (vf & VertexFormat.VF_UV0) {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
-                        srcOffset += Geometry.uvSize;
                     }
                     else {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
@@ -737,12 +824,14 @@
                     }
                     offset += Geometry.uvSize;
                 }
+                if (vf & VertexFormat.VF_UV0) {
+                    srcOffset += Geometry.uvSize;
+                }
 
                 if (this.vertexFormat & VertexFormat.VF_UV1) {
                     if (vf & VertexFormat.VF_UV1) {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
-                        srcOffset += Geometry.uv2Size;
                     }
                     else {
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
@@ -750,13 +839,15 @@
                     }
                     offset += Geometry.uv2Size;
                 }
+                if (vf & VertexFormat.VF_UV1) {
+                    srcOffset += Geometry.uv2Size;
+                }
 
                 if (this.vertexFormat & VertexFormat.VF_SKIN) {
                     if (vf & VertexFormat.VF_SKIN) {
                         for (var j = 0; j < Geometry.skinSize; ++j) {
                             this.vertexArray[index * this.vertexAttLength + offset + j] = src[srcOffset + j];
                         }
-                        srcOffset += Geometry.skinSize;
                     }
                     else {
                         for (var j = 0; j < Geometry.skinSize; ++j) {
@@ -765,7 +856,9 @@
                     }
                     offset += Geometry.skinSize;
                 }
-
+                if (vf & VertexFormat.VF_SKIN) {
+                    srcOffset += Geometry.skinSize;
+                }
                 index++;
             }
         }
@@ -815,6 +908,24 @@
             }
             for (var i: number = 0; i < indices.length; ++i) {
                 this.indexArray[start + i] = indices[i];
+            }
+        }
+
+        /**
+        * @language zh_CN
+        * 释放接口
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose(): void {
+            if (this.sharedIndexBuffer) {
+                this.sharedIndexBuffer.dispose();
+                this.sharedIndexBuffer = null;
+            }
+
+            if (this.sharedVertexBuffer) {
+                this.sharedVertexBuffer.dispose();
+                this.sharedVertexBuffer = null;
             }
         }
     }

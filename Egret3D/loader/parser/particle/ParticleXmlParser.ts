@@ -97,9 +97,7 @@
             var colorConst2: Node = this.getNode(node, "colorConst2");
             var gradients1: Node = this.getNode(node, "colorGradients1");
             var gradients2: Node = this.getNode(node, "colorGradients2");
-            //tint color
-            var tintColor: Node = this.getNode(node, "tintColor");
-            this.parseColorProperty(property, colorConst1, colorConst2, gradients1, gradients2, tintColor);
+            this.parseColorProperty(property, colorConst1, colorConst2, gradients1, gradients2);
             //gravity
             property.gravity = Number(this.getNode(node, "gravity").textContent);
             //transform
@@ -149,7 +147,7 @@
          * @private
          * 解析颜色属性
          */
-        private parseColorProperty(property: ParticleDataProperty, c1: Node, c2: Node, cg1: Node, cg2: Node, tintColor:Node): void {
+        private parseColorProperty(property: ParticleDataProperty, c1: Node, c2: Node, cg1: Node, cg2: Node): void {
             if (c1) {
                 property.colorConst1 = Color.createColor(Number(c1.textContent));
             }
@@ -163,9 +161,6 @@
             if (cg2) {
                 var itemList: NodeList = this.getNodeList(cg2, "item");
                 property.colorGradients2 = this.parseGradientsColor(itemList, property.colorGradients2);
-            }
-            if (tintColor) {
-                property.tintColor = Color.createColor(Number(tintColor.textContent));
             }
 
         }
@@ -392,8 +387,10 @@
                 velocityLimit.type = ParticleValueType[this.getNode(velocityLimitNode, "type").textContent];
                 var min: Node = this.getNode(velocityLimitNode, "min");
                 var max: Node = this.getNode(velocityLimitNode, "max");
+                var dampen: Node = this.getNode(velocityLimitNode, "dampen");
                 velocityLimit.min = Number(min.textContent);
                 velocityLimit.max = Number(max.textContent);
+                velocityLimit.dampen = dampen ? Number(dampen.textContent) : 0;
 
                 velocityLimit.bezier1 = this.parseBezierData(this.getNode(velocityLimitNode, "bezier1"));
                 velocityLimit.bezier2 = this.parseBezierData(this.getNode(velocityLimitNode, "bezier2"));

@@ -75,6 +75,8 @@
         protected initPass() {
             //this.passes[PassType.diffusePass] = new ColorPass(this.materialData);
             this.addPass(PassType.colorPass);
+            //this.addPass(PassType.normalPass);
+            //this.addPass(PassType.depthPass_8);
         }
         
         /**
@@ -205,7 +207,6 @@
                     this.materialData.shaderPhaseTypes[PassType.shadowPass].push(ShaderPhaseType.diffuse_fragment);
                     //this.passes[PassType.shadowPass].passInvalid();
                 }
-               
             }
         }
 
@@ -452,6 +453,30 @@
         */
         public get specularColor(): number {
             return this.materialData.specularColor;
+        }
+
+        /**
+        * @language zh_CN
+        * 设置材质色相。
+        * 设置 16 进制的色相颜色
+        * @param color {Number}
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set tintColor(color: number) {
+            this.materialData.materialDataNeedChange = true;
+            this.materialData.tintColor = color;
+        }
+
+        /**
+        * @language zh_CN
+        * 获取材质 tintColor
+        * @returns number 材质 tintColor
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get tintColor(): number {
+            return this.materialData.tintColor;
         }
 
         /**
@@ -719,6 +744,24 @@
 
         /**
         * @language zh_CN
+        * @private
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set castPick(value: boolean) {
+            if (value) {
+                PickSystem.instance.enablePick = true;
+                this.addPass(PassType.PickPass);
+            } else {
+                if (this.passes[PassType.PickPass]) {
+                    this.disposePass(PassType.PickPass);
+                    this.passes[PassType.PickPass] = null;
+                }
+            }
+        }
+
+        /**
+        * @language zh_CN
         * 使用阴影详细请看 ShadowCast
         * @see egret3d.ShadowCast
         * 返回材质 castShadow 值。
@@ -824,31 +867,6 @@
         */
         public get shadowOffset(): number {
             return this.materialData.shadowColor[3];
-        }
-
-        /**
-         * @language zh_CN
-         * 设置材质 smooth 值。
-         * 材质纹理的采样方式，是否抗锯齿，是否精细显示。
-         * @param value {boolean}
-         * @version Egret 3.0
-         * @platform Web,Native
-         */
-        public set smooth(val: boolean) {
-            this.materialData.smooth = val;
-            this.materialData.textureStateChage = true; 
-        }
-
-        /**
-        * @language zh_CN
-        * 返回材质 smooth 值。
-        * 返回 材质纹理的采样方式，是否抗锯齿，是否精细显示。的开关
-        * @returns {boolean}
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public get smooth(): boolean {
-            return this.materialData.smooth;
         }
 
         /**

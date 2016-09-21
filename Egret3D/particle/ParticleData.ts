@@ -217,8 +217,6 @@
         public colorConst2: Color = new Color(255, 255, 255, 255);
         public colorGradients1: ColorGradients;
         public colorGradients2: ColorGradients;
-        //颜色矫正
-        public tintColor: Color = new Color(128, 128, 128, 128);
         //重力
         public gravity: number = 0;
         //是否预热
@@ -573,7 +571,7 @@
         public type: number = ParticleValueType.Const;
         public max: number = 0;
         public min: number = 0;
-
+        public dampen: number = 0;
         public bezier1: BezierData = new BezierData();
         public bezier2: BezierData = new BezierData();
 
@@ -587,6 +585,8 @@
             if (this.min < 0) {
                 this.min = 0;
             }
+            this.dampen = this.dampen || 0;
+
             if (this.type == ParticleValueType.Const) {
                 this.min = this.max;
             }
@@ -607,17 +607,6 @@
 
         }
 
-        public scaleBy(value: number): void {
-            this.min *= value;
-            this.max *= value;
-            if (this.bezier1) {
-                this.bezier1.scaleBy(value);
-            }
-            if (this.bezier2) {
-                this.bezier2.scaleBy(value);
-            }
-
-        }
     }
 
 
@@ -676,29 +665,7 @@
 
         }
 
-        public scaleBy(value: number): void {
-            this.min.scaleBy(value);
-            this.max.scaleBy(value);
-            if (this.xBezier1) {
-                this.xBezier1.scaleBy(value);
-            }
-            if (this.yBezier1) {
-                this.yBezier1.scaleBy(value);
-            }
-            if (this.zBezier1) {
-                this.zBezier1.scaleBy(value);
-            }
-            if (this.xBezier2) {
-                this.xBezier2.scaleBy(value);
-            }
-            if (this.yBezier2) {
-                this.yBezier2.scaleBy(value);
-            }
-            if (this.zBezier2) {
-                this.zBezier2.scaleBy(value);
-            }
-
-        }
+       
     }
 
 
@@ -757,29 +724,7 @@
 
         }
 
-        public scaleBy(value: number): void {
-            this.min.scaleBy(value);
-            this.max.scaleBy(value);
-            if (this.xBezier1) {
-                this.xBezier1.scaleBy(value);
-            }
-            if (this.yBezier1) {
-                this.yBezier1.scaleBy(value);
-            }
-            if (this.zBezier1) {
-                this.zBezier1.scaleBy(value);
-            }
-            if (this.xBezier2) {
-                this.xBezier2.scaleBy(value);
-            }
-            if (this.yBezier2) {
-                this.yBezier2.scaleBy(value);
-            }
-            if (this.zBezier2) {
-                this.zBezier2.scaleBy(value);
-            }
-
-        }
+       
     }
 
     export class ParticleDataScaleBezier extends ParticleDataNode {

@@ -24,7 +24,15 @@
         */
         constructor( pass:number = PassType.diffusePass ) {
             super();
-            this._pass = pass; 
+            this.pass = pass; 
+        }
+
+        public set pass( value: PassType ) {
+            this._pass = value; 
+        }
+
+        public get pass(): PassType {
+            return this._pass;
         }
 
         /**
@@ -60,6 +68,11 @@
                             material.passes[this._pass][this._j].draw(time, delay, context3D, this._renderItem.modelMatrix, camera, subGeometry, this._renderItem.animation);
                         }
                     } else if (PassUtil.PassAuto[this._pass]) {
+                        //// 补充新的需要的渲染pass
+                        if (!material.passes[this._pass]) {
+                            material.addPass(this._pass);
+                        }
+
                         for (this._j = material.passes[this._pass].length - 1; this._j >= 0; this._j--) {
                             material.passes[this._pass] = PassUtil.CreatPass(this._pass, material.materialData);
                             material.passes[this._pass][this._j].draw(time, delay, context3D, this._renderItem.modelMatrix, camera, subGeometry, this._renderItem.animation);

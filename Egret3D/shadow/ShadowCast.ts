@@ -99,7 +99,6 @@
             v.copyFrom(this.directLight.dir);
             v.negate();
             v.scaleBy(1000);
-            //this.directLight.position = v;
             this.shadowCamera.globalPosition = v;
         }
 
@@ -132,9 +131,6 @@
             this.shadowCamera.near = 1;
             this.shadowCamera.far = 3000;
             light.addChild(this.shadowCamera);
-
-            var box: Mesh = new Mesh(new CubeGeometry());
-            this.shadowCamera.addChild(box);
         }
 
         /**
@@ -144,8 +140,6 @@
         * @platform Web,Native
         */
         public update(entityCollect: EntityCollect, camera:Camera3D, time:number, delay:number, viewPort:Rectangle ) {
-
-            //entityCollect.update(this.shadowCamera);
 
             this.calculateBoundBox(entityCollect);
 

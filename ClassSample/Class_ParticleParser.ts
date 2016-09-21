@@ -6,9 +6,7 @@
 
         private _particle: ParticleEmitter;
         private _cube: Mesh;
-        private _xmlLoader: URLLoader;
-        private _particleData: ParticleData;
-        private _particleLoader: MapLoader;
+        private _particleLoader: EffectGroupLoader;
 
         public static view: View3D;
         constructor() {
@@ -23,14 +21,14 @@
             view1.camera3D.lookAt(new Vector3D(0, -500, -500), new Vector3D(0, 0, 0));
             view1.camera3D.far = 1000 * scale;
 
-            view1.backColor = 0xff000000;
+            view1.backColor = 0xff707070;
             this._egret3DCanvas.addView3D(view1);
 
             this._cameraCrl = new LookAtController(this._view3D.camera3D, new Object3D());
             this._cameraCrl.distance = 100 * scale;
             this._cameraCrl.scaleSpeed(scale);
 
-            this._particleLoader = new MapLoader("resource/scene/test/MapConfig.json");
+            this._particleLoader = new EffectGroupLoader("resource/scene/fire_scene/MapConfig.json");
             this._particleLoader.addEventListener(LoaderEvent3D.LOADER_COMPLETE, this.onParticleLoad, this);
             this._view3D.addChild3D(this._particleLoader.container);
 
@@ -58,7 +56,7 @@
         public update(e: Event3D) {
             this._cameraCrl.update();
             //this.obj.rotationY++;
-            if (this.angle > 300) {
+            if (this.angle > 180) {
                 this.angle = 0;
                 ParticleAnimation.Reset = true;
             } else {

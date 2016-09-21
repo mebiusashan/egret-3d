@@ -87,7 +87,7 @@
 
            // c.z = 200;
 
-            this.mapLoader = new MapLoader("resource/scene/scene(3)/MapConfig.json");
+            this.mapLoader = new MapLoader("resource/scene/sponza_Demo/MapConfig.json");
             this.view1.addChild3D(this.mapLoader.container);
             this.mapLoader.addEventListener(LoaderEvent3D.LOADER_COMPLETE, this.onMaploader, this);
             //this._line[0] = this.buildSemicircleLien(egret3d.Vector3D.X_AXIS, 80, 25, 180, 180, 0xffff00);

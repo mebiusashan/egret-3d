@@ -4,7 +4,7 @@
 // 按秒为单位
 //x : bornTime
 //y : life
-//w : index
+//z : index
 attribute vec3 attribute_time ;
 
 //按秒为单位
@@ -24,25 +24,21 @@ float particle( ParticleData curParticle ){
 	//扣除延迟时间
 	float time = particleStateData.time - particleStateData.delay;
 	//还未出生
-	if(time <= curParticle.bornTime){
+	currentTime = time - curParticle.bornTime;
+	if(currentTime <= 0.0){
 		return currentTime = 0.0;
 	}
 	if(particleStateData.loop < TrueOrFalse){
-		float emitterDuring = particleStateData.duration - particleStateData.delay;
 		//还没到出生时间，发射器已经死亡
-		if(curParticle.bornTime >= emitterDuring)
-		{
+		if(curParticle.bornTime >= particleStateData.duration){
 			return currentTime = 0.0;
 		}
 		//单个粒子本身的生命周期已经结束
-		if(time >= curParticle.life + curParticle.bornTime)
-		{
+		if(time >= curParticle.life + curParticle.bornTime){
 			return currentTime = 0.0;
 		}
-		
 	}
 
-	currentTime = time - curParticle.bornTime;
 	//计算当前粒子在单次循环中的相对时间
 	currentTime = mod(currentTime, particleStateData.loopTime);
 	//当前loopTime内超过粒子自身的什么周期，死亡状态

@@ -169,7 +169,7 @@
             ret.push(0.0);
 
             var face: number = -1;
-            var t: number = Number.MAX_VALUE;
+            var t: number = MathUtil.MAX_VALUE;
             var u: number = 0;
             var v: number = 0;
             for (var i: number = 0; i < faces; ++i) {

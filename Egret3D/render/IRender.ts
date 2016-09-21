@@ -76,7 +76,7 @@
 
         /**
         * @language zh_CN
-        * 动作对象，控制骨骼动画。</p>
+        * 动作对象，控制骨骼动画/特效动画等。</p>
         * 可拓展的动画功能属性，动画功能的驱动类总接口。</p>
         * @version Egret 3.0
         * @platform Web,Native
@@ -90,10 +90,109 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public lightGroup: LightGroup;
+        protected _lightGroup: LightGroup; 
+
+        /**
+        * @language zh_CN
+        * 设置材质 lightGroup 。
+        * 设置材质球接受的灯光组。
+        * @param lightGroup LightGroup
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set lightGroup(lightGroup: LightGroup) {
+            this._lightGroup = lightGroup;
+            for (var id in this.multiMaterial) {
+                this.multiMaterial[id].lightGroup = this._lightGroup;
+            }
+        }
+
+        /**
+        * @language zh_CN
+        * 获取材质 lightGroup 。
+        * @returns LightGroup 灯光组
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get lightGroup(): LightGroup {
+            return this._lightGroup;
+        }
+
+        /**
+        * @language zh_CN
+        * 增加一个材质
+        * @param id 材质id
+        * @param material 模型材质
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public addSubMaterial(id: number, material: MaterialBase) {
+            if (!this.multiMaterial[id]) {
+                this._materialCount++;
+            }
+            this.multiMaterial[id] = material;
+            material.lightGroup = this._lightGroup;
+        }
+
+        /**
+        * @language zh_CN
+        * 删除一个材质
+        * @param id 材质id
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public removeSubMaterial(id: number) {
+            if (this.multiMaterial[id]) {
+                delete this.multiMaterial[id];
+                this._materialCount--;
+            }
+        }
+
+        /**
+        * @language zh_CN
+        * 用ID得到一个材质
+        * @param id 材质id
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public getMaterial(id: number): MaterialBase {
+            return this.multiMaterial[id];
+        }
+
+        /**
+        * @language zh_CN
+        * 得到所有材质的个数
+        * @returns number
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public materialCount(): number {
+            return this._materialCount;
+        }
 
         public update(time: number, delay: number, camera: Camera3D) {
             super.update(time, delay, camera);
+
+            if (this.animation) {
+                this.animation.update(time, delay, this.geometry);
+            }
+            if (this.geometry.subGeometrys.length <= 0) {
+                this.geometry.buildDefaultSubGeometry();
+            }
+        }
+
+        /**
+        * @language zh_CN
+        * 释放所有数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose() {
+            super.dispose();
+            if (this.geometry) {
+                this.geometry.dispose();
+                this.geometry = null;
+            }
         }
     }
 }

@@ -17,7 +17,6 @@ module egret3d {
         */
         public weight: number = 1.0;
 
-        private _skeleton: Skeleton = null;
         private _timeLength: number = 0;
         private _timePosition: number = 0;
         private _skeletonAnimation: SkeletonAnimation = null;
@@ -26,26 +25,6 @@ module egret3d {
 
         constructor(name: string) {
             this.name = name;
-        }
-
-        /**
-        * @language zh_CN
-        * √…∆§π«º‹
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public get skeleton(): Skeleton {
-            return this._skeleton;
-        }
-
-        /**
-        * @language zh_CN
-        * √…∆§π«º‹
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public set skeleton(skeleton: Skeleton) {
-            this._skeleton = skeleton;
         }
 
         /**
@@ -289,8 +268,6 @@ module egret3d {
         public clone(): SkeletonAnimationState {
 
             var skeletonAnimationState: SkeletonAnimationState = new SkeletonAnimationState(this.name);
-
-            skeletonAnimationState._skeleton = this._skeleton;
 
             skeletonAnimationState._timeLength = this._timeLength;
 

@@ -39,7 +39,6 @@
             var plane_2: Mesh = new Mesh(new PlaneGeometry(1000,1000,1,1,10,10), new TextureMaterial(texture));
             plane_2.material.blendMode = BlendMode.NORMAL;
             plane_2.material.cutAlpha = 0;
-            plane_2.material.smooth = false;
             plane_2.material.repeat = true;
             plane_2.name = "plane_2";
             plane_2.tag.name = "normalObject";

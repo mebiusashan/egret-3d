@@ -73,7 +73,7 @@
         * @platform Web,Native
         */
         public createQuadTree(): void {
-            this._quad = new QuadRoot(8, 128);
+            this._quad = new QuadRoot(16, 2500);
             var nodes: Array<IQuadNode> = new Array<IQuadNode>();
             this.collectQuadList(nodes, this.root);
             this._quad.createQuadTree(nodes);

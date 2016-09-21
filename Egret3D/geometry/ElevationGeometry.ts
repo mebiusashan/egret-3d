@@ -17,8 +17,15 @@
 
         private _scaleU: number = 1; 
         private _scaleV: number = 1; 
-        private imageData: ImageData; 
+        private imageData: ImageData;
 
+        public get segmentsW(): number {
+            return this._segmentsW;
+        }
+
+        public get segmentsH(): number {
+            return this._segmentsH;
+        }
 
         constructor(heightmap: ImageTexture, width: number = 1000, height: number = 100, depth: number = 1000, segmentsW: number = 30, segmentsH: number = 30, maxElevation: number = 255, minElevation: number = 0) {
             super();
@@ -65,11 +72,6 @@
             var u: number, v: number;
             var y: number;
 
-            //if (numVerts == this._subGeometry.numVertices) {
-            //    vertices = this._subGeometry.vertexData;
-            //    indices = this._subGeometry.indexData;
-            // } else {
-
             this.vertexCount = numVerts;
             this.indexCount = this._segmentsH * this._segmentsW * 6;
 
@@ -84,9 +86,7 @@
                     u = Math.floor(xi * uDiv);
                     v = Math.floor((this._segmentsH - zi) * vDiv);
 
-                    col = this.getPixel(u, v) & 0xff;
-                    y =  (col > this._maxElevation) ? (this._maxElevation / 0xff) * this._height : ((col < this._minElevation) ? (this._minElevation / 0xff) * this._height : (col / 0xff) * this._height);
-
+                    y = this.getHeightBypos(u, v);
                     //pos
                     this.vertexArray[numVerts++] = x;
                     this.vertexArray[numVerts++] = y;//Math.random() * 1000;;
@@ -127,13 +127,13 @@
         }
 
         public getPixel(x: number, z: number): number {
-            var index: number = z * (this._heightmap.imageData.width * 4) + x * 4;
+            var index: number = (z * this._heightmap.imageData.width + x) * 4;
             var color: number = this.imageData.data[index + 3] << 24 | this.imageData.data[index + 0] << 16 | this.imageData.data[index + 1] << 8 | this.imageData.data[index + 2];
             return color;
         }
 
         public getHeightBypos(x: number, z: number): number {
-            var color: number = this.getPixel(x, z);
+            var color: number = this.getPixel(x, z) & 0xff;
 
             return (color > this._maxElevation) ? (this._maxElevation / 0xff) * this._height : ((color < this._minElevation) ? (this._minElevation / 0xff) * this._height : (color / 0xff) * this._height);
         }

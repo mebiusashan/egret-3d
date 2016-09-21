@@ -237,7 +237,7 @@
 
 
 
-        private _particleProperty: Float32Array = new Float32Array(23);
+        private _particleProperty: Float32Array = new Float32Array(24);
         private _particleFsData: Float32Array = new Float32Array(3);
         /**
         * @language zh_CN
@@ -284,10 +284,12 @@
             this._particleProperty[16] = data.property.gravity;
             this._particleProperty[17] = (data.moveSpeed.velocityOver && data.moveSpeed.velocityOver.worldSpace) ? 1 : 0;
             this._particleProperty[18] = (data.moveSpeed.velocityForce && data.moveSpeed.velocityForce.worldSpace) ? 1 : 0;
-            this._particleProperty[19] = data.property.cameraScale;
-            this._particleProperty[20] = data.property.speedScale;
-            this._particleProperty[21] = data.property.lengthScale;
-            this._particleProperty[22] = data.property.renderMode;
+            this._particleProperty[19] = data.moveSpeed.velocityLimit ? data.moveSpeed.velocityLimit.dampen : 0;
+
+            this._particleProperty[20] = data.property.cameraScale;
+            this._particleProperty[21] = data.property.speedScale;
+            this._particleProperty[22] = data.property.lengthScale;
+            this._particleProperty[23] = data.property.renderMode;
 
             context3DProxy.uniform1fv(usage["uniform_particleState"].uniformIndex, this._particleProperty);
 
@@ -302,6 +304,18 @@
                 this.animNodes[i].activeState(time, animTime, delay, animDelay, usage, geometry, context3DProxy);
             }
             //##FilterEnd##
+        }
+
+        public dispose(): void {
+            var node: AnimationNode;
+            for (node of this.animNodes) {
+                node.dispose();
+            }
+            this.animNodes.length = 0;
+            this.animNodes = null;
+
+            this.keyFrames.length = 0;
+            this.keyFrames = null;
         }
 
 

@@ -43,9 +43,9 @@ void main(void){
     wa.wave_xyz_speed_1 = vec3(waveVSData[3]) ; 
     
     float tempTime = mod( time , 1000000.0 ); 
-	vec3 newPose1 = calcWave2(tempTime,e_position,60.0, 500.0, 20.0,vec3(1.0,0.0,1.0)); 
-	newPose1 += calcWave2(tempTime,e_position,130.0, 50.0, 20.0,vec3(1.0,0.0,-0.5)); 
-	newPose1 += calcWave2(tempTime,e_position,90.0, 80.0, 20.0,vec3(1.0,0.0,-1.5)); 
+	vec3 newPose1 = calcWave2(tempTime,e_position,40.0, 20.0, 10.0,vec3(1.0,0.0,1.0)); 
+	newPose1 += calcWave2(tempTime,e_position,20.0, 10.0, 10.0,vec3(1.0,0.0,-0.5)); 
+	newPose1 += calcWave2(tempTime,e_position,1.0, 1.0, 10.0,vec3(1.0,0.0,-1.5)); 
     e_position = newPose1 ; 
     
     mat4 mvMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); 

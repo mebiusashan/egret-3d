@@ -84,6 +84,14 @@
         }
 
 
+        /**
+        * @private 
+        */
+        public dispose(): void {
+            super.dispose();
+            this._floatCompressDataX = this._floatCompressDataY = this._floatCompressDataZ = null;
+            this._node = null;
+        }
 
     }
 } 
