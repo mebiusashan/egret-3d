@@ -28,6 +28,8 @@
             this.width = width;
             this.height = height;
 
+            this.texture2D = new ContextTexture2D();
+
             this.tmpCanvas = document.createElement("canvas");
             this.tmpCanvas.width = width;
             this.tmpCanvas.height = height;
@@ -107,8 +109,8 @@
         */
         public upload(context3D: Context3DProxy) {
 
-            if (!this.texture2D) {
-                this.texture2D = context3D.creatTexture2D();
+            if (!this.texture2D.textureBuffer) {
+                this.texture2D.textureBuffer = this.texture2D.textureBuffer || context3D.creatTexture();
 
                 this.context.drawImage(this.video, 0, 0, this.width, this.height);
                 Context3DProxy.gl.pixelStorei(Context3DProxy.gl.UNPACK_ALIGNMENT, 1)

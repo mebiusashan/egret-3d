@@ -41,6 +41,9 @@
             this.height = 32;
             this.uvRectangle = new Rectangle(0, 0, 1, 1);
             this.buildCheckerboard();
+            this.texture2D = new ContextTexture2D();
+            this.texture2D.border = 0;
+            this.texture2D.internalFormat = InternalFormat.PixelArray;
         }
 
         /**
@@ -49,10 +52,8 @@
          * @param context3D 
          */
         public upload(context3D: Context3DProxy) {
-            if (!this.texture2D) {
-                this.texture2D = context3D.creatTexture2D();
-                this.texture2D.border = 0; 
-                this.texture2D.internalFormat = InternalFormat.PixelArray;
+            if (!this.texture2D.textureBuffer) {
+                this.texture2D.textureBuffer = this.texture2D.textureBuffer || context3D.creatTexture();
                 this.texture2D.colorFormat = Context3DProxy.gl.RGBA;
                 this.texture2D.mimapData = new Array<MipmapData>();
                 this.texture2D.mimapData.push(new MipmapData(this._pixelArray, this.width, this.height));

@@ -284,7 +284,6 @@
             }
 
             source += "precision highp float;            \t\n";
-
             for (i = 0; i < content.defineList.length; i++) {
                 source += ShaderUtil.connectDefine(content.defineList[i]);
             }

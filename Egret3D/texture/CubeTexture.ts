@@ -106,6 +106,9 @@
             this.image_right = image_right;
             this.image_up = image_up;
             this.image_down = image_down;
+
+            this.texture3D = new ContextTexture3D();
+
         }
 
         /**
@@ -145,6 +148,17 @@
 
             var cubeTexture: CubeTexture = new CubeTexture(front, back, left, right, up, down);
             return cubeTexture;
+        }
+
+        public static createCubeTextureByImageTexture(
+            image_front: ITexture,
+            image_back: ITexture,
+            image_left: ITexture,
+            image_right: ITexture,
+            image_up: ITexture,
+            image_down: ITexture):CubeTexture {
+
+            return new CubeTexture(image_front.texture2D, image_back.texture2D, image_left.texture2D, image_right.texture2D, image_up.texture2D, image_down.texture2D);
         }
 
         /**
@@ -187,9 +201,9 @@
                 !this.image_down) {
                 return;
             }
-            if (!this.texture3D) {
+            if (!this.texture3D.texture) {
 
-                this.texture3D = context3D.creatCubeTexture();
+                this.texture3D.texture = this.texture3D.texture || context3D.creatTexture();
                 this.texture3D.border = 0;
 
                 this.texture3D.image_front = this.image_front;
@@ -198,6 +212,7 @@
                 this.texture3D.image_right = this.image_right;
                 this.texture3D.image_up = this.image_up;
                 this.texture3D.image_down = this.image_down;
+
                 context3D.uploadCubetexture(this.texture3D);
             }
         }

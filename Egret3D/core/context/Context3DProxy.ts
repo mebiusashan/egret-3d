@@ -335,23 +335,21 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public creatTexture2D(): ContextTexture2D {
-            var texture: ContextTexture2D = new ContextTexture2D();
-            texture.textureBuffer = Context3DProxy.gl.createTexture();
-            return texture;
+        public creatTexture(): WebGLTexture {
+            return Context3DProxy.gl.createTexture();
         }
 
-        /**
-        * @language zh_CN
-        * 创建 Cube贴图 向显卡提交buffer申请 并创建Texture3D对象
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public creatCubeTexture(): ContextTexture3D {
-            var texture: ContextTexture3D = new ContextTexture3D();
-            texture.texture = Context3DProxy.gl.createTexture();
-            return texture;
-        }
+        ///**
+        //* @language zh_CN
+        //* 创建 Cube贴图 向显卡提交buffer申请 并创建Texture3D对象
+        //* @version Egret 3.0
+        //* @platform Web,Native
+        //*/
+        //public creatCubeTexture(): ContextTexture3D {
+        //    var texture: ContextTexture3D = new ContextTexture3D();
+        //    texture.texture = Context3DProxy.gl.createTexture();
+        //    return texture;
+        //}
 
         /**
         * @language zh_CN
@@ -424,8 +422,9 @@
         */
         public createFramebuffer(width: number, height: number, format: FrameBufferFormat): ContextTexture2D {
             var rttframeBuffer = Context3DProxy.gl.createFramebuffer();
-            var texture2D: ContextTexture2D = this.creatTexture2D();
+            var texture2D: ContextTexture2D = new ContextTexture2D();
             var depthRenderbuffer = Context3DProxy.gl.createRenderbuffer();
+            texture2D.textureBuffer = texture2D.textureBuffer || Context3DProxy.gl.createTexture(); 
 
             Context3DProxy.gl.bindTexture(Context3DProxy.gl.TEXTURE_2D, texture2D.textureBuffer);
 

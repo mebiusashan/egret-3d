@@ -9,8 +9,6 @@
     */
     export class Texture extends ITexture {
 
-      
-
         /**
         * @language zh_CN
         * 构造函数
@@ -20,6 +18,7 @@
         constructor() {
             super();
             this.smooth = true;
+            this.texture2D = new ContextTexture2D();
         }
 
       
@@ -31,12 +30,12 @@
         * @platform Web,Native
         */
         public upload(context3D: Context3DProxy) {
-            if (!this.texture2D) {
-                this.texture2D = context3D.creatTexture2D();
+            if (!this.texture2D.textureBuffer) {
+                this.texture2D.textureBuffer = this.texture2D.textureBuffer || context3D.creatTexture();
                 this.texture2D.internalFormat = this.internalFormat;
                 this.texture2D.colorFormat = this.colorFormat;
                 this.texture2D.mimapData = this.mimapData;
-
+                this.texture2D.dataFormat = Context3DProxy.gl.UNSIGNED_BYTE;
                 if (this.mimapData && this.mimapData.length > 0) {
                     for (var i: number = 0; i < this.mimapData.length; i++) {
                         context3D.upLoadTextureData(i, this);

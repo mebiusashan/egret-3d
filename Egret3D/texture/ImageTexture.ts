@@ -39,6 +39,8 @@
         constructor(img: HTMLImageElement) {
             super();
             this.imageData = img;
+            this.texture2D = new ContextTexture2D();
+            this.texture2D.imageData = img;
         }
 
         public get width(): number {
@@ -57,11 +59,12 @@
         * @platform Web,Native
         */
         public upload(context3D: Context3DProxy) {
-            if (!this.texture2D) {
-                this.texture2D = context3D.creatTexture2D();
+            if (!this.texture2D.textureBuffer ) {
+                this.texture2D.textureBuffer = this.texture2D.textureBuffer || context3D.creatTexture(); 
                 this.texture2D.internalFormat = InternalFormat.ImageData;
                 this.texture2D.imageData = this.imageData;
-              
+
+                this.texture2D.dataFormat = Context3DProxy.gl.UNSIGNED_BYTE;
                 this.texture2D.colorFormat = ContextConfig.ColorFormat_RGBA8888;
                 context3D.upLoadTextureData(0, this );
             }

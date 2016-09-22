@@ -15571,22 +15571,20 @@ var egret3d;
         * @version Egret 3.0
         * @platform Web,Native
         */
-        Context3DProxy.prototype.creatTexture2D = function () {
-            var texture = new egret3d.ContextTexture2D();
-            texture.textureBuffer = Context3DProxy.gl.createTexture();
-            return texture;
+        Context3DProxy.prototype.creatTexture = function () {
+            return Context3DProxy.gl.createTexture();
         };
-        /**
-        * @language zh_CN
-        * 创建 Cube贴图 向显卡提交buffer申请 并创建Texture3D对象
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        Context3DProxy.prototype.creatCubeTexture = function () {
-            var texture = new egret3d.ContextTexture3D();
-            texture.texture = Context3DProxy.gl.createTexture();
-            return texture;
-        };
+        ///**
+        //* @language zh_CN
+        //* 创建 Cube贴图 向显卡提交buffer申请 并创建Texture3D对象
+        //* @version Egret 3.0
+        //* @platform Web,Native
+        //*/
+        //public creatCubeTexture(): ContextTexture3D {
+        //    var texture: ContextTexture3D = new ContextTexture3D();
+        //    texture.texture = Context3DProxy.gl.createTexture();
+        //    return texture;
+        //}
         /**
         * @language zh_CN
         * @private
@@ -15647,8 +15645,9 @@ var egret3d;
         */
         Context3DProxy.prototype.createFramebuffer = function (width, height, format) {
             var rttframeBuffer = Context3DProxy.gl.createFramebuffer();
-            var texture2D = this.creatTexture2D();
+            var texture2D = new egret3d.ContextTexture2D();
             var depthRenderbuffer = Context3DProxy.gl.createRenderbuffer();
+            texture2D.textureBuffer = texture2D.textureBuffer || Context3DProxy.gl.createTexture();
             Context3DProxy.gl.bindTexture(Context3DProxy.gl.TEXTURE_2D, texture2D.textureBuffer);
             switch (format) {
                 case egret3d.FrameBufferFormat.UNSIGNED_BYTE_RGB:
@@ -16695,10 +16694,10 @@ var egret3d;
         function ContextTexture2D() {
             this.border = 0;
             this.imageData = null;
-            this.colorFormat = egret3d.ContextConfig.ColorFormat_RGBA8888;
-            this.dataFormat = egret3d.Context3DProxy.gl.UNSIGNED_BYTE;
-            this.internalFormat = egret3d.InternalFormat.PixelArray;
-            this.mimapData = new Array();
+            //this.colorFormat = ContextConfig.ColorFormat_RGBA8888;
+            //this.dataFormat = Context3DProxy.gl.UNSIGNED_BYTE;
+            //this.internalFormat = InternalFormat.PixelArray;
+            //this.mimapData = new Array<MipmapData>();
         }
         /**
         * @language zh_CN
@@ -45305,6 +45304,8 @@ var egret3d;
         function ImageTexture(img) {
             _super.call(this);
             this.imageData = img;
+            this.texture2D = new egret3d.ContextTexture2D();
+            this.texture2D.imageData = img;
         }
         Object.defineProperty(ImageTexture.prototype, "width", {
             get: function () {
@@ -45328,10 +45329,11 @@ var egret3d;
         * @platform Web,Native
         */
         ImageTexture.prototype.upload = function (context3D) {
-            if (!this.texture2D) {
-                this.texture2D = context3D.creatTexture2D();
+            if (!this.texture2D.textureBuffer) {
+                this.texture2D.textureBuffer = this.texture2D.textureBuffer || context3D.creatTexture();
                 this.texture2D.internalFormat = egret3d.InternalFormat.ImageData;
                 this.texture2D.imageData = this.imageData;
+                this.texture2D.dataFormat = egret3d.Context3DProxy.gl.UNSIGNED_BYTE;
                 this.texture2D.colorFormat = egret3d.ContextConfig.ColorFormat_RGBA8888;
                 context3D.upLoadTextureData(0, this);
             }
@@ -45371,6 +45373,7 @@ var egret3d;
         function Texture() {
             _super.call(this);
             this.smooth = true;
+            this.texture2D = new egret3d.ContextTexture2D();
         }
         /**
         * @language zh_CN
@@ -45379,11 +45382,12 @@ var egret3d;
         * @platform Web,Native
         */
         Texture.prototype.upload = function (context3D) {
-            if (!this.texture2D) {
-                this.texture2D = context3D.creatTexture2D();
+            if (!this.texture2D.textureBuffer) {
+                this.texture2D.textureBuffer = this.texture2D.textureBuffer || context3D.creatTexture();
                 this.texture2D.internalFormat = this.internalFormat;
                 this.texture2D.colorFormat = this.colorFormat;
                 this.texture2D.mimapData = this.mimapData;
+                this.texture2D.dataFormat = egret3d.Context3DProxy.gl.UNSIGNED_BYTE;
                 if (this.mimapData && this.mimapData.length > 0) {
                     for (var i = 0; i < this.mimapData.length; i++) {
                         context3D.upLoadTextureData(i, this);
@@ -45476,6 +45480,7 @@ var egret3d;
             this.image_right = image_right;
             this.image_up = image_up;
             this.image_down = image_down;
+            this.texture3D = new egret3d.ContextTexture3D();
         }
         /**
          * @language zh_CN
@@ -45502,6 +45507,9 @@ var egret3d;
             down.imageData = image_down;
             var cubeTexture = new CubeTexture(front, back, left, right, up, down);
             return cubeTexture;
+        };
+        CubeTexture.createCubeTextureByImageTexture = function (image_front, image_back, image_left, image_right, image_up, image_down) {
+            return new CubeTexture(image_front.texture2D, image_back.texture2D, image_left.texture2D, image_right.texture2D, image_up.texture2D, image_down.texture2D);
         };
         /**
          * @language zh_CN
@@ -45537,8 +45545,8 @@ var egret3d;
                 !this.image_down) {
                 return;
             }
-            if (!this.texture3D) {
-                this.texture3D = context3D.creatCubeTexture();
+            if (!this.texture3D.texture) {
+                this.texture3D.texture = this.texture3D.texture || context3D.creatTexture();
                 this.texture3D.border = 0;
                 this.texture3D.image_front = this.image_front;
                 this.texture3D.image_back = this.image_back;
@@ -45588,6 +45596,7 @@ var egret3d;
             this.height = 32;
             this.uvRectangle = new egret3d.Rectangle(0, 0, 1, 1);
             this.buildCheckerboard();
+            this.texture2D = new egret3d.ContextTexture2D();
         }
         /**
          * @language zh_CN
@@ -45595,8 +45604,8 @@ var egret3d;
          * @param context3D
          */
         CheckerboardTexture.prototype.upload = function (context3D) {
-            if (!this.texture2D) {
-                this.texture2D = context3D.creatTexture2D();
+            if (!this.texture2D.textureBuffer) {
+                this.texture2D.textureBuffer = this.texture2D.textureBuffer || context3D.creatTexture();
                 this.texture2D.border = 0;
                 this.texture2D.internalFormat = egret3d.InternalFormat.PixelArray;
                 this.texture2D.colorFormat = egret3d.Context3DProxy.gl.RGBA;
@@ -45676,6 +45685,7 @@ var egret3d;
             this.canUpdataTexture = false;
             this.width = width;
             this.height = height;
+            this.texture2D = new egret3d.ContextTexture2D();
             this.tmpCanvas = document.createElement("canvas");
             this.tmpCanvas.width = width;
             this.tmpCanvas.height = height;
@@ -45749,8 +45759,8 @@ var egret3d;
         * @param context3D
         */
         VideoTexture.prototype.upload = function (context3D) {
-            if (!this.texture2D) {
-                this.texture2D = context3D.creatTexture2D();
+            if (!this.texture2D.textureBuffer) {
+                this.texture2D.textureBuffer = this.texture2D.textureBuffer || context3D.creatTexture();
                 this.context.drawImage(this.video, 0, 0, this.width, this.height);
                 egret3d.Context3DProxy.gl.pixelStorei(egret3d.Context3DProxy.gl.UNPACK_ALIGNMENT, 1);
                 egret3d.Context3DProxy.gl.bindTexture(egret3d.Context3DProxy.gl.TEXTURE_2D, this.texture2D.textureBuffer);

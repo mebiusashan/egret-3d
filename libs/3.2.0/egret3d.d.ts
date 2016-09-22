@@ -7603,14 +7603,7 @@ declare module egret3d {
         * @version Egret 3.0
         * @platform Web,Native
         */
-        creatTexture2D(): ContextTexture2D;
-        /**
-        * @language zh_CN
-        * 创建 Cube贴图 向显卡提交buffer申请 并创建Texture3D对象
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        creatCubeTexture(): ContextTexture3D;
+        creatTexture(): WebGLTexture;
         /**
         * @language zh_CN
         * @private
@@ -21318,6 +21311,7 @@ declare module egret3d {
          * @param image_down 底部HTMLImageElement图片元素
          */
         static createCubeTexture(image_front: HTMLImageElement, image_back: HTMLImageElement, image_left: HTMLImageElement, image_right: HTMLImageElement, image_up: HTMLImageElement, image_down: HTMLImageElement): CubeTexture;
+        static createCubeTextureByImageTexture(image_front: ITexture, image_back: ITexture, image_left: ITexture, image_right: ITexture, image_up: ITexture, image_down: ITexture): CubeTexture;
         /**
          * @language zh_CN
          * 设置CubuTexture

@@ -111,10 +111,10 @@
         constructor() {
             this.border = 0;
             this.imageData = null;
-            this.colorFormat = ContextConfig.ColorFormat_RGBA8888;
-            this.dataFormat = Context3DProxy.gl.UNSIGNED_BYTE;
-            this.internalFormat = InternalFormat.PixelArray;
-            this.mimapData = new Array<MipmapData>();
+            //this.colorFormat = ContextConfig.ColorFormat_RGBA8888;
+            //this.dataFormat = Context3DProxy.gl.UNSIGNED_BYTE;
+            //this.internalFormat = InternalFormat.PixelArray;
+            //this.mimapData = new Array<MipmapData>();
         }
 
 
