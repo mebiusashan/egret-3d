@@ -888,7 +888,7 @@
                 count = this.indexCount - start;
             }
 
-            for (var i: number = 0; i < count - start; ++i) {
+            for (var i: number = 0; i < count; ++i) {
                 target[i] = this.indexArray[i + start];
             }
             return target;

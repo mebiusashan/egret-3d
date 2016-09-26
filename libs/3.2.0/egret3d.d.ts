@@ -2869,15 +2869,16 @@ declare module egret3d {
 declare module egret3d {
     /**
     * @private
-     * @language zh_CN
-     * @class egret3d.BezierCurve
-     * @classdesc
-     * 贝塞尔曲线
-     * @version Egret 3.0
-     * @platform Web,Native
-     */
+    * @language zh_CN
+    * @class egret3d.BezierCurve
+    * @classdesc
+    * 贝塞尔曲线
+    * @version Egret 3.0
+    * @platform Web,Native
+    */
     class BezierCurve {
         constructor();
+        calcLineX(pos: Array<Point>, t: number): number;
         calcBezierY(pos: Array<Point>, ctrl: Array<Point>, t: number): number;
         calcBezierX(pos: Array<Point>, ctrl: Array<Point>, t: number): number;
         private cubic_bezier(p0, p1, p2, p3, t);
@@ -2892,17 +2893,19 @@ declare module egret3d {
     * @platform Web,Native
     */
     class BezierData {
-        static SegCount: number;
+        private static SegCount;
         posPoints: Array<Point>;
         ctrlPoints: Array<Point>;
+        lineMode: boolean;
+        linePoints: Array<Point>;
         private static calc;
         constructor();
         calc(t: number): number;
         trySampler(): Float32Array;
         sampler(): Float32Array;
-        private doSampler();
+        private samplerLine();
+        private samplerBezier();
         validate(): void;
-        static compressFloats(floats: Array<number>, times: Array<number>): Float32Array;
     }
 }
 declare module egret3d {
@@ -3112,6 +3115,14 @@ declare module egret3d {
         * @platform Web,Native
         */
         target: any;
+        /**
+      * @language zh_CN
+      * 当前正在使用某个事件侦听器处理 Event3D 对象的对象
+      * @param value {any}
+      * @version Egret 3.0
+      * @platform Web,Native
+      */
+        currentTarget: any;
         /**
         * @language zh_CN
         * 3D引擎中的事件的类型
@@ -9734,6 +9745,9 @@ declare module egret3d {
      * @platform Web,Native
      */
     class Billboard extends Mesh {
+        private width;
+        private height;
+        private planeGeometry;
         /**
          * @language zh_CN
          * 指定材质，和公告板宽、高，构建一个公告板
@@ -9755,6 +9769,7 @@ declare module egret3d {
         * @platform Web,Native
         */
         update(time: number, delay: number, camera: Camera3D): void;
+        clone(): Mesh;
     }
 }
 declare module egret3d {
@@ -9818,11 +9833,33 @@ declare module egret3d {
      */
     class Wireframe extends IRender {
         /**
-         * @language zh_CN
-         * @version Egret 3.0
-         * @platform Web,Native
-         */
-        constructor();
+        * @language zh_CN
+        * 构造
+        * @param src  画线顶点数据列表 默认为null 没有设置数据 可以调用 this.fromVertexs 或 this.fromGeometry设置数据
+        * @param vf 画线顶点数据格式 默认为 VertexFormat.VF_POSITION (x, y, z) 可以加上颜色 VertexFormat.VF_COLOR (r, g, b, a)
+        * 每个顶点数据格式必须统一
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        constructor(src?: any, vf?: VertexFormat);
+        /**
+        * @language zh_CN
+        * 设置画线顶点数据 规则是把传入的所有点依次连接
+        * @param src  画线顶点数据列表
+        * @param vf 画线顶点数据格式 默认为 VertexFormat.VF_POSITION (x, y, z) 可以加上颜色 VertexFormat.VF_COLOR (r, g, b, a)
+        * 每个顶点数据格式必须统一
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        fromVertexs(src: any, vf?: VertexFormat): void;
+        /**
+        * @language zh_CN
+        * 设置画线顶点数据来源为Geometry 规则是按面连接
+        * @param geo  画线顶点数据来源 只会用到Geometry 和坐标数据和颜色数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        fromGeometry(geo: Geometry): void;
     }
 }
 declare module egret3d {
@@ -9965,7 +10002,10 @@ declare module egret3d {
         protected _visibleInvalid: boolean;
         protected _qut: Quaternion;
         protected _vec: Vector3D;
+        parentIsStage: boolean;
         constructor();
+        mouseX: number;
+        mouseY: number;
         /**
         * @language zh_CN
         * 获得当前舞台引用
@@ -10664,7 +10704,7 @@ declare module egret3d {
     * @platform Web,Native
     */
     class QuadNullType {
-        static NULL_TEXTURE: number;
+        static NULL_WHITE: number;
         static NULL_QUAD: number;
         static NULL_INVISIBLE: number;
     }
@@ -10714,6 +10754,10 @@ declare module egret3d {
         private _mouseList;
         private _quadStage;
         constructor(quadStage: QuadStage);
+        private dispatchMouseEvent(eventType);
+        private onTouchStart(e);
+        private onTouchEnd(e);
+        private onTouchMove(e);
         private mouseOut(e);
         private mouseDown(e);
         private mouseUp(e);
@@ -10721,6 +10765,7 @@ declare module egret3d {
         private mouseMove(e);
         private mouseClick(e);
         fire(): void;
+        private getGlobalRect(dis);
         private getMousePickList();
     }
 }
@@ -11370,6 +11415,39 @@ declare module egret3d.gui {
         private updateBar();
         setStyle(style: string, value: Texture): void;
         private updateStyle();
+    }
+}
+declare module egret3d.gui {
+    /**
+* @private
+* @class egret3d.gui.UISlider
+* @classdesc
+* @version Egret 3.0
+* @platform Web,Native
+*/
+    class UISlider extends gui.UIElement {
+        private _background;
+        private _bar;
+        private _maximum;
+        private _minimum;
+        private _value;
+        private _snapInterval;
+        private _text;
+        constructor();
+        setStyle(style: string, value: Texture): void;
+        private onMouseUp(event);
+        private onMouseDown(event);
+        private updateBar();
+        value: number;
+        private onMouseMove(event);
+        private onMouseClick(event);
+        maximum: number;
+        minimum: number;
+        backgroundColor: number;
+        barColor: number;
+        width: number;
+        height: number;
+        onRender(): void;
     }
 }
 declare module egret3d {
@@ -13231,7 +13309,6 @@ declare module egret3d {
         * @param r 半径 默认值 100
         * @param segmentsW 宽度分段数 默认值 15
         * @param segmentsH 高度分段数 默认值 15
-        * @param faceOrBack 正面或者反面显示
         * @version Egret 3.0
         * @platform Web,Native
         */
@@ -13267,6 +13344,7 @@ declare module egret3d {
         * @platform Web,Native
         */
         static createGemetryForType(type: string, gemetry: any): Geometry;
+        static fromVertexFormatToLength(vf: VertexFormat): number;
     }
 }
 declare module egret3d {
@@ -14564,6 +14642,13 @@ declare module egret3d {
          * @platform Web,Native
          */
         vSpeed: number;
+        play: boolean;
+        loop: boolean;
+        frameNum: number;
+        row: number;
+        col: number;
+        delayTime: number;
+        totalTime: number;
     }
 }
 declare module egret3d {
@@ -15550,6 +15635,9 @@ declare module egret3d {
         private _currentFrame;
         private frameList;
         private _change;
+        private _delayTime;
+        private _isLoop;
+        private _currentDelay;
         /**
         * @language zh_CN
         * 创建一个UV精灵动画的渲染方法对象
@@ -15637,6 +15725,36 @@ declare module egret3d {
         * @platform Web,Native
         */
         stop(): void;
+        /**
+        * @language zh_CN
+        * 获取播放延时时间
+        * @returns number 时间 秒
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        /**
+        * @language zh_CN
+        * 设置播放延时时间
+        * @param value 时间 秒
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        delayTime: number;
+        /**
+        * @language zh_CN
+        * 获取是否循环播放
+        * @returns boolean 是否循环
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        /**
+        * @language zh_CN
+        * 设置是否循环播放
+        * @param value 是否循环
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        isLoop: boolean;
         /**
         * @private
         * @language zh_CN

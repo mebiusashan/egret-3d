@@ -820,7 +820,7 @@ module egret3d {
 			"int index = int(floor(varying_textureIndex)) ; \n" +
 			"if(index < 0){ \n" +
 			"if(index == -1){ \n" +
-			"diffuseColor = vec4(1.0, 0.0, 0.0, 0.8); \n" +
+			"diffuseColor = vec4(1.0, 1.0, 1.0, 1.0); \n" +
 			"}else{ \n" +
 			"discard; \n" +
 			"} \n" +
@@ -1177,25 +1177,8 @@ module egret3d {
 			"} \n",
 
 			"particle_bezier":
-			"vec2 bzData[20]; \n" +
 			"const float Tiny = 0.0001; \n" +
-			"void dcpBezier(float bezierData[22], float tTotal) \n" +
-			"{ \n" +
-			"float timeNow = 0.0; \n" +
-			"float time1 = bezierData[20] * tTotal; \n" +
-			"float time2 = bezierData[21] * tTotal; \n" +
-			"for(int i = 0; i < 20; i ++){ \n" +
-			"bzData[i].x = timeNow; \n" +
-			"bzData[i].y = bezierData[i]; \n" +
-			"if(i <= 9){ \n" +
-			"timeNow += time1; \n" +
-			"}else if(i >= 11){ \n" +
-			"timeNow += time2; \n" +
-			"} \n" +
-			"} \n" +
-			"bzData[10].x = bzData[9].x; \n" +
-			"} \n" +
-			"float calcBezierArea(float tCurrent){ \n" +
+			"float calcBezierArea(float bzData[35], float tCurrent, float tTotal){ \n" +
 			"float res = 0.0; \n" +
 			"float v0; \n" +
 			"float v1; \n" +
@@ -1203,18 +1186,26 @@ module egret3d {
 			"float t1; \n" +
 			"float deltaTime = 0.0; \n" +
 			"float a_deltaTime; \n" +
-			"for(int i = 0; i < 19; i ++){ \n" +
-			"v0 = bzData[i].y; \n" +
-			"v1 = bzData[i + 1].y; \n" +
-			"t0 = bzData[i].x; \n" +
-			"t1 = bzData[i + 1].x; \n" +
+			"float segmentCount = bzData[34] - 1.0; \n" +
+			"float iFloat = 0.0; \n" +
+			"for(int i = 0; i < 16; i ++) \n" +
+			"{ \n" +
+			"iFloat = float(i); \n" +
+			"if(iFloat - segmentCount > Tiny) \n" +
+			"break; \n" +
+			"v0 = bzData[i * 2 + 1]; \n" +
+			"t0 = bzData[i * 2 + 2] * tTotal; \n" +
+			"v1 = bzData[i * 2 + 3]; \n" +
+			"t1 = bzData[i * 2 + 4] * tTotal; \n" +
 			"deltaTime = t1 - t0; \n" +
 			"if(deltaTime > Tiny) \n" +
 			"{ \n" +
 			"a_deltaTime = 0.5 * (v1 - v0); \n" +
-			"if(tCurrent >= t1){ \n" +
+			"if(tCurrent >= t1) \n" +
+			"{ \n" +
 			"res += deltaTime * (v0 + a_deltaTime); \n" +
-			"}else{ \n" +
+			"}else \n" +
+			"{ \n" +
 			"deltaTime = tCurrent - t0; \n" +
 			"res += deltaTime * (v0 + a_deltaTime); \n" +
 			"break; \n" +
@@ -1223,11 +1214,7 @@ module egret3d {
 			"} \n" +
 			"return res; \n" +
 			"} \n" +
-			"float calcOneBezierArea(float bezierData[22], float tCurrent, float tTotal){ \n" +
-			"dcpBezier(bezierData, tTotal); \n" +
-			"return calcBezierArea(tCurrent); \n" +
-			"} \n" +
-			"float calcBezierSize(float tCurrent){ \n" +
+			"float calcBezierSize(float bzData[35], float tCurrent, float tTotal){ \n" +
 			"float res = 0.0; \n" +
 			"float y0; \n" +
 			"float y1; \n" +
@@ -1235,15 +1222,22 @@ module egret3d {
 			"float t1; \n" +
 			"float deltaTime = 0.0; \n" +
 			"float v; \n" +
-			"for(int i = 0; i < 19; i ++){ \n" +
-			"y0 = bzData[i].y; \n" +
-			"y1 = bzData[i + 1].y; \n" +
-			"t0 = bzData[i].x; \n" +
-			"t1 = bzData[i + 1].x; \n" +
+			"float segmentCount = bzData[34] - 1.0; \n" +
+			"float iFloat = 0.0; \n" +
+			"for(int i = 0; i < 16; i ++) \n" +
+			"{ \n" +
+			"iFloat = float(i); \n" +
+			"if(iFloat - segmentCount > Tiny) \n" +
+			"break; \n" +
+			"y0 = bzData[i * 2 + 1]; \n" +
+			"t0 = bzData[i * 2 + 2] * tTotal; \n" +
+			"y1 = bzData[i * 2 + 3]; \n" +
+			"t1 = bzData[i * 2 + 4] * tTotal; \n" +
 			"deltaTime = t1 - t0; \n" +
 			"if(deltaTime > Tiny) \n" +
 			"{ \n" +
-			"if(tCurrent <= t1){ \n" +
+			"if(tCurrent <= t1) \n" +
+			"{ \n" +
 			"v = (y1 - y0) / deltaTime; \n" +
 			"deltaTime = tCurrent - t0; \n" +
 			"res = y0 + v * deltaTime; \n" +
@@ -1252,10 +1246,6 @@ module egret3d {
 			"} \n" +
 			"} \n" +
 			"return res; \n" +
-			"} \n" +
-			"float calcOneBezierSize(float bezierData[22], float tCurrent, float tTotal){ \n" +
-			"dcpBezier(bezierData, tTotal); \n" +
-			"return calcBezierSize(tCurrent); \n" +
 			"} \n",
 
 			"particle_color_fs":
@@ -1627,10 +1617,10 @@ module egret3d {
 			"} \n",
 
 			"particle_rotationOneBezier":
-			"uniform float uniform_rotationBezier[22]; \n" +
+			"uniform float uniform_rotationBezier[35]; \n" +
 			"float particle(  ParticleData curParticle ){ \n" +
 			"if(discard_particle < TrueOrFalse){ \n" +
-			"float rot = calcOneBezierSize(uniform_rotationBezier, currentTime, curParticle.life); \n" +
+			"float rot = calcBezierSize(uniform_rotationBezier, currentTime, curParticle.life); \n" +
 			"rot = currentTime * rot * (PI / 180.0); \n" +
 			"localPosition = buildRotMat4(vec3(0.0,0.0,rot)) * localPosition; \n" +
 			"} \n" +
@@ -1638,13 +1628,13 @@ module egret3d {
 
 			"particle_rotationTwoBezier":
 			"attribute float attribute_rotationRandomSeed; \n" +
-			"uniform float uniform_rotationBezier[22]; \n" +
-			"uniform float uniform_rotationBezier2[22]; \n" +
+			"uniform float uniform_rotationBezier[35]; \n" +
+			"uniform float uniform_rotationBezier2[35]; \n" +
 			"float particle(  ParticleData curParticle ){ \n" +
 			"if(discard_particle < TrueOrFalse){ \n" +
 			"vec2 rotationTwoBezier = vec2(0.0); \n" +
-			"rotationTwoBezier.x = calcOneBezierArea(uniform_rotationBezier, currentTime, curParticle.life); \n" +
-			"rotationTwoBezier.y = calcOneBezierArea(uniform_rotationBezier2, currentTime, curParticle.life); \n" +
+			"rotationTwoBezier.x = calcBezierArea(uniform_rotationBezier, currentTime, curParticle.life); \n" +
+			"rotationTwoBezier.y = calcBezierArea(uniform_rotationBezier2, currentTime, curParticle.life); \n" +
 			"float rot = mix(rotationTwoBezier.x, rotationTwoBezier.y, attribute_rotationRandomSeed); \n" +
 			"rot = currentTime * rot * (PI / 180.0); \n" +
 			"localPosition = buildRotMat4(vec3(0.0,0.0,rot)) * localPosition; \n" +
@@ -1652,9 +1642,9 @@ module egret3d {
 			"} \n",
 
 			"particle_size_vs":
-			"uniform float uniform_bezierSize[22]; \n" +
+			"uniform float uniform_bezierSize[35]; \n" +
 			"void main() { \n" +
-			"float bezierSize = calcOneBezierSize(uniform_bezierSize, currentTime, curParticle.life); \n" +
+			"float bezierSize = calcBezierSize(uniform_bezierSize, currentTime, curParticle.life); \n" +
 			"localPosition.xyz *= bezierSize; \n" +
 			"} \n",
 
@@ -1682,7 +1672,7 @@ module egret3d {
 			"particle_textureSheetOneBezier":
 			"varying vec3 varying_textureSheetData; \n" +
 			"uniform float uniform_textureSheet[5]; \n" +
-			"uniform float uniform_frameBezier[22]; \n" +
+			"uniform float uniform_frameBezier[35]; \n" +
 			"vec2 getSheetOffset(float frame, float tileX, float tileY) \n" +
 			"{ \n" +
 			"frame = floor(frame); \n" +
@@ -1699,7 +1689,7 @@ module egret3d {
 			"float frame = varying_textureSheetData.x + varying_textureSheetData.y; \n" +
 			"float currentTime = varying_particleData.x * uniform_textureSheet[2]; \n" +
 			"currentTime = mod(currentTime, varying_particleData.y); \n" +
-			"float bezierFrame = calcOneBezierSize(uniform_frameBezier, currentTime, varying_particleData.y); \n" +
+			"float bezierFrame = calcBezierSize(uniform_frameBezier, currentTime, varying_particleData.y); \n" +
 			"bezierFrame = clamp(bezierFrame, uniform_textureSheet[3], uniform_textureSheet[4]); \n" +
 			"frame += bezierFrame; \n" +
 			"uv_0.xy += getSheetOffset(frame, uniform_textureSheet[0], uniform_textureSheet[1]); \n" +
@@ -1708,8 +1698,8 @@ module egret3d {
 			"particle_textureSheetTwoBezier":
 			"varying vec3 varying_textureSheetData; \n" +
 			"uniform float uniform_textureSheet[5]; \n" +
-			"uniform float uniform_frameBezier1[22]; \n" +
-			"uniform float uniform_frameBezier2[22]; \n" +
+			"uniform float uniform_frameBezier1[35]; \n" +
+			"uniform float uniform_frameBezier2[35]; \n" +
 			"vec2 getSheetOffset(float frame, float tileX, float tileY) \n" +
 			"{ \n" +
 			"frame = floor(frame); \n" +
@@ -1726,8 +1716,8 @@ module egret3d {
 			"float frame = varying_textureSheetData.x + varying_textureSheetData.y; \n" +
 			"float currentTime = varying_particleData.x * uniform_textureSheet[2]; \n" +
 			"currentTime = mod(currentTime, varying_particleData.y); \n" +
-			"float b1 = calcOneBezierSize(uniform_frameBezier1, currentTime2, varying_particleData.y); \n" +
-			"float b2 = calcOneBezierSize(uniform_frameBezier2, currentTime2, varying_particleData.y); \n" +
+			"float b1 = calcBezierSize(uniform_frameBezier1, currentTime2, varying_particleData.y); \n" +
+			"float b2 = calcBezierSize(uniform_frameBezier2, currentTime2, varying_particleData.y); \n" +
 			"float bezierFrame = mix(b1, b2, varying_particleData.z); \n" +
 			"bezierFrame = clamp(bezierFrame, uniform_textureSheet[3], uniform_textureSheet[4]); \n" +
 			"frame += bezierFrame; \n" +
@@ -1822,24 +1812,24 @@ module egret3d {
 			"} \n",
 
 			"particle_velocityForceOneBezierX":
-			"uniform float uniform_velocityForceX[22]; \n" +
+			"uniform float uniform_velocityForceX[35]; \n" +
 			"void calcVelocityForceBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityForceOneBezier.x = calcOneBezierArea(uniform_velocityForceX, curTime, totalTime); \n" +
+			"velocityForceOneBezier.x = calcBezierArea(uniform_velocityForceX, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityForceOneBezierY":
-			"uniform float uniform_velocityForceY[22]; \n" +
+			"uniform float uniform_velocityForceY[35]; \n" +
 			"void calcVelocityForceBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityForceOneBezier.y = calcOneBezierArea(uniform_velocityForceY, curTime, totalTime); \n" +
+			"velocityForceOneBezier.y = calcBezierArea(uniform_velocityForceY, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityForceOneBezierZ":
-			"uniform float uniform_velocityForceZ[22]; \n" +
+			"uniform float uniform_velocityForceZ[35]; \n" +
 			"void calcVelocityForceBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityForceOneBezier.z = calcOneBezierArea(uniform_velocityForceZ, curTime, totalTime); \n" +
+			"velocityForceOneBezier.z = calcBezierArea(uniform_velocityForceZ, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityForceTwoBezier":
@@ -1859,45 +1849,45 @@ module egret3d {
 			"} \n",
 
 			"particle_velocityForceTwoBezierX1":
-			"uniform float uniform_velocityForceX1[22]; \n" +
+			"uniform float uniform_velocityForceX1[35]; \n" +
 			"void calcVelocityForceBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityForceTwoBezier1.x = calcOneBezierArea(uniform_velocityForceX1, curTime, totalTime); \n" +
+			"velocityForceTwoBezier1.x = calcBezierArea(uniform_velocityForceX1, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityForceTwoBezierX2":
-			"uniform float uniform_velocityForceX2[22]; \n" +
+			"uniform float uniform_velocityForceX2[35]; \n" +
 			"void calcVelocityForceBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityForceTwoBezier2.x = calcOneBezierArea(uniform_velocityForceX2, curTime, totalTime); \n" +
+			"velocityForceTwoBezier2.x = calcBezierArea(uniform_velocityForceX2, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityForceTwoBezierY1":
-			"uniform float uniform_velocityForceY1[22]; \n" +
+			"uniform float uniform_velocityForceY1[35]; \n" +
 			"void calcVelocityForceBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityForceTwoBezier1.y = calcOneBezierArea(uniform_velocityForceY1, curTime, totalTime); \n" +
+			"velocityForceTwoBezier1.y = calcBezierArea(uniform_velocityForceY1, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityForceTwoBezierY2":
-			"uniform float uniform_velocityForceY2[22]; \n" +
+			"uniform float uniform_velocityForceY2[35]; \n" +
 			"void calcVelocityForceBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityForceTwoBezier2.y = calcOneBezierArea(uniform_velocityForceY2, curTime, totalTime); \n" +
+			"velocityForceTwoBezier2.y = calcBezierArea(uniform_velocityForceY2, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityForceTwoBezierZ1":
-			"uniform float uniform_velocityForceZ1[22]; \n" +
+			"uniform float uniform_velocityForceZ1[35]; \n" +
 			"void calcVelocityForceBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityForceTwoBezier1.z = calcOneBezierArea(uniform_velocityForceZ1, curTime, totalTime); \n" +
+			"velocityForceTwoBezier1.z = calcBezierArea(uniform_velocityForceZ1, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityForceTwoBezierZ2":
-			"uniform float uniform_velocityForceZ2[22]; \n" +
+			"uniform float uniform_velocityForceZ2[35]; \n" +
 			"void calcVelocityForceBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityForceTwoBezier2.z = calcOneBezierArea(uniform_velocityForceZ2, curTime, totalTime); \n" +
+			"velocityForceTwoBezier2.z = calcBezierArea(uniform_velocityForceZ2, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityLimitConst":
@@ -1911,22 +1901,22 @@ module egret3d {
 			"} \n",
 
 			"particle_velocityLimitOneBezier":
-			"uniform float uniform_velocityLimit[22]; \n" +
+			"uniform float uniform_velocityLimit[35]; \n" +
 			"void main() { \n" +
 			"if(discard_particle < TrueOrFalse){ \n" +
-			"velocityLimitVec2.x = calcOneBezierArea(uniform_velocityLimit, currentTime, curParticle.life); \n" +
+			"velocityLimitVec2.x = calcBezierArea(uniform_velocityLimit, currentTime, curParticle.life); \n" +
 			"velocityLimitVec2.y = 1.0; \n" +
 			"} \n" +
 			"} \n",
 
 			"particle_velocityLimitTwoBezier":
-			"uniform float uniform_velocityLimit[22]; \n" +
-			"uniform float uniform_velocityLimit2[22]; \n" +
+			"uniform float uniform_velocityLimit[35]; \n" +
+			"uniform float uniform_velocityLimit2[35]; \n" +
 			"attribute float attribute_velocityLimitRandomSeed; \n" +
 			"void main() { \n" +
 			"if(discard_particle < TrueOrFalse){ \n" +
-			"float velocity2Limit1 = calcOneBezierArea(uniform_velocityLimit, currentTime, curParticle.life); \n" +
-			"float velocity2Limit2 = calcOneBezierArea(uniform_velocityLimit2, currentTime, curParticle.life); \n" +
+			"float velocity2Limit1 = calcBezierArea(uniform_velocityLimit, currentTime, curParticle.life); \n" +
+			"float velocity2Limit2 = calcBezierArea(uniform_velocityLimit2, currentTime, curParticle.life); \n" +
 			"velocityLimitVec2.x = mix(velocity2Limit1, velocity2Limit1, attribute_velocityLimitRandomSeed); \n" +
 			"if(velocityLimitVec2.x < 0.0){ \n" +
 			"velocityLimitVec2.x = 0.0; \n" +
@@ -1954,24 +1944,24 @@ module egret3d {
 			"} \n",
 
 			"particle_velocityOverOneBezierX":
-			"uniform float uniform_velocityOverX[22]; \n" +
+			"uniform float uniform_velocityOverX[35]; \n" +
 			"void calcVelocityOverBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityTwoBezier.x = calcOneBezierArea(uniform_velocityOverX, curTime, totalTime); \n" +
+			"velocityTwoBezier.x = calcBezierArea(uniform_velocityOverX, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityOverOneBezierY":
-			"uniform float uniform_velocityOverY[22]; \n" +
+			"uniform float uniform_velocityOverY[35]; \n" +
 			"void calcVelocityOverBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityTwoBezier.y = calcOneBezierArea(uniform_velocityOverY, curTime, totalTime); \n" +
+			"velocityTwoBezier.y = calcBezierArea(uniform_velocityOverY, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityOverOneBezierZ":
-			"uniform float uniform_velocityOverZ[22]; \n" +
+			"uniform float uniform_velocityOverZ[35]; \n" +
 			"void calcVelocityOverBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityTwoBezier.z = calcOneBezierArea(uniform_velocityOverZ, curTime, totalTime); \n" +
+			"velocityTwoBezier.z = calcBezierArea(uniform_velocityOverZ, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityOverTwoBezier":
@@ -1991,45 +1981,45 @@ module egret3d {
 			"} \n",
 
 			"particle_velocityOverTwoBezierX1":
-			"uniform float uniform_velocityOverX1[22]; \n" +
+			"uniform float uniform_velocityOverX1[35]; \n" +
 			"void calcVelocityOverBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityOverTwoBezier1.x = calcOneBezierArea(uniform_velocityOverX1, curTime, totalTime); \n" +
+			"velocityOverTwoBezier1.x = calcBezierArea(uniform_velocityOverX1, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityOverTwoBezierX2":
-			"uniform float uniform_velocityOverX2[22]; \n" +
+			"uniform float uniform_velocityOverX2[35]; \n" +
 			"void calcVelocityOverBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityOverTwoBezier2.x = calcOneBezierArea(uniform_velocityOverX2, curTime, totalTime); \n" +
+			"velocityOverTwoBezier2.x = calcBezierArea(uniform_velocityOverX2, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityOverTwoBezierY1":
-			"uniform float uniform_velocityOverY1[22]; \n" +
+			"uniform float uniform_velocityOverY1[35]; \n" +
 			"void calcVelocityOverBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityOverTwoBezier1.y = calcOneBezierArea(uniform_velocityOverY1, curTime, totalTime); \n" +
+			"velocityOverTwoBezier1.y = calcBezierArea(uniform_velocityOverY1, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityOverTwoBezierY2":
-			"uniform float uniform_velocityOverY2[22]; \n" +
+			"uniform float uniform_velocityOverY2[35]; \n" +
 			"void calcVelocityOverBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityOverTwoBezier2.y = calcOneBezierArea(uniform_velocityOverY2, curTime, totalTime); \n" +
+			"velocityOverTwoBezier2.y = calcBezierArea(uniform_velocityOverY2, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityOverTwoBezierZ1":
-			"uniform float uniform_velocityOverZ1[22]; \n" +
+			"uniform float uniform_velocityOverZ1[35]; \n" +
 			"void calcVelocityOverBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityOverTwoBezier1.z = calcOneBezierArea(uniform_velocityOverZ1, curTime, totalTime); \n" +
+			"velocityOverTwoBezier1.z = calcBezierArea(uniform_velocityOverZ1, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_velocityOverTwoBezierZ2":
-			"uniform float uniform_velocityOverZ2[22]; \n" +
+			"uniform float uniform_velocityOverZ2[35]; \n" +
 			"void calcVelocityOverBezier(float curTime, float totalTime) \n" +
 			"{ \n" +
-			"velocityOverTwoBezier2.z = calcOneBezierArea(uniform_velocityOverZ2, curTime, totalTime); \n" +
+			"velocityOverTwoBezier2.z = calcBezierArea(uniform_velocityOverZ2, curTime, totalTime); \n" +
 			"} \n",
 
 			"particle_vs":

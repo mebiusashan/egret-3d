@@ -27,6 +27,10 @@
         private frameList: Array<Rectangle> = [] ;
         private _change: boolean = true;
 
+        private _delayTime: number = 0.0;
+        private _isLoop: boolean = true;
+        private _currentDelay: number = 0.0;
+
         /**
         * @language zh_CN
         * 创建一个UV精灵动画的渲染方法对象
@@ -182,8 +186,11 @@
         * @platform Web,Native
         */
         public start(rest: boolean = false) {
-            if (rest)
+            if (rest) {
                 this._time = 0;
+                this._currentDelay = 0.0;
+                this._currentFrame = 0;
+            }
             this._start = true;
         }
                         
@@ -195,6 +202,57 @@
         */
         public stop() {
             this._start = false;
+        }
+
+        /**
+        * @language zh_CN
+        * 获取播放延时时间
+        * @returns number 时间 秒
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get delayTime(): number {
+            return this._delayTime / 1000.0;
+        }
+
+        /**
+        * @language zh_CN
+        * 设置播放延时时间
+        * @param value 时间 秒
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set delayTime(value: number) {
+            if (this._delayTime != value) {
+                this._change = true;
+                this._delayTime = value * 1000.0;
+                this._currentDelay = 0.0;
+            }
+        }
+
+        /**
+        * @language zh_CN
+        * 获取是否循环播放
+        * @returns boolean 是否循环
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get isLoop(): boolean {
+            return this._isLoop;
+        }
+
+        /**
+        * @language zh_CN
+        * 设置是否循环播放
+        * @param value 是否循环
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set isLoop(value: boolean) {
+            if (this._isLoop != value) {
+                this._change = true;
+                this._isLoop = value;
+            }
         }
 
         /**
@@ -223,12 +281,25 @@
                 this.caculate();
 
             if (this._start) {
+                this._currentDelay += delay;
 
-                this._time += delay;
+                if (this._currentDelay >= this._delayTime) {
+                    this._time += delay;
 
-                if (this._time / this._speed > 1.0) {
-                    this._currentFrame++;
-                    this._time = 0;
+                    if (this._time / this._speed > 1.0) {
+                        if (this._currentFrame + 1 >= this._frameNum) {
+                            if (this._isLoop) {
+                                this._currentFrame = 0;
+                            }
+                            else {
+                                this._start = false;
+                            }
+                        }
+                        else {
+                            this._currentFrame++;
+                        }
+                        this._time = 0;
+                    }
                 }
             }
 

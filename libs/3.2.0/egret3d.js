@@ -4705,6 +4705,12 @@ var egret3d;
                     if (!this._bound.parent) {
                         this.owner.addChild(this._bound);
                     }
+                    else {
+                        if (this._bound.parent != this.owner) {
+                            this._bound.parent.removeChild(this._bound);
+                            this.owner.addChild(this._bound);
+                        }
+                    }
                 }
                 else {
                     if (this._bound.parent) {
@@ -5209,16 +5215,7 @@ var egret3d;
         * @returns Bound 包圍對象
         */
         BoundBox.prototype.clone = function () {
-            var bound = new BoundBox(this.owner);
-            bound.copyVertex(this);
-            bound.width = this.width;
-            bound.heigth = this.heigth;
-            bound.depth = this.depth;
-            bound.min.copyFrom(this.min);
-            bound.max.copyFrom(this.max);
-            bound.volume = this.volume;
-            bound.center.copyFrom(this.center);
-            bound.radius = this.radius;
+            var bound = new BoundBox(this.owner, this.min, this.max);
             return bound;
         };
         return BoundBox;
@@ -5229,16 +5226,28 @@ var egret3d;
 (function (egret3d) {
     /**
     * @private
-     * @language zh_CN
-     * @class egret3d.BezierCurve
-     * @classdesc
-     * 贝塞尔曲线
-     * @version Egret 3.0
-     * @platform Web,Native
-     */
+    * @language zh_CN
+    * @class egret3d.BezierCurve
+    * @classdesc
+    * 贝塞尔曲线
+    * @version Egret 3.0
+    * @platform Web,Native
+    */
     var BezierCurve = (function () {
         function BezierCurve() {
         }
+        BezierCurve.prototype.calcLineX = function (pos, t) {
+            var A0;
+            var A1;
+            for (var i = 0, count = pos.length - 1; i < count; i++) {
+                A0 = pos[i];
+                A1 = pos[i + 1];
+                if (A0.x <= t && A1.x >= t) {
+                    break;
+                }
+            }
+            return this.mix(A0.y, A1.y, (t - A0.x) / (t - A1.x));
+        };
         BezierCurve.prototype.calcBezierY = function (pos, ctrl, t) {
             var A0;
             var B0;
@@ -5311,52 +5320,123 @@ var egret3d;
         function BezierData() {
             this.posPoints = [];
             this.ctrlPoints = [];
+            this.lineMode = false;
+            this.linePoints = [];
         }
         BezierData.prototype.calc = function (t) {
-            var value = BezierData.calc.calcBezierY(this.posPoints, this.ctrlPoints, t);
+            var value;
+            if (!this.lineMode) {
+                value = BezierData.calc.calcBezierY(this.posPoints, this.ctrlPoints, t);
+            }
+            else {
+                value = BezierData.calc.calcLineX(this.linePoints, t);
+            }
             return value;
         };
         BezierData.prototype.trySampler = function () {
-            for (var i = 0, count = this.posPoints.length; i < count; i++) {
-                if (this.posPoints[i].y != 0 || this.ctrlPoints[i].y != 0) {
-                    return this.doSampler();
+            var dataValide;
+            if (this.lineMode) {
+                for (var i = 0, count = this.linePoints.length; i < count; i++) {
+                    if (this.linePoints[i].y != 0) {
+                        dataValide = true;
+                        break;
+                    }
                 }
+            }
+            else {
+                for (var i = 0, count = this.posPoints.length; i < count; i++) {
+                    if (this.posPoints[i].y != 0 || this.ctrlPoints[i].y != 0) {
+                        dataValide = true;
+                        break;
+                    }
+                }
+            }
+            if (dataValide) {
+                return this.sampler();
+                ;
             }
             return null;
         };
         BezierData.prototype.sampler = function () {
-            return this.doSampler();
+            if (this.lineMode) {
+                return this.samplerLine();
+            }
+            return this.samplerBezier();
         };
-        BezierData.prototype.doSampler = function () {
-            var floats = [];
-            var times = [];
-            var segmentTime;
-            var segmentStartTime = 0;
-            var segmentEndTime = 0;
-            //每段有10个数据，将该段曲线分为9小段
-            var SegmentCount = 9;
-            var i;
-            var count;
-            for (i = 0, count = BezierData.SegCount; i < count; i++) {
-                floats.push(this.posPoints[i * 2].y); //第一个数字
-                segmentStartTime = this.posPoints[i * 2].x;
-                segmentEndTime = this.posPoints[i * 2 + 1].x;
-                segmentTime = (segmentEndTime - segmentStartTime) / SegmentCount; //该贝塞尔的每小段
-                times.push(segmentTime);
-                for (var j = 1; j < SegmentCount; j++) {
-                    floats.push(this.calc(segmentStartTime + segmentTime * j));
-                }
-                floats.push(this.posPoints[i * 2 + 1].y); //第10个数字
-            }
-            var res = new Float32Array(floats.length + times.length);
-            for (i = 0, count = floats.length; i < count; i++) {
-                res[i] = floats[i];
-            }
-            for (var j = 0, count = times.length; j < count; i++, j++) {
-                res[i] = times[j];
+        BezierData.prototype.samplerLine = function () {
+            var SampleNum = 8;
+            var res = new Float32Array(1 + (SampleNum * 2 + 1) * 2);
+            res[res.length - 1] = this.linePoints.length;
+            for (var i = 0, count = this.linePoints.length; i < count; i++) {
+                res[i * 2] = this.linePoints[i].x;
+                res[i * 2 + 1] = this.linePoints[i].y;
             }
             return res;
         };
+        /*
+        * @private
+        * 采样bezier变成线段的形式
+        */
+        BezierData.prototype.samplerBezier = function () {
+            //2段bezier，第一段9个点，第二段8个点
+            //每个点有(x,y)
+            //最后一个数据表示当前采样了几个点，如果是bezier的情况，值是9+8；如果是线段类型，则在(1，8 + 9)之间的一个整数
+            var SampleNum = 8;
+            var res = new Float32Array(1 + (SampleNum * 2 + 1) * 2);
+            var tempTime;
+            var now = 0;
+            var i, j, count;
+            var position = 0;
+            res[position] = now;
+            position++;
+            res[position] = this.posPoints[0].y;
+            position++;
+            for (i = 0, count = BezierData.SegCount; i < count; i++) {
+                tempTime = this.posPoints[i * 2 + 1].x - this.posPoints[i * 2].x;
+                tempTime /= SampleNum;
+                for (j = 0; j < SampleNum; j++) {
+                    now += tempTime;
+                    res[position] = now;
+                    position++;
+                    res[position] = this.calc(now);
+                    position++;
+                }
+            }
+            //最后放入数量
+            res[position] = SampleNum * 2 + 1;
+            position++;
+            return res;
+        };
+        //private doSampler1(): Float32Array {
+        //    var floats: Array<number> = [];
+        //    var times: Array<number> = [];
+        //    var segmentTime: number;
+        //    var segmentStartTime: number = 0;
+        //    var segmentEndTime: number = 0;
+        //    //每段有10个数据，将该段曲线分为10小段
+        //    const SegmentCount: number = 9;
+        //    var i: number;
+        //    var count: number;
+        //    for (i = 0, count = BezierData.SegCount; i < count; i++) {
+        //        floats.push(this.posPoints[i * 2].y);//第一个数字
+        //        segmentStartTime = this.posPoints[i * 2].x;
+        //        segmentEndTime = this.posPoints[i * 2 + 1].x;
+        //        segmentTime = (segmentEndTime - segmentStartTime) / SegmentCount;//该贝塞尔的每小段
+        //        times.push(segmentTime);
+        //        for (var j: number = 1; j < SegmentCount; j++) {
+        //            floats.push(this.calc(segmentStartTime + segmentTime * j));
+        //        }
+        //        floats.push(this.posPoints[i * 2 + 1].y);//第10个数字
+        //    }
+        //    var res: Float32Array = new Float32Array(floats.length + times.length);
+        //    for (i = 0, count = floats.length; i < count; i++) {
+        //        res[i] = floats[i];
+        //    }
+        //    for (var j: number = 0, count = times.length; j < count; i++ , j++) {
+        //        res[i] = times[j];
+        //    }
+        //    return res;
+        //}
         BezierData.prototype.validate = function () {
             if (this.posPoints == null) {
                 this.posPoints = [];
@@ -5376,77 +5456,7 @@ var egret3d;
             this.ctrlPoints.length = BezierData.SegCount * 2;
             this.posPoints.length = BezierData.SegCount * 2;
         };
-        //___________压缩数据
-        BezierData.compressFloats = function (floats, times) {
-            if (floats.length % 2 == 1) {
-                floats.push(0);
-            }
-            var floatCount = 0;
-            floatCount += BezierData.SegCount * 5; //每段有10个float高度数据，压缩后变成5个
-            floatCount += 2; //2个float是用于放入min和range
-            floatCount += 1; //记录是否表示所有的数据都相等
-            floatCount += BezierData.SegCount; //每段有一个float记录该段的总时间
-            var res = new Float32Array(floatCount);
-            var maxInt = 4096; //最大的数，在这个范围进行压缩
-            var maxInt_1 = maxInt - 1;
-            var i;
-            var count;
-            //获得最小和最大值
-            var ints = [];
-            ints.length = floats.length;
-            var floatValue;
-            var min = egret3d.MathUtil.MAX_VALUE;
-            var max = -min;
-            for (i = 0, count = floats.length; i < count; i++) {
-                floatValue = ints[i] = floats[i];
-                max = Math.max(floatValue, max);
-                min = Math.min(floatValue, min);
-            }
-            var range = max - min;
-            //表示所有的数据都相等
-            if (range > 0) {
-                //转化每个float，于0 - maxInt之间
-                var intValue = 0;
-                for (i = 0, count = ints.length; i < count; i++) {
-                    intValue = ints[i];
-                    intValue -= min;
-                    intValue /= range; //0-1之间
-                    intValue *= maxInt_1; //0 - (maxInt - 1)之间
-                    ints[i] = Math.floor(intValue);
-                }
-                //2合1
-                var int1;
-                var int2;
-                for (i = 0, count = ints.length / 2; i < count; i++) {
-                    int1 = ints[i * 2];
-                    int2 = ints[i * 2 + 1];
-                    res[i] = int1 + int2 / maxInt;
-                }
-                res[i] = min;
-                i++;
-                res[i] = range;
-                i++;
-                res[i] = 0;
-                i++;
-            }
-            else {
-                for (i = 0, count = ints.length / 2; i < count; i++) {
-                    res[i] = min;
-                }
-                res[i] = min;
-                i++;
-                res[i] = range;
-                i++;
-                res[i] = 1;
-                i++;
-            }
-            for (var j = 0, count = BezierData.SegCount; j < count; i++, j++) {
-                res[i] = times[j];
-            }
-            //输出结果
-            return res;
-        };
-        BezierData.SegCount = 2; //四段贝塞尔曲线
+        BezierData.SegCount = 2; //最多2段贝塞尔曲线
         BezierData.calc = new BezierCurve();
         return BezierData;
     }());
@@ -8545,7 +8555,7 @@ var egret3d;
                 "int index = int(floor(varying_textureIndex)) ; \n" +
                 "if(index < 0){ \n" +
                 "if(index == -1){ \n" +
-                "diffuseColor = vec4(1.0, 0.0, 0.0, 0.8); \n" +
+                "diffuseColor = vec4(1.0, 1.0, 1.0, 1.0); \n" +
                 "}else{ \n" +
                 "discard; \n" +
                 "} \n" +
@@ -8870,25 +8880,8 @@ var egret3d;
                 "normalTex.y *= -1.0; \n" +
                 "normal.xyz = tbn( normalTex.xyz , normal.xyz , varying_mvPose.xyz , uv_0 ) ; \n" +
                 "} \n",
-            "particle_bezier": "vec2 bzData[20]; \n" +
-                "const float Tiny = 0.0001; \n" +
-                "void dcpBezier(float bezierData[22], float tTotal) \n" +
-                "{ \n" +
-                "float timeNow = 0.0; \n" +
-                "float time1 = bezierData[20] * tTotal; \n" +
-                "float time2 = bezierData[21] * tTotal; \n" +
-                "for(int i = 0; i < 20; i ++){ \n" +
-                "bzData[i].x = timeNow; \n" +
-                "bzData[i].y = bezierData[i]; \n" +
-                "if(i <= 9){ \n" +
-                "timeNow += time1; \n" +
-                "}else if(i >= 11){ \n" +
-                "timeNow += time2; \n" +
-                "} \n" +
-                "} \n" +
-                "bzData[10].x = bzData[9].x; \n" +
-                "} \n" +
-                "float calcBezierArea(float tCurrent){ \n" +
+            "particle_bezier": "const float Tiny = 0.0001; \n" +
+                "float calcBezierArea(float bzData[35], float tCurrent, float tTotal){ \n" +
                 "float res = 0.0; \n" +
                 "float v0; \n" +
                 "float v1; \n" +
@@ -8896,18 +8889,26 @@ var egret3d;
                 "float t1; \n" +
                 "float deltaTime = 0.0; \n" +
                 "float a_deltaTime; \n" +
-                "for(int i = 0; i < 19; i ++){ \n" +
-                "v0 = bzData[i].y; \n" +
-                "v1 = bzData[i + 1].y; \n" +
-                "t0 = bzData[i].x; \n" +
-                "t1 = bzData[i + 1].x; \n" +
+                "float segmentCount = bzData[34] - 1.0; \n" +
+                "float iFloat = 0.0; \n" +
+                "for(int i = 0; i < 16; i ++) \n" +
+                "{ \n" +
+                "iFloat = float(i); \n" +
+                "if(iFloat - segmentCount > Tiny) \n" +
+                "break; \n" +
+                "v0 = bzData[i * 2 + 1]; \n" +
+                "t0 = bzData[i * 2 + 2] * tTotal; \n" +
+                "v1 = bzData[i * 2 + 3]; \n" +
+                "t1 = bzData[i * 2 + 4] * tTotal; \n" +
                 "deltaTime = t1 - t0; \n" +
                 "if(deltaTime > Tiny) \n" +
                 "{ \n" +
                 "a_deltaTime = 0.5 * (v1 - v0); \n" +
-                "if(tCurrent >= t1){ \n" +
+                "if(tCurrent >= t1) \n" +
+                "{ \n" +
                 "res += deltaTime * (v0 + a_deltaTime); \n" +
-                "}else{ \n" +
+                "}else \n" +
+                "{ \n" +
                 "deltaTime = tCurrent - t0; \n" +
                 "res += deltaTime * (v0 + a_deltaTime); \n" +
                 "break; \n" +
@@ -8916,11 +8917,7 @@ var egret3d;
                 "} \n" +
                 "return res; \n" +
                 "} \n" +
-                "float calcOneBezierArea(float bezierData[22], float tCurrent, float tTotal){ \n" +
-                "dcpBezier(bezierData, tTotal); \n" +
-                "return calcBezierArea(tCurrent); \n" +
-                "} \n" +
-                "float calcBezierSize(float tCurrent){ \n" +
+                "float calcBezierSize(float bzData[35], float tCurrent, float tTotal){ \n" +
                 "float res = 0.0; \n" +
                 "float y0; \n" +
                 "float y1; \n" +
@@ -8928,15 +8925,22 @@ var egret3d;
                 "float t1; \n" +
                 "float deltaTime = 0.0; \n" +
                 "float v; \n" +
-                "for(int i = 0; i < 19; i ++){ \n" +
-                "y0 = bzData[i].y; \n" +
-                "y1 = bzData[i + 1].y; \n" +
-                "t0 = bzData[i].x; \n" +
-                "t1 = bzData[i + 1].x; \n" +
+                "float segmentCount = bzData[34] - 1.0; \n" +
+                "float iFloat = 0.0; \n" +
+                "for(int i = 0; i < 16; i ++) \n" +
+                "{ \n" +
+                "iFloat = float(i); \n" +
+                "if(iFloat - segmentCount > Tiny) \n" +
+                "break; \n" +
+                "y0 = bzData[i * 2 + 1]; \n" +
+                "t0 = bzData[i * 2 + 2] * tTotal; \n" +
+                "y1 = bzData[i * 2 + 3]; \n" +
+                "t1 = bzData[i * 2 + 4] * tTotal; \n" +
                 "deltaTime = t1 - t0; \n" +
                 "if(deltaTime > Tiny) \n" +
                 "{ \n" +
-                "if(tCurrent <= t1){ \n" +
+                "if(tCurrent <= t1) \n" +
+                "{ \n" +
                 "v = (y1 - y0) / deltaTime; \n" +
                 "deltaTime = tCurrent - t0; \n" +
                 "res = y0 + v * deltaTime; \n" +
@@ -8945,10 +8949,6 @@ var egret3d;
                 "} \n" +
                 "} \n" +
                 "return res; \n" +
-                "} \n" +
-                "float calcOneBezierSize(float bezierData[22], float tCurrent, float tTotal){ \n" +
-                "dcpBezier(bezierData, tTotal); \n" +
-                "return calcBezierSize(tCurrent); \n" +
                 "} \n",
             "particle_color_fs": "uniform float uniform_colorTransform[40]; \n" +
                 "vec3 unpack_color(float rgb_data) \n" +
@@ -9294,30 +9294,30 @@ var egret3d;
                 "float rot = currentTime * attribute_rotationZ * (PI / 180.0); \n" +
                 "localPosition = buildRotMat4(vec3(0.0,0.0,rot)) * localPosition; \n" +
                 "} \n",
-            "particle_rotationOneBezier": "uniform float uniform_rotationBezier[22]; \n" +
+            "particle_rotationOneBezier": "uniform float uniform_rotationBezier[35]; \n" +
                 "float particle(  ParticleData curParticle ){ \n" +
                 "if(discard_particle < TrueOrFalse){ \n" +
-                "float rot = calcOneBezierSize(uniform_rotationBezier, currentTime, curParticle.life); \n" +
+                "float rot = calcBezierSize(uniform_rotationBezier, currentTime, curParticle.life); \n" +
                 "rot = currentTime * rot * (PI / 180.0); \n" +
                 "localPosition = buildRotMat4(vec3(0.0,0.0,rot)) * localPosition; \n" +
                 "} \n" +
                 "} \n",
             "particle_rotationTwoBezier": "attribute float attribute_rotationRandomSeed; \n" +
-                "uniform float uniform_rotationBezier[22]; \n" +
-                "uniform float uniform_rotationBezier2[22]; \n" +
+                "uniform float uniform_rotationBezier[35]; \n" +
+                "uniform float uniform_rotationBezier2[35]; \n" +
                 "float particle(  ParticleData curParticle ){ \n" +
                 "if(discard_particle < TrueOrFalse){ \n" +
                 "vec2 rotationTwoBezier = vec2(0.0); \n" +
-                "rotationTwoBezier.x = calcOneBezierArea(uniform_rotationBezier, currentTime, curParticle.life); \n" +
-                "rotationTwoBezier.y = calcOneBezierArea(uniform_rotationBezier2, currentTime, curParticle.life); \n" +
+                "rotationTwoBezier.x = calcBezierArea(uniform_rotationBezier, currentTime, curParticle.life); \n" +
+                "rotationTwoBezier.y = calcBezierArea(uniform_rotationBezier2, currentTime, curParticle.life); \n" +
                 "float rot = mix(rotationTwoBezier.x, rotationTwoBezier.y, attribute_rotationRandomSeed); \n" +
                 "rot = currentTime * rot * (PI / 180.0); \n" +
                 "localPosition = buildRotMat4(vec3(0.0,0.0,rot)) * localPosition; \n" +
                 "} \n" +
                 "} \n",
-            "particle_size_vs": "uniform float uniform_bezierSize[22]; \n" +
+            "particle_size_vs": "uniform float uniform_bezierSize[35]; \n" +
                 "void main() { \n" +
-                "float bezierSize = calcOneBezierSize(uniform_bezierSize, currentTime, curParticle.life); \n" +
+                "float bezierSize = calcBezierSize(uniform_bezierSize, currentTime, curParticle.life); \n" +
                 "localPosition.xyz *= bezierSize; \n" +
                 "} \n",
             "particle_textureSheetConst": "varying vec3 varying_textureSheetData; \n" +
@@ -9341,7 +9341,7 @@ var egret3d;
                 "} \n",
             "particle_textureSheetOneBezier": "varying vec3 varying_textureSheetData; \n" +
                 "uniform float uniform_textureSheet[5]; \n" +
-                "uniform float uniform_frameBezier[22]; \n" +
+                "uniform float uniform_frameBezier[35]; \n" +
                 "vec2 getSheetOffset(float frame, float tileX, float tileY) \n" +
                 "{ \n" +
                 "frame = floor(frame); \n" +
@@ -9358,15 +9358,15 @@ var egret3d;
                 "float frame = varying_textureSheetData.x + varying_textureSheetData.y; \n" +
                 "float currentTime = varying_particleData.x * uniform_textureSheet[2]; \n" +
                 "currentTime = mod(currentTime, varying_particleData.y); \n" +
-                "float bezierFrame = calcOneBezierSize(uniform_frameBezier, currentTime, varying_particleData.y); \n" +
+                "float bezierFrame = calcBezierSize(uniform_frameBezier, currentTime, varying_particleData.y); \n" +
                 "bezierFrame = clamp(bezierFrame, uniform_textureSheet[3], uniform_textureSheet[4]); \n" +
                 "frame += bezierFrame; \n" +
                 "uv_0.xy += getSheetOffset(frame, uniform_textureSheet[0], uniform_textureSheet[1]); \n" +
                 "} \n",
             "particle_textureSheetTwoBezier": "varying vec3 varying_textureSheetData; \n" +
                 "uniform float uniform_textureSheet[5]; \n" +
-                "uniform float uniform_frameBezier1[22]; \n" +
-                "uniform float uniform_frameBezier2[22]; \n" +
+                "uniform float uniform_frameBezier1[35]; \n" +
+                "uniform float uniform_frameBezier2[35]; \n" +
                 "vec2 getSheetOffset(float frame, float tileX, float tileY) \n" +
                 "{ \n" +
                 "frame = floor(frame); \n" +
@@ -9383,8 +9383,8 @@ var egret3d;
                 "float frame = varying_textureSheetData.x + varying_textureSheetData.y; \n" +
                 "float currentTime = varying_particleData.x * uniform_textureSheet[2]; \n" +
                 "currentTime = mod(currentTime, varying_particleData.y); \n" +
-                "float b1 = calcOneBezierSize(uniform_frameBezier1, currentTime2, varying_particleData.y); \n" +
-                "float b2 = calcOneBezierSize(uniform_frameBezier2, currentTime2, varying_particleData.y); \n" +
+                "float b1 = calcBezierSize(uniform_frameBezier1, currentTime2, varying_particleData.y); \n" +
+                "float b2 = calcBezierSize(uniform_frameBezier2, currentTime2, varying_particleData.y); \n" +
                 "float bezierFrame = mix(b1, b2, varying_particleData.z); \n" +
                 "bezierFrame = clamp(bezierFrame, uniform_textureSheet[3], uniform_textureSheet[4]); \n" +
                 "frame += bezierFrame; \n" +
@@ -9463,20 +9463,20 @@ var egret3d;
                 "calcVelocityForceBezier(currentTime, curParticle.life); \n" +
                 "} \n" +
                 "} \n",
-            "particle_velocityForceOneBezierX": "uniform float uniform_velocityForceX[22]; \n" +
+            "particle_velocityForceOneBezierX": "uniform float uniform_velocityForceX[35]; \n" +
                 "void calcVelocityForceBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityForceOneBezier.x = calcOneBezierArea(uniform_velocityForceX, curTime, totalTime); \n" +
+                "velocityForceOneBezier.x = calcBezierArea(uniform_velocityForceX, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityForceOneBezierY": "uniform float uniform_velocityForceY[22]; \n" +
+            "particle_velocityForceOneBezierY": "uniform float uniform_velocityForceY[35]; \n" +
                 "void calcVelocityForceBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityForceOneBezier.y = calcOneBezierArea(uniform_velocityForceY, curTime, totalTime); \n" +
+                "velocityForceOneBezier.y = calcBezierArea(uniform_velocityForceY, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityForceOneBezierZ": "uniform float uniform_velocityForceZ[22]; \n" +
+            "particle_velocityForceOneBezierZ": "uniform float uniform_velocityForceZ[35]; \n" +
                 "void calcVelocityForceBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityForceOneBezier.z = calcOneBezierArea(uniform_velocityForceZ, curTime, totalTime); \n" +
+                "velocityForceOneBezier.z = calcBezierArea(uniform_velocityForceZ, curTime, totalTime); \n" +
                 "} \n",
             "particle_velocityForceTwoBezier": "attribute float attribute_velocityForceRandomSeed; \n" +
                 "vec3 velocityForceTwoBezier1 = vec3(0.0); \n" +
@@ -9492,35 +9492,35 @@ var egret3d;
                 "velocityForceVec3.z = mix(velocityForceTwoBezier1.z, velocityForceTwoBezier2.z, attribute_velocityForceRandomSeed); \n" +
                 "} \n" +
                 "} \n",
-            "particle_velocityForceTwoBezierX1": "uniform float uniform_velocityForceX1[22]; \n" +
+            "particle_velocityForceTwoBezierX1": "uniform float uniform_velocityForceX1[35]; \n" +
                 "void calcVelocityForceBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityForceTwoBezier1.x = calcOneBezierArea(uniform_velocityForceX1, curTime, totalTime); \n" +
+                "velocityForceTwoBezier1.x = calcBezierArea(uniform_velocityForceX1, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityForceTwoBezierX2": "uniform float uniform_velocityForceX2[22]; \n" +
+            "particle_velocityForceTwoBezierX2": "uniform float uniform_velocityForceX2[35]; \n" +
                 "void calcVelocityForceBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityForceTwoBezier2.x = calcOneBezierArea(uniform_velocityForceX2, curTime, totalTime); \n" +
+                "velocityForceTwoBezier2.x = calcBezierArea(uniform_velocityForceX2, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityForceTwoBezierY1": "uniform float uniform_velocityForceY1[22]; \n" +
+            "particle_velocityForceTwoBezierY1": "uniform float uniform_velocityForceY1[35]; \n" +
                 "void calcVelocityForceBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityForceTwoBezier1.y = calcOneBezierArea(uniform_velocityForceY1, curTime, totalTime); \n" +
+                "velocityForceTwoBezier1.y = calcBezierArea(uniform_velocityForceY1, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityForceTwoBezierY2": "uniform float uniform_velocityForceY2[22]; \n" +
+            "particle_velocityForceTwoBezierY2": "uniform float uniform_velocityForceY2[35]; \n" +
                 "void calcVelocityForceBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityForceTwoBezier2.y = calcOneBezierArea(uniform_velocityForceY2, curTime, totalTime); \n" +
+                "velocityForceTwoBezier2.y = calcBezierArea(uniform_velocityForceY2, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityForceTwoBezierZ1": "uniform float uniform_velocityForceZ1[22]; \n" +
+            "particle_velocityForceTwoBezierZ1": "uniform float uniform_velocityForceZ1[35]; \n" +
                 "void calcVelocityForceBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityForceTwoBezier1.z = calcOneBezierArea(uniform_velocityForceZ1, curTime, totalTime); \n" +
+                "velocityForceTwoBezier1.z = calcBezierArea(uniform_velocityForceZ1, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityForceTwoBezierZ2": "uniform float uniform_velocityForceZ2[22]; \n" +
+            "particle_velocityForceTwoBezierZ2": "uniform float uniform_velocityForceZ2[35]; \n" +
                 "void calcVelocityForceBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityForceTwoBezier2.z = calcOneBezierArea(uniform_velocityForceZ2, curTime, totalTime); \n" +
+                "velocityForceTwoBezier2.z = calcBezierArea(uniform_velocityForceZ2, curTime, totalTime); \n" +
                 "} \n",
             "particle_velocityLimitConst": "attribute float attribute_velocityLimit; \n" +
                 "float particle(  ParticleData curParticle ){ \n" +
@@ -9530,20 +9530,20 @@ var egret3d;
                 "} \n" +
                 "velocityLimitVec2.y = 1.0; \n" +
                 "} \n",
-            "particle_velocityLimitOneBezier": "uniform float uniform_velocityLimit[22]; \n" +
+            "particle_velocityLimitOneBezier": "uniform float uniform_velocityLimit[35]; \n" +
                 "void main() { \n" +
                 "if(discard_particle < TrueOrFalse){ \n" +
-                "velocityLimitVec2.x = calcOneBezierArea(uniform_velocityLimit, currentTime, curParticle.life); \n" +
+                "velocityLimitVec2.x = calcBezierArea(uniform_velocityLimit, currentTime, curParticle.life); \n" +
                 "velocityLimitVec2.y = 1.0; \n" +
                 "} \n" +
                 "} \n",
-            "particle_velocityLimitTwoBezier": "uniform float uniform_velocityLimit[22]; \n" +
-                "uniform float uniform_velocityLimit2[22]; \n" +
+            "particle_velocityLimitTwoBezier": "uniform float uniform_velocityLimit[35]; \n" +
+                "uniform float uniform_velocityLimit2[35]; \n" +
                 "attribute float attribute_velocityLimitRandomSeed; \n" +
                 "void main() { \n" +
                 "if(discard_particle < TrueOrFalse){ \n" +
-                "float velocity2Limit1 = calcOneBezierArea(uniform_velocityLimit, currentTime, curParticle.life); \n" +
-                "float velocity2Limit2 = calcOneBezierArea(uniform_velocityLimit2, currentTime, curParticle.life); \n" +
+                "float velocity2Limit1 = calcBezierArea(uniform_velocityLimit, currentTime, curParticle.life); \n" +
+                "float velocity2Limit2 = calcBezierArea(uniform_velocityLimit2, currentTime, curParticle.life); \n" +
                 "velocityLimitVec2.x = mix(velocity2Limit1, velocity2Limit1, attribute_velocityLimitRandomSeed); \n" +
                 "if(velocityLimitVec2.x < 0.0){ \n" +
                 "velocityLimitVec2.x = 0.0; \n" +
@@ -9565,20 +9565,20 @@ var egret3d;
                 "velocityOverVec3.xyz = velocityTwoBezier.xyz; \n" +
                 "} \n" +
                 "} \n",
-            "particle_velocityOverOneBezierX": "uniform float uniform_velocityOverX[22]; \n" +
+            "particle_velocityOverOneBezierX": "uniform float uniform_velocityOverX[35]; \n" +
                 "void calcVelocityOverBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityTwoBezier.x = calcOneBezierArea(uniform_velocityOverX, curTime, totalTime); \n" +
+                "velocityTwoBezier.x = calcBezierArea(uniform_velocityOverX, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityOverOneBezierY": "uniform float uniform_velocityOverY[22]; \n" +
+            "particle_velocityOverOneBezierY": "uniform float uniform_velocityOverY[35]; \n" +
                 "void calcVelocityOverBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityTwoBezier.y = calcOneBezierArea(uniform_velocityOverY, curTime, totalTime); \n" +
+                "velocityTwoBezier.y = calcBezierArea(uniform_velocityOverY, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityOverOneBezierZ": "uniform float uniform_velocityOverZ[22]; \n" +
+            "particle_velocityOverOneBezierZ": "uniform float uniform_velocityOverZ[35]; \n" +
                 "void calcVelocityOverBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityTwoBezier.z = calcOneBezierArea(uniform_velocityOverZ, curTime, totalTime); \n" +
+                "velocityTwoBezier.z = calcBezierArea(uniform_velocityOverZ, curTime, totalTime); \n" +
                 "} \n",
             "particle_velocityOverTwoBezier": "attribute float attribute_velocityOverRandomSeed; \n" +
                 "vec3 velocityOverTwoBezier1 = vec3(0.0); \n" +
@@ -9594,35 +9594,35 @@ var egret3d;
                 "velocityOverVec3.z = mix(velocityOverTwoBezier1.z, velocityOverTwoBezier2.z, attribute_velocityOverRandomSeed); \n" +
                 "} \n" +
                 "} \n",
-            "particle_velocityOverTwoBezierX1": "uniform float uniform_velocityOverX1[22]; \n" +
+            "particle_velocityOverTwoBezierX1": "uniform float uniform_velocityOverX1[35]; \n" +
                 "void calcVelocityOverBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityOverTwoBezier1.x = calcOneBezierArea(uniform_velocityOverX1, curTime, totalTime); \n" +
+                "velocityOverTwoBezier1.x = calcBezierArea(uniform_velocityOverX1, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityOverTwoBezierX2": "uniform float uniform_velocityOverX2[22]; \n" +
+            "particle_velocityOverTwoBezierX2": "uniform float uniform_velocityOverX2[35]; \n" +
                 "void calcVelocityOverBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityOverTwoBezier2.x = calcOneBezierArea(uniform_velocityOverX2, curTime, totalTime); \n" +
+                "velocityOverTwoBezier2.x = calcBezierArea(uniform_velocityOverX2, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityOverTwoBezierY1": "uniform float uniform_velocityOverY1[22]; \n" +
+            "particle_velocityOverTwoBezierY1": "uniform float uniform_velocityOverY1[35]; \n" +
                 "void calcVelocityOverBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityOverTwoBezier1.y = calcOneBezierArea(uniform_velocityOverY1, curTime, totalTime); \n" +
+                "velocityOverTwoBezier1.y = calcBezierArea(uniform_velocityOverY1, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityOverTwoBezierY2": "uniform float uniform_velocityOverY2[22]; \n" +
+            "particle_velocityOverTwoBezierY2": "uniform float uniform_velocityOverY2[35]; \n" +
                 "void calcVelocityOverBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityOverTwoBezier2.y = calcOneBezierArea(uniform_velocityOverY2, curTime, totalTime); \n" +
+                "velocityOverTwoBezier2.y = calcBezierArea(uniform_velocityOverY2, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityOverTwoBezierZ1": "uniform float uniform_velocityOverZ1[22]; \n" +
+            "particle_velocityOverTwoBezierZ1": "uniform float uniform_velocityOverZ1[35]; \n" +
                 "void calcVelocityOverBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityOverTwoBezier1.z = calcOneBezierArea(uniform_velocityOverZ1, curTime, totalTime); \n" +
+                "velocityOverTwoBezier1.z = calcBezierArea(uniform_velocityOverZ1, curTime, totalTime); \n" +
                 "} \n",
-            "particle_velocityOverTwoBezierZ2": "uniform float uniform_velocityOverZ2[22]; \n" +
+            "particle_velocityOverTwoBezierZ2": "uniform float uniform_velocityOverZ2[35]; \n" +
                 "void calcVelocityOverBezier(float curTime, float totalTime) \n" +
                 "{ \n" +
-                "velocityOverTwoBezier2.z = calcOneBezierArea(uniform_velocityOverZ2, curTime, totalTime); \n" +
+                "velocityOverTwoBezier2.z = calcBezierArea(uniform_velocityOverZ2, curTime, totalTime); \n" +
                 "} \n",
             "particle_vs": "attribute vec4 attribute_color; \n" +
                 "attribute vec3 attribute_offsetPosition; \n" +
@@ -18714,6 +18714,8 @@ var egret3d;
                 geometry = new egret3d.PlaneGeometry(width, height, 1, 1, 1, 1, egret3d.Vector3D.Z_AXIS);
             }
             _super.call(this, geometry, material);
+            this.planeGeometry = this.geometry;
+            this.width = width;
             if (!this.bound) {
                 this.bound = this.buildBoundBox();
             }
@@ -18731,6 +18733,15 @@ var egret3d;
             //this._qut.fromEulerAngles(-90, 0, 0);
             //this._qut.multiply(camera.globalOrientation, this._qut);
             this.globalOrientation = camera.globalOrientation;
+        };
+        Billboard.prototype.clone = function () {
+            var ani = null;
+            if (this.animation) {
+                ani = this.animation.clone();
+            }
+            var cloneMesh = new Billboard(this.material, this.geometry, this.planeGeometry.width, this.planeGeometry.height);
+            cloneMesh.multiMaterial = this.multiMaterial;
+            return cloneMesh;
         };
         return Billboard;
     }(egret3d.Mesh));
@@ -18809,11 +18820,17 @@ var egret3d;
     var Wireframe = (function (_super) {
         __extends(Wireframe, _super);
         /**
-         * @language zh_CN
-         * @version Egret 3.0
-         * @platform Web,Native
-         */
-        function Wireframe() {
+        * @language zh_CN
+        * 构造
+        * @param src  画线顶点数据列表 默认为null 没有设置数据 可以调用 this.fromVertexs 或 this.fromGeometry设置数据
+        * @param vf 画线顶点数据格式 默认为 VertexFormat.VF_POSITION (x, y, z) 可以加上颜色 VertexFormat.VF_COLOR (r, g, b, a)
+        * 每个顶点数据格式必须统一
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        function Wireframe(src, vf) {
+            if (src === void 0) { src = null; }
+            if (vf === void 0) { vf = egret3d.VertexFormat.VF_POSITION; }
             _super.call(this);
             this.type = "wireframe";
             this.geometry = new egret3d.Geometry();
@@ -18821,7 +18838,52 @@ var egret3d;
             this.addSubMaterial(0, this.material);
             this.material.drawMode = egret3d.DrawMode.LINES;
             this.geometry.vertexFormat = egret3d.VertexFormat.VF_POSITION | egret3d.VertexFormat.VF_NORMAL | egret3d.VertexFormat.VF_COLOR | egret3d.VertexFormat.VF_UV0;
+            this.fromVertexs(src, vf);
         }
+        /**
+        * @language zh_CN
+        * 设置画线顶点数据 规则是把传入的所有点依次连接
+        * @param src  画线顶点数据列表
+        * @param vf 画线顶点数据格式 默认为 VertexFormat.VF_POSITION (x, y, z) 可以加上颜色 VertexFormat.VF_COLOR (r, g, b, a)
+        * 每个顶点数据格式必须统一
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        Wireframe.prototype.fromVertexs = function (src, vf) {
+            if (vf === void 0) { vf = egret3d.VertexFormat.VF_POSITION; }
+            if (src) {
+                this.geometry.setVerticesForIndex(0, vf, src, src.length / egret3d.GeometryUtil.fromVertexFormatToLength(vf));
+                this.geometry.indexCount = (this.geometry.vertexCount - 1) * 2;
+                for (var i = 0; i < this.geometry.vertexCount - 1; ++i) {
+                    this.geometry.indexArray[i * 2 + 0] = i;
+                    this.geometry.indexArray[i * 2 + 1] = i + 1;
+                }
+            }
+        };
+        /**
+        * @language zh_CN
+        * 设置画线顶点数据来源为Geometry 规则是按面连接
+        * @param geo  画线顶点数据来源 只会用到Geometry 和坐标数据和颜色数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        Wireframe.prototype.fromGeometry = function (geo) {
+            var target = [];
+            geo.getVertexForIndex(0, egret3d.VertexFormat.VF_POSITION | egret3d.VertexFormat.VF_COLOR, target, geo.vertexCount);
+            this.geometry.setVerticesForIndex(0, egret3d.VertexFormat.VF_POSITION | egret3d.VertexFormat.VF_COLOR, target, geo.vertexCount);
+            this.geometry.indexCount = geo.faceCount * 6;
+            for (var i = 0; i < geo.faceCount; ++i) {
+                var _0 = geo.indexArray[i * 3 + 0];
+                var _1 = geo.indexArray[i * 3 + 1];
+                var _2 = geo.indexArray[i * 3 + 2];
+                this.geometry.indexArray[i * 6 + 0] = _0;
+                this.geometry.indexArray[i * 6 + 1] = _1;
+                this.geometry.indexArray[i * 6 + 2] = _1;
+                this.geometry.indexArray[i * 6 + 3] = _2;
+                this.geometry.indexArray[i * 6 + 4] = _2;
+                this.geometry.indexArray[i * 6 + 5] = _0;
+            }
+        };
         return Wireframe;
     }(egret3d.IRender));
     egret3d.Wireframe = Wireframe;
@@ -19322,7 +19384,44 @@ var egret3d;
             this._visibleInvalid = true;
             this._qut = new egret3d.Quaternion();
             this._vec = new egret3d.Vector3D();
+            this.parentIsStage = false;
         }
+        Object.defineProperty(DisplayObject.prototype, "mouseX", {
+            get: function () {
+                var temp = this;
+                var x = egret3d.Input.mouseX;
+                while (temp) {
+                    x -= temp.x;
+                    if (temp.parent && !temp.parentIsStage) {
+                        temp = temp.parent;
+                    }
+                    else {
+                        temp = null;
+                    }
+                }
+                return x;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DisplayObject.prototype, "mouseY", {
+            get: function () {
+                var temp = this;
+                var y = egret3d.Input.mouseY;
+                while (temp) {
+                    y -= temp.y;
+                    if (temp.parent && !temp.parentIsStage) {
+                        temp = temp.parent;
+                    }
+                    else {
+                        temp = null;
+                    }
+                }
+                return y;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(DisplayObject.prototype, "stage", {
             /**
             * @language zh_CN
@@ -20812,8 +20911,8 @@ var egret3d;
     var QuadNullType = (function () {
         function QuadNullType() {
         }
-        //没有贴图的QUAD
-        QuadNullType.NULL_TEXTURE = -1;
+        //没有贴图的QUAD(默认白色)
+        QuadNullType.NULL_WHITE = -1;
         //空的QUAD
         QuadNullType.NULL_QUAD = -2;
         //不可见
@@ -20877,8 +20976,14 @@ var egret3d;
                 positionFrom = zIndex * egret3d.QuadData.quadVertexLen + egret3d.QuadData.offsetOffest;
                 for (var i = 0; i < 4; i++) {
                     index = positionFrom + i * positionOffset;
-                    verticesData[index] = pos.x;
-                    verticesData[index + 1] = -pos.y;
+                    if (this._renderType == 1) {
+                        verticesData[index] = pos.x >> 0;
+                        verticesData[index + 1] = -pos.y >> 0;
+                    }
+                    else {
+                        verticesData[index] = pos.x;
+                        verticesData[index + 1] = -pos.y;
+                    }
                 }
                 //____________________(width,height)
                 positionFrom = zIndex * egret3d.QuadData.quadVertexLen + egret3d.QuadData.posOffest;
@@ -20935,7 +21040,7 @@ var egret3d;
                 this._textureInvalid = false;
                 this._visibleInvalid = false;
                 //____________________gui index
-                var texId = QuadNullType.NULL_TEXTURE;
+                var texId = QuadNullType.NULL_WHITE;
                 var uvRec;
                 if (this._texture) {
                     uvRec = this._texture.uvRectangle;
@@ -20944,7 +21049,7 @@ var egret3d;
                 }
                 else {
                     //hav no texture
-                    texId = QuadNullType.NULL_TEXTURE;
+                    texId = QuadNullType.NULL_WHITE;
                     uvRec = Quad.DefaultUVRect;
                 }
                 if (this.visible == false) {
@@ -20975,20 +21080,26 @@ var egret3d;
                 this._maskRectInvalid = false;
                 //____________________mask x y width height
                 var maskRect = this.globalMask;
+                var maskX, maskY, maskW, maskH;
                 if (maskRect) {
-                    var maskX, maskY, maskW, maskH;
                     maskX = maskRect.x; //                0;
                     maskY = maskRect.y; //                0;
-                    maskW = maskRect.width; //                50;
-                    maskH = maskRect.height; //                600;
-                    positionFrom = zIndex * egret3d.QuadData.quadVertexLen + egret3d.QuadData.scaleOffest;
-                    for (var i = 0; i < 4; i++) {
-                        index = positionFrom + i * positionOffset;
-                        verticesData[index + 0] = maskX;
-                        verticesData[index + 1] = maskY;
-                        verticesData[index + 2] = maskW;
-                        verticesData[index + 3] = maskH;
-                    }
+                    maskW = maskRect.width; //            50;
+                    maskH = maskRect.height; //           600;
+                }
+                else {
+                    maskX = -1;
+                    maskY = -1;
+                    maskW = 0;
+                    maskH = 0;
+                }
+                positionFrom = zIndex * egret3d.QuadData.quadVertexLen + egret3d.QuadData.scaleOffest;
+                for (var i = 0; i < 4; i++) {
+                    index = positionFrom + i * positionOffset;
+                    verticesData[index + 0] = maskX;
+                    verticesData[index + 1] = maskY;
+                    verticesData[index + 2] = maskW;
+                    verticesData[index + 3] = maskH;
                 }
             }
             if (this._colorInvalid) {
@@ -21054,76 +21165,76 @@ var egret3d;
             egret3d.Input.addEventListener(egret3d.TouchEvent3D.TOUCH_END, this.mouseUp, this);
             egret3d.Input.addEventListener(egret3d.TouchEvent3D.TOUCH_MOVE, this.mouseMove, this);
         }
-        GUIEventFire.prototype.mouseOut = function (e) {
+        GUIEventFire.prototype.dispatchMouseEvent = function (eventType) {
+            //todo 事件冒泡加入捕获阶段
+            //todo 事件阻断机制
             var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick = list[0];
-                pick.pickResult = pick.pickResult || new egret3d.PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseOut();
+            var target;
+            var currentTraget;
+            if (list.length === 0) {
+                //当没有任何对象被点击时. 抛出舞台事件
+                var evt = new egret3d.MouseEvent3D(eventType);
+                evt.target = this._quadStage;
+                evt.currentTarget = this._quadStage;
+                this._quadStage.dispatchEvent(evt);
+                return;
             }
-            this._quadStage.dispatchMouseOut();
+            target = list[0]; //最上层显示对象
+            currentTraget = target;
+            while (currentTraget) {
+                var event = new egret3d.MouseEvent3D(eventType);
+                event.target = target;
+                event.currentTarget = currentTraget;
+                currentTraget.dispatchEvent(event);
+                if (!currentTraget.parentIsStage) {
+                    currentTraget = currentTraget.parent;
+                }
+                else {
+                    currentTraget = null;
+                }
+            }
+            var stageEvent = new egret3d.MouseEvent3D(eventType);
+            stageEvent.target = target;
+            stageEvent.currentTarget = this._quadStage;
+            this._quadStage.dispatchEvent(stageEvent);
+        };
+        GUIEventFire.prototype.onTouchStart = function (e) {
+        };
+        GUIEventFire.prototype.onTouchEnd = function (e) {
+        };
+        GUIEventFire.prototype.onTouchMove = function (e) {
+        };
+        GUIEventFire.prototype.mouseOut = function (e) {
+            this.dispatchMouseEvent(egret3d.MouseEvent3D.MOUSE_DOWN);
         };
         GUIEventFire.prototype.mouseDown = function (e) {
-            var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick = list[0];
-                pick.pickResult = pick.pickResult || new egret3d.PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseDown();
-            }
-            this._quadStage.dispatchMuseDown();
+            this.dispatchMouseEvent(egret3d.MouseEvent3D.MOUSE_DOWN);
         };
         GUIEventFire.prototype.mouseUp = function (e) {
-            var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick = list[0];
-                pick.pickResult = pick.pickResult || new egret3d.PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseUp();
-            }
-            this._quadStage.dispatchMuseUp();
+            this.dispatchMouseEvent(egret3d.MouseEvent3D.MOUSE_UP);
         };
         GUIEventFire.prototype.mouseOver = function (e) {
-            var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick = list[0];
-                pick.mouseInState = true;
-                pick.pickResult = pick.pickResult || new egret3d.PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseUp();
-            }
-            this._quadStage.dispatchMouseOver();
+            this.dispatchMouseEvent(egret3d.MouseEvent3D.MOUSE_OVER);
         };
         GUIEventFire.prototype.mouseMove = function (e) {
-            var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick = list[0];
-                pick.mouseInState = true;
-                pick.pickResult = pick.pickResult || new egret3d.PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseMove();
-            }
-            this._quadStage.dispatchMuseMove();
+            this.dispatchMouseEvent(egret3d.MouseEvent3D.MOUSE_MOVE);
         };
         GUIEventFire.prototype.mouseClick = function (e) {
-            var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick = list[0];
-                pick.mouseInState = true;
-                pick.pickResult = pick.pickResult || new egret3d.PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseClick();
-            }
-            this._quadStage.dispatchMuseClick();
+            this.dispatchMouseEvent(egret3d.MouseEvent3D.MOUSE_CLICK);
         };
-        //public hasMouseMove: boolean = false;
-        //public hasMouseDown: boolean = false;
-        //public hasMouseUp: boolean = false;
-        //public hasMouseClick: boolean = false;
-        //public hasMouseOut: boolean = false;
         GUIEventFire.prototype.fire = function () {
             this._finalist = this._quadStage.quadList;
+        };
+        GUIEventFire.prototype.getGlobalRect = function (dis) {
+            var rect = new egret3d.Rectangle();
+            rect.copyFrom(dis.aabb);
+            dis = dis.parent;
+            while (dis) {
+                rect.x += dis.x;
+                rect.y += dis.y;
+                dis = dis.parent;
+            }
+            return rect;
         };
         GUIEventFire.prototype.getMousePickList = function () {
             var i;
@@ -21132,16 +21243,13 @@ var egret3d;
             if (this._finalist) {
                 for (i = 0; i < this._finalist.length; i++) {
                     quad = this._finalist[i];
+                    //                    console.log("quad.aabb: ", quad.aabb);
+                    //                    console.log("mouseX: ", Input.mouseX, "mouseY: ", Input.mouseY);
                     if (quad.globalVisible && quad.mouseEnable && quad.aabb.inner(egret3d.Input.mouseX, egret3d.Input.mouseY)) {
-                        //mouse down
                         this._mouseList.push(quad);
                     }
                 }
             }
-            //已经排序了不需要排序
-            //return pickList = SortUtil.sortAB(this._mouseList);
-            //todo
-            //???        是否需要颠倒
             this._mouseList.reverse();
             return this._mouseList;
         };
@@ -21340,6 +21448,7 @@ var egret3d;
             }
             this._childList.push(object);
             object.activeStage(this);
+            object.parentIsStage = true;
             this.setRenderListInvalid();
         };
         /**
@@ -21384,6 +21493,7 @@ var egret3d;
             //    }
             //}
             object.activeStage(null);
+            object.parentIsStage = false;
             this.setRenderListInvalid();
         };
         /**
@@ -21612,9 +21722,9 @@ var egret3d;
                 this._state = UIButton.STATE_UP;
                 this._enable = true;
                 this._isDowning = false;
-                this._skin.addEventListener(egret3d.MouseEvent3D.MOUSE_DOWN, this.mouseEventHandler, this);
-                this._skin.addEventListener(egret3d.MouseEvent3D.MOUSE_OUT, this.mouseEventHandler, this);
-                this._skin.addEventListener(egret3d.MouseEvent3D.MOUSE_OVER, this.mouseEventHandler, this);
+                this.addEventListener(egret3d.MouseEvent3D.MOUSE_DOWN, this.mouseEventHandler, this);
+                this.addEventListener(egret3d.MouseEvent3D.MOUSE_OUT, this.mouseEventHandler, this);
+                this.addEventListener(egret3d.MouseEvent3D.MOUSE_OVER, this.mouseEventHandler, this);
             }
             Object.defineProperty(UIButton.prototype, "width", {
                 get: function () {
@@ -21667,27 +21777,23 @@ var egret3d;
                 }
             };
             UIButton.prototype.startPress = function () {
-                this._skin.addEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.mouseEventHandler, this);
+                this.addEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.mouseEventHandler, this);
                 this.stage.addEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onStageEnd, this);
                 this._isDowning = true;
                 this.setMouseState(UIButton.STATE_DOWN);
-                this.dispatchEvent(new egret3d.MouseEvent3D(egret3d.MouseEvent3D.MOUSE_DOWN, this));
             };
             UIButton.prototype.onStageEnd = function (event) {
                 console.log("stage up");
                 this.stage.removeEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onStageEnd, this);
-                this._skin.removeEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.mouseEventHandler, this);
+                this.removeEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.mouseEventHandler, this);
                 this.setMouseState(UIButton.STATE_UP);
                 this._isDowning = false;
             };
             UIButton.prototype.endPress = function () {
-                this.dispatchEvent(new egret3d.MouseEvent3D(egret3d.MouseEvent3D.MOUSE_UP, this));
-                this.dispatchEvent(new egret3d.MouseEvent3D(egret3d.MouseEvent3D.MOUSE_CLICK, this));
                 this.setMouseState(UIButton.STATE_UP);
                 this._isDowning = false;
                 this.stage.removeEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onStageEnd, this);
-                this._skin.removeEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.mouseEventHandler, this);
-                console.log("btn up");
+                this.removeEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.mouseEventHandler, this);
             };
             Object.defineProperty(UIButton.prototype, "enable", {
                 get: function () {
@@ -22371,6 +22477,7 @@ var egret3d;
                 this._label = "";
                 this._textField = new gui.UITextField();
                 this._textField.autoSize = gui.UITextFieldAutoSize.CENTER;
+                this._textField.textColor = 0xff000000;
                 this.addChild(this._textField);
                 this.onRender();
                 this._textHeight = -1;
@@ -22640,18 +22747,22 @@ var egret3d;
                 this._gap = 5;
                 this._selectedIndex = -1;
                 this._selectedItem = null;
-                this._background.addEventListener(egret3d.MouseEvent3D.MOUSE_DOWN, this.onMouseDown, this);
-                this._background.addEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
-                this._background.addEventListener(egret3d.MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
+                this.addEventListener(egret3d.MouseEvent3D.MOUSE_DOWN, this.onMouseDown, this);
                 this._startDrag = false;
                 this._container.height = 0;
             }
             UIList.prototype.onMouseDown = function (event) {
                 this._startDrag = true;
+                this.addEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
+                this.addEventListener(egret3d.MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
+                this.stage.addEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
                 console.log("mousedown");
             };
             UIList.prototype.onMouseUp = function (event) {
                 this._startDrag = false;
+                this.removeEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
+                this.removeEventListener(egret3d.MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
+                this.stage.removeEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
                 console.log("mouseup");
             };
             UIList.prototype.onMouseMove = function (event) {
@@ -22718,20 +22829,11 @@ var egret3d;
             UIList.prototype.addItem = function (item) {
                 this._items.push(item);
                 this.addChildAt(item, this._container.childs.length);
-                item.addEventListener(egret3d.MouseEvent3D.MOUSE_DOWN, function (e) {
-                    console.log("aaaaaa");
-                }, this);
-                item.addEventListener(egret3d.MouseEvent3D.MOUSE_DOWN, this.onMouseDown, this);
-                item.addEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
-                item.addEventListener(egret3d.MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
                 this.updateView();
             };
             UIList.prototype.removeItem = function (item) {
                 this.removeChild(item);
                 this._items.splice(this._items.indexOf(item), 1);
-                item.removeEventListener(egret3d.MouseEvent3D.MOUSE_DOWN, this.onMouseDown, this);
-                item.removeEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
-                item.removeEventListener(egret3d.MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
                 this.updateView();
             };
             return UIList;
@@ -22973,6 +23075,145 @@ var egret3d;
             return UIProgressBar;
         }(gui.UIElement));
         gui.UIProgressBar = UIProgressBar;
+    })(gui = egret3d.gui || (egret3d.gui = {}));
+})(egret3d || (egret3d = {}));
+var egret3d;
+(function (egret3d) {
+    var gui;
+    (function (gui) {
+        /**
+   * @private
+   * @class egret3d.gui.UISlider
+   * @classdesc
+   * @version Egret 3.0
+   * @platform Web,Native
+   */
+        var UISlider = (function (_super) {
+            __extends(UISlider, _super);
+            function UISlider() {
+                _super.call(this);
+                this._background = new egret3d.Quad();
+                this._bar = new egret3d.Quad();
+                this._text = new gui.UITextField(gui.UITextFieldType.DYNAMIC);
+                this._text.autoSize = gui.UITextFieldAutoSize.CENTER;
+                this._text.textColor = 0xff000000;
+                this.addChild(this._background);
+                this.addChild(this._bar);
+                this.addChild(this._text);
+                //            this._background.color = 0xff00ffff;
+                //            this._bar.color = 0xffff00ff;
+                this._minimum = 0;
+                this._maximum = 100;
+                this._snapInterval = 10;
+                this.value = 50;
+                this.addEventListener(egret3d.MouseEvent3D.MOUSE_DOWN, this.onMouseDown, this);
+            }
+            UISlider.prototype.setStyle = function (style, value) {
+                _super.prototype.setStyle.call(this, style, value);
+                if (style === "bar") {
+                    this._bar.texture = value;
+                }
+                else if (style === "background") {
+                    this._background.texture = value;
+                }
+                this.onRender();
+            };
+            UISlider.prototype.onMouseUp = function (event) {
+                this.removeEventListener(egret3d.MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
+                this.removeEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
+            };
+            UISlider.prototype.onMouseDown = function (event) {
+                this.addEventListener(egret3d.MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
+                //            this.addEventListener(MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
+                this.stage.addEventListener(egret3d.MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
+                var cx = this.mouseX;
+                this.value = cx / this._background.width * (this._maximum - this._minimum) + this._minimum;
+            };
+            UISlider.prototype.updateBar = function () {
+                var ratio = Math.abs(this._value / (this._maximum + this._minimum));
+                this._bar.width = this._background.width * ratio;
+                this._text.text = this.value.toString();
+            };
+            Object.defineProperty(UISlider.prototype, "value", {
+                get: function () {
+                    return this._value;
+                },
+                set: function (value) {
+                    if (value % this._snapInterval !== 0) {
+                        value = Math.round(value / this._snapInterval) * this._snapInterval;
+                    }
+                    this._value = value;
+                    this.updateBar();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            UISlider.prototype.onMouseMove = function (event) {
+                var cx = this.mouseX;
+                this.value = cx / this._background.width * (this._maximum - this._minimum) + this._minimum;
+            };
+            UISlider.prototype.onMouseClick = function (event) {
+            };
+            Object.defineProperty(UISlider.prototype, "maximum", {
+                get: function () {
+                    return this._maximum;
+                },
+                set: function (value) {
+                    this._maximum = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(UISlider.prototype, "minimum", {
+                get: function () {
+                    return this._minimum;
+                },
+                set: function (value) {
+                    this._minimum = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(UISlider.prototype, "backgroundColor", {
+                set: function (color) {
+                    this._background.color = color;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(UISlider.prototype, "barColor", {
+                set: function (color) {
+                    this._bar.color = color;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(UISlider.prototype, "width", {
+                get: function () {
+                    return this._background.width;
+                },
+                set: function (value) {
+                    this._background.width = this._text.width = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(UISlider.prototype, "height", {
+                get: function () {
+                    return this._background.height;
+                },
+                set: function (value) {
+                    this._background.height = this._text.height = this._bar.height = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            UISlider.prototype.onRender = function () {
+                _super.prototype.onRender.call(this);
+            };
+            return UISlider;
+        }(gui.UIElement));
+        gui.UISlider = UISlider;
     })(gui = egret3d.gui || (egret3d.gui = {}));
 })(egret3d || (egret3d = {}));
 var egret3d;
@@ -24212,6 +24453,12 @@ var egret3d;
                     if (!this._frustum.parent) {
                         this.camera.addChild(this._frustum);
                     }
+                    else {
+                        if (this._frustum.parent != this.camera) {
+                            this._frustum.parent.removeChild(this._frustum);
+                            this.camera.addChild(this._frustum);
+                        }
+                    }
                 }
                 else {
                     if (this._frustum.parent) {
@@ -25382,7 +25629,7 @@ var egret3d;
             if (start + count > this.indexCount) {
                 count = this.indexCount - start;
             }
-            for (var i = 0; i < count - start; ++i) {
+            for (var i = 0; i < count; ++i) {
                 target[i] = this.indexArray[i + start];
             }
             return target;
@@ -26847,7 +27094,6 @@ var egret3d;
         * @param r 半径 默认值 100
         * @param segmentsW 宽度分段数 默认值 15
         * @param segmentsH 高度分段数 默认值 15
-        * @param faceOrBack 正面或者反面显示
         * @version Egret 3.0
         * @platform Web,Native
         */
@@ -27089,6 +27335,49 @@ var egret3d;
                     return new egret3d.SphereGeometry(gemetry.r, gemetry.segmentsW, gemetry.segmentsH);
             }
             return null;
+        };
+        GeometryUtil.fromVertexFormatToLength = function (vf) {
+            var length = 0;
+            if (vf & egret3d.VertexFormat.VF_POSITION) {
+                length += egret3d.Geometry.positionSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_NORMAL) {
+                length += egret3d.Geometry.normalSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_TANGENT) {
+                length += egret3d.Geometry.tangentSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_COLOR) {
+                length += egret3d.Geometry.colorSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_UV0) {
+                length += egret3d.Geometry.uvSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_UV1) {
+                length += egret3d.Geometry.uv2Size;
+            }
+            if (vf & egret3d.VertexFormat.VF_SKIN) {
+                length += egret3d.Geometry.skinSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_QUADPOS) {
+                length += egret3d.QuadData.posSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_QUADOFFSET) {
+                length += egret3d.QuadData.offsetSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_UVREC) {
+                length += egret3d.QuadData.uvRectangleSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_ROTATION) {
+                length += egret3d.QuadData.rotationSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_SCALE) {
+                length += egret3d.QuadData.scaleSize;
+            }
+            if (vf & egret3d.VertexFormat.VF_QUAD_COLOR) {
+                length += egret3d.QuadData.colorSize;
+            }
+            return length;
         };
         return GeometryUtil;
     }());
@@ -31902,6 +32191,15 @@ var egret3d;
                     material.repeat = true;
                     uvScrollMethod.start(true);
                 }
+                else if (method.type == egret3d.MatMethodData.methodType.uvSpriteSheetMethod) {
+                    var uvSpriteSheetMethod = new egret3d.UVSpriteSheetMethod(method.frameNum, method.row, method.col, method.totalTime);
+                    material.diffusePass.addMethod(uvSpriteSheetMethod);
+                    uvSpriteSheetMethod.isLoop = method.loop;
+                    uvSpriteSheetMethod.delayTime = method.delayTime;
+                    if (method.play) {
+                        uvSpriteSheetMethod.start(true);
+                    }
+                }
                 else if (method.type == egret3d.MatMethodData.methodType.mulUvRollMethod) {
                     var uvMethod = new egret3d.MulUVRollMethod();
                     material.diffusePass.addMethod(uvMethod);
@@ -32334,10 +32632,18 @@ var egret3d;
              * @platform Web,Native
              */
             this.vSpeed = 0;
+            this.play = true;
+            this.loop = true;
+            this.frameNum = 0;
+            this.row = 0;
+            this.col = 0;
+            this.delayTime = 0;
+            this.totalTime = 0;
         }
         MatMethodData.methodType = {
             lightmapMethod: "lightmapMethod",
             uvRollMethod: "uvRollMethod",
+            uvSpriteSheetMethod: "uvSpriteSheetMethod",
             mulUvRollMethod: "mulUvRollMethod",
             alphaMaskMethod: "alphaMaskMethod",
             streamerMethod: "streamerMethod",
@@ -33767,6 +34073,9 @@ var egret3d;
             this._currentFrame = 0;
             this.frameList = [];
             this._change = true;
+            this._delayTime = 0.0;
+            this._isLoop = true;
+            this._currentDelay = 0.0;
             this.fsShaderList[egret3d.ShaderPhaseType.diffuse_fragment] = this.fsShaderList[egret3d.ShaderPhaseType.diffuse_fragment] || [];
             this.fsShaderList[egret3d.ShaderPhaseType.diffuse_fragment].push("uvSpriteSheet_fs");
             this.frameNum = frameNum;
@@ -33912,8 +34221,11 @@ var egret3d;
         */
         UVSpriteSheetMethod.prototype.start = function (rest) {
             if (rest === void 0) { rest = false; }
-            if (rest)
+            if (rest) {
                 this._time = 0;
+                this._currentDelay = 0.0;
+                this._currentFrame = 0;
+            }
             this._start = true;
         };
         /**
@@ -33925,6 +34237,61 @@ var egret3d;
         UVSpriteSheetMethod.prototype.stop = function () {
             this._start = false;
         };
+        Object.defineProperty(UVSpriteSheetMethod.prototype, "delayTime", {
+            /**
+            * @language zh_CN
+            * 获取播放延时时间
+            * @returns number 时间 秒
+            * @version Egret 3.0
+            * @platform Web,Native
+            */
+            get: function () {
+                return this._delayTime / 1000.0;
+            },
+            /**
+            * @language zh_CN
+            * 设置播放延时时间
+            * @param value 时间 秒
+            * @version Egret 3.0
+            * @platform Web,Native
+            */
+            set: function (value) {
+                if (this._delayTime != value) {
+                    this._change = true;
+                    this._delayTime = value * 1000.0;
+                    this._currentDelay = 0.0;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(UVSpriteSheetMethod.prototype, "isLoop", {
+            /**
+            * @language zh_CN
+            * 获取是否循环播放
+            * @returns boolean 是否循环
+            * @version Egret 3.0
+            * @platform Web,Native
+            */
+            get: function () {
+                return this._isLoop;
+            },
+            /**
+            * @language zh_CN
+            * 设置是否循环播放
+            * @param value 是否循环
+            * @version Egret 3.0
+            * @platform Web,Native
+            */
+            set: function (value) {
+                if (this._isLoop != value) {
+                    this._change = true;
+                    this._isLoop = value;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
         /**
         * @private
         * @language zh_CN
@@ -33948,10 +34315,23 @@ var egret3d;
             if (this._change)
                 this.caculate();
             if (this._start) {
-                this._time += delay;
-                if (this._time / this._speed > 1.0) {
-                    this._currentFrame++;
-                    this._time = 0;
+                this._currentDelay += delay;
+                if (this._currentDelay >= this._delayTime) {
+                    this._time += delay;
+                    if (this._time / this._speed > 1.0) {
+                        if (this._currentFrame + 1 >= this._frameNum) {
+                            if (this._isLoop) {
+                                this._currentFrame = 0;
+                            }
+                            else {
+                                this._start = false;
+                            }
+                        }
+                        else {
+                            this._currentFrame++;
+                        }
+                        this._time = 0;
+                    }
                 }
             }
             this._currentFrame = this._currentFrame % this._frameNum;
@@ -38059,8 +38439,8 @@ var egret3d;
             if (texture === void 0) { texture = null; }
             if (materialData === void 0) { materialData = null; }
             _super.call(this, materialData);
-            this.diffuseTexture = texture;
             this.initMatPass();
+            this.materialData["diffuseTexture3D"] = texture;
         }
         CubeTextureMaterial.prototype.initMatPass = function () {
             this.addPass(egret3d.PassType.diffusePass);
@@ -38899,24 +39279,26 @@ var egret3d;
             var vc1;
             var vc2;
             var random;
+            var indexList = [];
             var xyz = [];
             for (var i = 0; i < num; i++) {
                 val = new egret3d.Vector3D();
                 values.push(val);
-                var index0 = 3 * Math.floor(triangleCount * Math.random()); //第n个三角形
-                var index1 = index0 + 1;
-                var index2 = index0 + 2;
+                indexList.length = 0;
+                var index = 3 * Math.floor(triangleCount * Math.random()); //第n个三角形
+                this.geometry.getVertexIndices(index, 3, indexList);
                 //获取三角形的三个顶点
                 xyz.length = 0;
-                this.geometry.getVertexForIndex(index0 + 0, egret3d.VertexFormat.VF_POSITION, xyz);
+                this.geometry.getVertexForIndex(indexList[0], egret3d.VertexFormat.VF_POSITION, xyz);
                 Mesh3DValueShape.vct1.setTo(xyz[0], xyz[1], xyz[2]);
                 xyz.length = 0;
-                this.geometry.getVertexForIndex(index0 + 1, egret3d.VertexFormat.VF_POSITION, xyz);
+                this.geometry.getVertexForIndex(indexList[1], egret3d.VertexFormat.VF_POSITION, xyz);
                 Mesh3DValueShape.vct2.setTo(xyz[0], xyz[1], xyz[2]);
                 xyz.length = 0;
-                this.geometry.getVertexForIndex(index0 + 2, egret3d.VertexFormat.VF_POSITION, xyz);
+                this.geometry.getVertexForIndex(indexList[2], egret3d.VertexFormat.VF_POSITION | egret3d.VertexFormat.VF_NORMAL, xyz);
                 Mesh3DValueShape.vct3.setTo(xyz[0], xyz[1], xyz[2]);
-                normal = this.calcNormal(Mesh3DValueShape.vct1, Mesh3DValueShape.vct2, Mesh3DValueShape.vct3);
+                normal = new egret3d.Vector3D();
+                normal.setTo(xyz[3], xyz[4], xyz[5]);
                 this.normalList.push(normal);
                 //在三角形上获得一条边
                 random = Math.random();
@@ -38945,23 +39327,25 @@ var egret3d;
             var vc2 = new egret3d.Vector3D();
             var random;
             var xyz = [];
+            var indexList = [];
             for (var i = 0; i < num; i++) {
                 val = new egret3d.Vector3D();
                 values.push(val);
-                var index0 = 3 * Math.floor(triangleCount * Math.random()); //第n个三角形
-                var index1 = index0 + 1;
-                var index2 = index0 + 2;
+                indexList.length = 0;
+                var index = 3 * Math.floor(triangleCount * Math.random()); //第n个三角形
+                this.geometry.getVertexIndices(index, 3, indexList);
                 //获取三角形的三个顶点
                 xyz.length = 0;
-                this.geometry.getVertexForIndex(index0 + 0, egret3d.VertexFormat.VF_POSITION, xyz);
+                this.geometry.getVertexForIndex(indexList[0], egret3d.VertexFormat.VF_POSITION, xyz);
                 Mesh3DValueShape.vct1.setTo(xyz[0], xyz[1], xyz[2]);
                 xyz.length = 0;
-                this.geometry.getVertexForIndex(index0 + 1, egret3d.VertexFormat.VF_POSITION, xyz);
+                this.geometry.getVertexForIndex(indexList[1], egret3d.VertexFormat.VF_POSITION, xyz);
                 Mesh3DValueShape.vct2.setTo(xyz[0], xyz[1], xyz[2]);
                 xyz.length = 0;
-                this.geometry.getVertexForIndex(index0 + 2, egret3d.VertexFormat.VF_POSITION, xyz);
+                this.geometry.getVertexForIndex(indexList[2], egret3d.VertexFormat.VF_POSITION | egret3d.VertexFormat.VF_NORMAL, xyz);
                 Mesh3DValueShape.vct3.setTo(xyz[0], xyz[1], xyz[2]);
-                normal = this.calcNormal(Mesh3DValueShape.vct1, Mesh3DValueShape.vct2, Mesh3DValueShape.vct3);
+                normal = new egret3d.Vector3D();
+                normal.setTo(xyz[3], xyz[4], xyz[5]);
                 this.normalList.push(normal);
                 //在两条边上分别随机一个位置
                 vc1.lerp(Mesh3DValueShape.vct1, Mesh3DValueShape.vct2, Math.random());
@@ -38975,26 +39359,28 @@ var egret3d;
             var normal;
             var triangleCount = this.geometry.faceCount;
             var random;
+            var indexList = [];
             var xyz = [];
             for (var i = 0; i < num; i++) {
                 val = new egret3d.Vector3D();
                 values.push(val);
-                var index0 = 3 * Math.floor(triangleCount * Math.random()); //第n个三角形
-                var index1 = index0 + 1;
-                var index2 = index0 + 2;
+                var index = 3 * Math.floor(triangleCount * Math.random()); //第n个三角形
+                indexList.length = 0;
+                this.geometry.getVertexIndices(index, 3, indexList);
                 //获取三角形的三个顶点
                 xyz.length = 0;
-                this.geometry.getVertexForIndex(index0 + 0, egret3d.VertexFormat.VF_POSITION, xyz);
+                this.geometry.getVertexForIndex(indexList[0], egret3d.VertexFormat.VF_POSITION, xyz);
                 Mesh3DValueShape.vct1.setTo(xyz[0], xyz[1], xyz[2]);
                 xyz.length = 0;
-                this.geometry.getVertexForIndex(index0 + 1, egret3d.VertexFormat.VF_POSITION, xyz);
+                this.geometry.getVertexForIndex(indexList[1], egret3d.VertexFormat.VF_POSITION, xyz);
                 Mesh3DValueShape.vct2.setTo(xyz[0], xyz[1], xyz[2]);
                 xyz.length = 0;
-                this.geometry.getVertexForIndex(index0 + 2, egret3d.VertexFormat.VF_POSITION, xyz);
+                this.geometry.getVertexForIndex(indexList[2], egret3d.VertexFormat.VF_POSITION | egret3d.VertexFormat.VF_NORMAL, xyz);
                 Mesh3DValueShape.vct3.setTo(xyz[0], xyz[1], xyz[2]);
-                normal = this.calcNormal(Mesh3DValueShape.vct1, Mesh3DValueShape.vct2, Mesh3DValueShape.vct3);
+                normal = new egret3d.Vector3D();
+                normal.setTo(xyz[3], xyz[4], xyz[5]);
                 this.normalList.push(normal);
-                //在三角形上获得一条边
+                //在三角形上获得一个顶点
                 random = Math.random();
                 if (random < 0.333) {
                     val.copyFrom(Mesh3DValueShape.vct1);
@@ -39010,7 +39396,9 @@ var egret3d;
         Mesh3DValueShape.prototype.calcNormal = function (pt0, pt1, pt2) {
             Mesh3DValueShape.crsVector1.setTo(pt1.x - pt0.x, pt1.y - pt0.y, pt1.z - pt0.z);
             Mesh3DValueShape.crsVector2.setTo(pt2.x - pt0.x, pt2.y - pt0.y, pt2.z - pt0.z);
-            this.normal = Mesh3DValueShape.crsVector1.crossProduct(Mesh3DValueShape.crsVector2);
+            Mesh3DValueShape.crsVector1.normalize();
+            Mesh3DValueShape.crsVector2.normalize();
+            this.normal = Mesh3DValueShape.crsVector2.crossProduct(Mesh3DValueShape.crsVector1);
             this.normal.normalize();
             return this.normal;
         };

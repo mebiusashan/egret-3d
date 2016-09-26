@@ -12,6 +12,7 @@
         public static methodType: any = {
             lightmapMethod: "lightmapMethod",
             uvRollMethod: "uvRollMethod",
+            uvSpriteSheetMethod: "uvSpriteSheetMethod",
             mulUvRollMethod: "mulUvRollMethod",
             alphaMaskMethod: "alphaMaskMethod",
             streamerMethod: "streamerMethod",
@@ -60,5 +61,13 @@
          * @platform Web,Native
          */
         public vSpeed: number = 0;
+
+        public play: boolean = true;
+        public loop: boolean = true;
+        public frameNum: number = 0;
+        public row: number = 0;
+        public col: number = 0;
+        public delayTime: number = 0;
+        public totalTime: number = 0;
     }
 }

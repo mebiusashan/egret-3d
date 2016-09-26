@@ -4,13 +4,12 @@
     */
     export class GUIEventFire {
 
-        private _finalist: Quad[];
-        private _mouseList: Quad[];
+        private _finalist: DisplayObject[];
+        private _mouseList: DisplayObject[];
         private _quadStage: QuadStage;
         constructor( quadStage:QuadStage ) {
             this._mouseList = [];
             this._quadStage = quadStage;
-
 
             Input.addEventListener(MouseEvent3D.MOUSE_DOWN, this.mouseDown, this);
             Input.addEventListener(MouseEvent3D.MOUSE_UP, this.mouseUp, this);
@@ -21,107 +20,114 @@
 
             Input.addEventListener(TouchEvent3D.TOUCH_START, this.mouseDown, this);
             Input.addEventListener(TouchEvent3D.TOUCH_END, this.mouseUp, this);
-
             Input.addEventListener(TouchEvent3D.TOUCH_MOVE, this.mouseMove, this);
         }
 
-        private mouseOut(e: MouseEvent3D) {
+        private dispatchMouseEvent(eventType: string) {
+            //todo 事件冒泡加入捕获阶段
+            //todo 事件阻断机制
             var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick: Quad = list[0];
-                pick.pickResult = pick.pickResult || new PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseOut();
+            var target: DisplayObject;
+            var currentTraget: DisplayObject;
+            if (list.length === 0) {
+                //当没有任何对象被点击时. 抛出舞台事件
+                var evt: MouseEvent3D = new MouseEvent3D(eventType);
+                evt.target = this._quadStage;
+                evt.currentTarget = this._quadStage;
+                this._quadStage.dispatchEvent(evt);
+                return;
             }
-            this._quadStage.dispatchMouseOut();
+            target = list[0];//最上层显示对象
+            currentTraget = target;
+
+            while (currentTraget) {
+                var event: MouseEvent3D = new MouseEvent3D(eventType);
+                event.target = target;
+                event.currentTarget = currentTraget;
+                currentTraget.dispatchEvent(event);
+                if (!currentTraget.parentIsStage) {
+                    currentTraget = currentTraget.parent;
+                } else {
+                    currentTraget = null;
+                }
+            }
+
+            var stageEvent: MouseEvent3D = new MouseEvent3D(eventType);
+            stageEvent.target = target;
+            stageEvent.currentTarget = this._quadStage;
+            this._quadStage.dispatchEvent(stageEvent);
+        }
+
+        private onTouchStart(e: TouchEvent3D) {
+
+        }
+
+        private onTouchEnd(e: TouchEvent3D) {
+
+        }
+
+        private onTouchMove(e: TouchEvent3D) {
+
+        }
+
+        private mouseOut(e: MouseEvent3D) {
+            this.dispatchMouseEvent(MouseEvent3D.MOUSE_DOWN);
         }
 
         private mouseDown(e: MouseEvent3D) {
-            var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick: Quad = list[0];
-                pick.pickResult = pick.pickResult || new PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseDown();
-            }
-            this._quadStage.dispatchMuseDown();
+            this.dispatchMouseEvent(MouseEvent3D.MOUSE_DOWN);
         }
 
         private mouseUp(e: MouseEvent3D) {
-            var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick: Quad = list[0];
-                pick.pickResult = pick.pickResult || new PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseUp();
-            }
-            this._quadStage.dispatchMuseUp();
+            this.dispatchMouseEvent(MouseEvent3D.MOUSE_UP);
         }
 
         private mouseOver(e: MouseEvent3D) {
-            var list = this.getMousePickList();
-            if (list.length>0){
-                var pick: Quad = list[0];
-                pick.mouseInState = true;
-                pick.pickResult = pick.pickResult || new PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseUp();
-            }
-            this._quadStage.dispatchMouseOver();
+            this.dispatchMouseEvent(MouseEvent3D.MOUSE_OVER);
         }
 
         private mouseMove(e: MouseEvent3D) {
-            var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick: Quad = list[0];
-                pick.mouseInState = true;
-                pick.pickResult = pick.pickResult || new PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseMove();
-            }
-            this._quadStage.dispatchMuseMove();
+            this.dispatchMouseEvent(MouseEvent3D.MOUSE_MOVE);
         }
 
         private mouseClick(e: MouseEvent3D) {
-            var list = this.getMousePickList();
-            if (list.length > 0) {
-                var pick: Quad = list[0];
-                pick.mouseInState = true;
-                pick.pickResult = pick.pickResult || new PickResult();
-                pick.pickResult.pickList = list;
-                pick.dispatchMuseClick();
-            }
-            this._quadStage.dispatchMuseClick();
+            this.dispatchMouseEvent(MouseEvent3D.MOUSE_CLICK);
         }
 
-        //public hasMouseMove: boolean = false;
-        //public hasMouseDown: boolean = false;
-        //public hasMouseUp: boolean = false;
-        //public hasMouseClick: boolean = false;
-        //public hasMouseOut: boolean = false;
+    
        public fire() {
            this._finalist = this._quadStage.quadList;
        }
 
-        private getMousePickList(): Quad[] {
+
+        private getGlobalRect(dis: DisplayObject): Rectangle {
+            var rect: Rectangle = new Rectangle();
+            rect.copyFrom(dis.aabb);
+            dis = dis.parent;
+            while (dis) {
+                rect.x += dis.x;
+                rect.y += dis.y;
+                dis = dis.parent;
+            }
+            return rect;
+        }
+
+
+        private getMousePickList(): DisplayObject[] {
             var i: number;
             this._mouseList.length = 0;
-            var quad: Quad;
+            var quad: DisplayObject;
             if (this._finalist) {
                 for (i = 0; i < this._finalist.length; i++) {
                     quad = this._finalist[i];
+//                    console.log("quad.aabb: ", quad.aabb);
+//                    console.log("mouseX: ", Input.mouseX, "mouseY: ", Input.mouseY);
                     if (quad.globalVisible && quad.mouseEnable && quad.aabb.inner(Input.mouseX, Input.mouseY)) {
-                        //mouse down
                         this._mouseList.push(quad);
                     }
                 }
             }
-            //已经排序了不需要排序
-            //return pickList = SortUtil.sortAB(this._mouseList);
 
-
-            //todo
-            //???        是否需要颠倒
             this._mouseList.reverse();
             return this._mouseList;
         }

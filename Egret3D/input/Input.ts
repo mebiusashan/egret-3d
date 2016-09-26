@@ -571,6 +571,7 @@
             this._mouseEvent3d.target = this;
             this._mouseEvent3d.eventType = MouseEvent3D.MOUSE_MOVE;
 
+
             this.dispatchEvent(this._mouseEvent3d);
         }
 

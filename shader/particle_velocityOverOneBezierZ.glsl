@@ -1,9 +1,9 @@
 //##FilterBegin## ##Particle##
 
-uniform float uniform_velocityOverZ[22];
+uniform float uniform_velocityOverZ[35];
 void calcVelocityOverBezier(float curTime, float totalTime)
 {
-	velocityTwoBezier.z = calcOneBezierArea(uniform_velocityOverZ, curTime, totalTime);
+	velocityTwoBezier.z = calcBezierArea(uniform_velocityOverZ, curTime, totalTime);
 }
 
 //##FilterEnd##

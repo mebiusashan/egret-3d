@@ -9,6 +9,9 @@
      */
     export class Billboard extends Mesh{
 
+        private width: number; 
+        private height: number; 
+        private planeGeometry: PlaneGeometry; 
         /**
          * @language zh_CN
          * 指定材质，和公告板宽、高，构建一个公告板
@@ -24,6 +27,10 @@
                 geometry = new PlaneGeometry(width, height, 1, 1, 1, 1, Vector3D.Z_AXIS);
             }
             super(geometry, material);
+
+            this.planeGeometry = <PlaneGeometry>this.geometry;
+
+            this.width = width; 
             if (!this.bound) {
                 this.bound = this.buildBoundBox();
             }
@@ -42,6 +49,16 @@
             //this._qut.fromEulerAngles(-90, 0, 0);
             //this._qut.multiply(camera.globalOrientation, this._qut);
             this.globalOrientation = camera.globalOrientation;
+        }
+
+        public clone(): Mesh {
+            var ani: IAnimation = null;
+            if (this.animation) {
+                ani = this.animation.clone();
+            }
+            var cloneMesh: Billboard = new Billboard(this.material, this.geometry, this.planeGeometry.width, this.planeGeometry.height );
+            cloneMesh.multiMaterial = this.multiMaterial;
+            return cloneMesh;
         }
     }
 }

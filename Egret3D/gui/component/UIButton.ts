@@ -25,9 +25,9 @@
             this._state = UIButton.STATE_UP;
             this._enable = true;
             this._isDowning = false;
-            this._skin.addEventListener(MouseEvent3D.MOUSE_DOWN, this.mouseEventHandler, this);
-            this._skin.addEventListener(MouseEvent3D.MOUSE_OUT, this.mouseEventHandler, this);
-            this._skin.addEventListener(MouseEvent3D.MOUSE_OVER, this.mouseEventHandler, this);
+            this.addEventListener(MouseEvent3D.MOUSE_DOWN, this.mouseEventHandler, this);
+            this.addEventListener(MouseEvent3D.MOUSE_OUT, this.mouseEventHandler, this);
+            this.addEventListener(MouseEvent3D.MOUSE_OVER, this.mouseEventHandler, this);
         }
 
         public set width(value: number) {
@@ -78,31 +78,26 @@
         }
 
         protected startPress(): void {
-            this._skin.addEventListener(MouseEvent3D.MOUSE_UP, this.mouseEventHandler, this);
+            this.addEventListener(MouseEvent3D.MOUSE_UP, this.mouseEventHandler, this);
             this.stage.addEventListener(MouseEvent3D.MOUSE_UP, this.onStageEnd, this);
             this._isDowning = true;
 
             this.setMouseState(UIButton.STATE_DOWN);
-            this.dispatchEvent(new MouseEvent3D(MouseEvent3D.MOUSE_DOWN, this));
         }
 
         protected onStageEnd(event: MouseEvent3D): void {
             console.log("stage up");
             this.stage.removeEventListener(MouseEvent3D.MOUSE_UP, this.onStageEnd, this);
-            this._skin.removeEventListener(MouseEvent3D.MOUSE_UP, this.mouseEventHandler,this);
+            this.removeEventListener(MouseEvent3D.MOUSE_UP, this.mouseEventHandler,this);
             this.setMouseState(UIButton.STATE_UP);
             this._isDowning = false;
         }
 
         protected endPress(): void {
-            this.dispatchEvent(new MouseEvent3D(MouseEvent3D.MOUSE_UP, this));
-            this.dispatchEvent(new MouseEvent3D(MouseEvent3D.MOUSE_CLICK, this));
             this.setMouseState(UIButton.STATE_UP);
             this._isDowning = false;
             this.stage.removeEventListener(MouseEvent3D.MOUSE_UP, this.onStageEnd, this);
-            this._skin.removeEventListener(MouseEvent3D.MOUSE_UP, this.mouseEventHandler, this);
-            console.log("btn up");
-
+            this.removeEventListener(MouseEvent3D.MOUSE_UP, this.mouseEventHandler, this);
         }
 
         public get enable(): boolean {
@@ -127,7 +122,6 @@
         protected drawBackground() {
             var skin: Texture = this.enable ? this.getStyle(this._state) : this.getStyle(UIButton.STATE_DISABLE);
             this._skin.texture = skin;
-
         }
     }
 

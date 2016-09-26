@@ -732,6 +732,15 @@
 
                     uvScrollMethod.start(true);
                 }
+                else if (method.type == MatMethodData.methodType.uvSpriteSheetMethod) {
+                    var uvSpriteSheetMethod: UVSpriteSheetMethod = new UVSpriteSheetMethod(method.frameNum, method.row, method.col, method.totalTime);
+                    material.diffusePass.addMethod(uvSpriteSheetMethod);
+                    uvSpriteSheetMethod.isLoop = method.loop;
+                    uvSpriteSheetMethod.delayTime = method.delayTime;
+                    if (method.play) {
+                        uvSpriteSheetMethod.start(true);
+                    }
+                }
                 else if (method.type == MatMethodData.methodType.mulUvRollMethod) {
 
                     var uvMethod: MulUVRollMethod = new MulUVRollMethod();

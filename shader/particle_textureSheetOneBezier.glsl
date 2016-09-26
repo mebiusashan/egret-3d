@@ -6,7 +6,7 @@ varying vec3 varying_textureSheetData;
 uniform float uniform_textureSheet[5];
 //tileX tileY circles frameFrom frameTo
 
-uniform float uniform_frameBezier[22];
+uniform float uniform_frameBezier[35];
 
 vec2 getSheetOffset(float frame, float tileX, float tileY)
 {
@@ -27,7 +27,7 @@ void calcUVCoord() {
 	float frame = varying_textureSheetData.x + varying_textureSheetData.y;
 	float currentTime = varying_particleData.x * uniform_textureSheet[2];
 	currentTime = mod(currentTime, varying_particleData.y);
-	float bezierFrame = calcOneBezierSize(uniform_frameBezier, currentTime, varying_particleData.y);
+	float bezierFrame = calcBezierSize(uniform_frameBezier, currentTime, varying_particleData.y);
 	bezierFrame = clamp(bezierFrame, uniform_textureSheet[3], uniform_textureSheet[4]);
 	frame += bezierFrame;
 	uv_0.xy += getSheetOffset(frame, uniform_textureSheet[0], uniform_textureSheet[1]);

@@ -401,16 +401,7 @@
         * @returns Bound 包圍對象
         */
         public clone(): Bound {
-            var bound: BoundBox = new BoundBox(this.owner);
-            bound.copyVertex(this);
-            bound.width = this.width;
-            bound.heigth = this.heigth;
-            bound.depth = this.depth;
-            bound.min.copyFrom(this.min);
-            bound.max.copyFrom(this.max);
-            bound.volume = this.volume;
-            bound.center.copyFrom(this.center);
-            bound.radius = this.radius;
+            var bound: BoundBox = new BoundBox(this.owner, this.min, this.max);
             return bound;
         }
     }

@@ -37,7 +37,7 @@ void main(){
   int index = int(floor(varying_textureIndex)) ; 
   if(index < 0){
 	  if(index == -1){
-		diffuseColor = vec4(1.0, 0.0, 0.0, 0.8);//NULL_TEXTURE
+		diffuseColor = vec4(1.0, 1.0, 1.0, 1.0);//NULL_WHITE DEFAULT
 	  }else{
 		discard;								//EMPTY_QUAD INVISIBLE						
 	  }

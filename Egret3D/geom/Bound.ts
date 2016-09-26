@@ -64,6 +64,12 @@
                 if (!this._bound.parent) {
                     this.owner.addChild(this._bound);
                 }
+                else {
+                    if (this._bound.parent != this.owner) {
+                        this._bound.parent.removeChild(this._bound);
+                        this.owner.addChild(this._bound);
+                    }
+                }
             }
             else {
                 if (this._bound.parent) {

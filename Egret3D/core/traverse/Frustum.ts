@@ -104,6 +104,12 @@
                 if (!this._frustum.parent) {
                     this.camera.addChild(this._frustum);
                 }
+                else {
+                    if (this._frustum.parent != this.camera) {
+                        this._frustum.parent.removeChild(this._frustum);
+                        this.camera.addChild(this._frustum);
+                    }
+                }
             }
             else {
                 if (this._frustum.parent) {

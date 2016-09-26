@@ -21,8 +21,8 @@
          */
         constructor(texture: CubeTexture = null, materialData: MaterialData = null) {
             super(materialData);
-            this.diffuseTexture = texture;
             this.initMatPass();
+            this.materialData["diffuseTexture3D"] = texture ;
         }
 
         protected initMatPass() {

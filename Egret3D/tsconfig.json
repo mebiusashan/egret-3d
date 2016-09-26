@@ -139,6 +139,7 @@
         "gui/component/UIRadioButton.ts",
         "gui/component/UIRadioButtonGroup.ts",
         "gui/component/UIProgressBar.ts",
+        "gui/component/UISlider.ts",
 
         "lights/LightBase.ts",
         "lights/PointLight.ts",

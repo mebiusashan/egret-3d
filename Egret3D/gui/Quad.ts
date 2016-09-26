@@ -7,8 +7,8 @@
     * @platform Web,Native
     */
     export class QuadNullType {
-        //没有贴图的QUAD
-        public static NULL_TEXTURE: number = -1;
+        //没有贴图的QUAD(默认白色)
+        public static NULL_WHITE: number = -1;
         //空的QUAD
         public static NULL_QUAD: number = -2;
         //不可见
@@ -43,7 +43,6 @@
         //public get texture(): Texture {
         //    return this._texture;
         //}
-
 
         /**
         * @language zh_CN
@@ -80,8 +79,13 @@
                 positionFrom = zIndex * QuadData.quadVertexLen + QuadData.offsetOffest;
                 for (var i: number = 0; i < 4; i++) {
                     index = positionFrom + i * positionOffset;
-                    verticesData[index] = pos.x;
-                    verticesData[index + 1] = -pos.y;
+                    if (this._renderType == 1) {
+                        verticesData[index] = pos.x >> 0;
+                        verticesData[index + 1] = -pos.y >> 0;
+                    } else {
+                        verticesData[index] = pos.x;
+                        verticesData[index + 1] = -pos.y;
+                    }
                 }
 
                 //____________________(width,height)
@@ -154,7 +158,7 @@
                 this._textureInvalid = false;
                 this._visibleInvalid = false;
                 //____________________gui index
-                var texId: number = QuadNullType.NULL_TEXTURE;
+                var texId: number = QuadNullType.NULL_WHITE;
                 var uvRec: Rectangle;
                 if (this._texture) {
                     uvRec = this._texture.uvRectangle;
@@ -162,7 +166,7 @@
                     texId = this._texture.guiIndex;
                 } else {
                     //hav no texture
-                    texId = QuadNullType.NULL_TEXTURE;
+                    texId = QuadNullType.NULL_WHITE;
                     uvRec = Quad.DefaultUVRect;
                 }
 
@@ -202,23 +206,25 @@
                 this._maskRectInvalid = false;
                 //____________________mask x y width height
                 var maskRect: Rectangle = this.globalMask;
+                var maskX: number, maskY: number, maskW: number, maskH: number;
                 if (maskRect) {
-                    var maskX: number, maskY: number, maskW: number, maskH: number;
-
-                    maskX = maskRect.x;      //                0;
-                    maskY = maskRect.y;      //                0;
-                    maskW = maskRect.width;  //                50;
-                    maskH = maskRect.height; //                600;
-
-                    positionFrom = zIndex * QuadData.quadVertexLen + QuadData.scaleOffest;
-                    for (var i: number = 0; i < 4; i++) {
-                        index = positionFrom + i * positionOffset;
-                        verticesData[index + 0] = maskX;
-                        verticesData[index + 1] = maskY;
-                        verticesData[index + 2] = maskW;
-                        verticesData[index + 3] = maskH;
-                    }
-
+                    maskX = maskRect.x; //                0;
+                    maskY = maskRect.y; //                0;
+                    maskW = maskRect.width; //            50;
+                    maskH = maskRect.height; //           600;
+                } else {
+                    maskX = -1;
+                    maskY = -1;
+                    maskW = 0;
+                    maskH = 0;
+                }
+                positionFrom = zIndex * QuadData.quadVertexLen + QuadData.scaleOffest;
+                for (var i: number = 0; i < 4; i++) {
+                    index = positionFrom + i * positionOffset;
+                    verticesData[index + 0] = maskX;
+                    verticesData[index + 1] = maskY;
+                    verticesData[index + 2] = maskW;
+                    verticesData[index + 3] = maskH;
                 }
             }
 

@@ -64,6 +64,15 @@
         */
         public target: any;
 
+          /**
+        * @language zh_CN
+        * 当前正在使用某个事件侦听器处理 Event3D 对象的对象
+        * @param value {any}
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public currentTarget:any;
+
         /**
         * @language zh_CN
         * 3D引擎中的事件的类型

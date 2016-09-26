@@ -68,10 +68,42 @@
 
         protected _qut: Quaternion = new Quaternion();
         protected _vec: Vector3D = new Vector3D();
+        public parentIsStage: boolean = false;
 
         constructor() {
             super();
         }
+
+
+        public get mouseX(): number {
+            var temp: DisplayObject = this;
+            var x: number = Input.mouseX;
+            while (temp) {
+                x -= temp.x;
+                if (temp.parent && !temp.parentIsStage) {
+                    temp = temp.parent;
+                } else {
+                    temp = null;
+                }
+            }
+            return x;
+        }
+
+        public get mouseY(): number {
+            var temp: DisplayObject = this;
+            var y: number = Input.mouseY;
+            while (temp) {
+                y -= temp.y;
+                if (temp.parent && !temp.parentIsStage) {
+                    temp = temp.parent;
+                } else {
+                    temp = null;
+                }
+            }
+            return y;
+        }
+
+
         /**
         * @language zh_CN
         * 获得当前舞台引用
@@ -105,6 +137,8 @@
         public get parent(): DisplayObject {
             return this._parent;
         }
+
+     
 
 
         /**
@@ -476,6 +510,7 @@
                 for (var i: number = 0, count: number = this._childs.length; i < count; i++) {
                     this._childs[i].activeStage(stage);
                 }
+
             }
         }
 

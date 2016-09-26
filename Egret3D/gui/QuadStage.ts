@@ -85,6 +85,7 @@
             }
             this._childList.push(object);
             object.activeStage(this);
+            object.parentIsStage = true;
             this.setRenderListInvalid();
         }
 
@@ -134,6 +135,7 @@
 
 
             object.activeStage(null);
+            object.parentIsStage = false;
             this.setRenderListInvalid();
         }
 

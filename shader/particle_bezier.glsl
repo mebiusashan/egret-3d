@@ -1,25 +1,6 @@
 //##FilterBegin## ##Particle##
-vec2 bzData[20];
 const float Tiny = 0.0001;
-void dcpBezier(float bezierData[22], float tTotal) 
-{ 
-	float timeNow = 0.0; 
-	float time1 = bezierData[20] * tTotal; 
-	float time2 = bezierData[21] * tTotal; 
-	for(int i = 0; i < 20; i ++){ 
-		bzData[i].x = timeNow; 
-		bzData[i].y = bezierData[i]; 
-		if(i <= 9){ 
-			timeNow += time1; 
-		}else if(i >= 11){ 
-			timeNow += time2; 
-		} 
-	} 
-	bzData[10].x = bzData[9].x;
-}
-
-
-float calcBezierArea(float tCurrent){
+float calcBezierArea(float bzData[35], float tCurrent, float tTotal){
 	float res = 0.0;
 
 	float v0;
@@ -29,19 +10,28 @@ float calcBezierArea(float tCurrent){
 	float deltaTime = 0.0;
 	float a_deltaTime;
 
+	float segmentCount = bzData[34] - 1.0;//最后一个点不需要记录，如9个点只有8条线段
+	float iFloat = 0.0;
+	for(int i = 0; i < 16; i ++)
+	{
+		iFloat = float(i);
+		if(iFloat - segmentCount > Tiny)
+			break;
+		v0 = bzData[i * 2 + 1];
+		t0 = bzData[i * 2 + 2] * tTotal;
+		v1 = bzData[i * 2 + 3];
+		t1 = bzData[i * 2 + 4] * tTotal;
 
-	for(int i = 0; i < 19; i ++){
-		v0 = bzData[i].y;
-		v1 = bzData[i + 1].y;
-		t0 = bzData[i].x;
-		t1 = bzData[i + 1].x;
 		deltaTime = t1 - t0;
+
 		if(deltaTime > Tiny)
 		{
 			a_deltaTime = 0.5 * (v1 - v0);
-			if(tCurrent >= t1){
+			if(tCurrent >= t1)
+			{
 				res += deltaTime * (v0 + a_deltaTime);
-			}else{
+			}else
+			{
 				deltaTime = tCurrent - t0;
 				res += deltaTime * (v0 + a_deltaTime);
 				break;
@@ -54,17 +44,7 @@ float calcBezierArea(float tCurrent){
 }
 
 
-
-
-float calcOneBezierArea(float bezierData[22], float tCurrent, float tTotal){
-	dcpBezier(bezierData, tTotal);
-	return calcBezierArea(tCurrent);
-}
-
-
-
-
-float calcBezierSize(float tCurrent){
+float calcBezierSize(float bzData[35], float tCurrent, float tTotal){
 	float res = 0.0;
 
 	float y0;
@@ -73,16 +53,25 @@ float calcBezierSize(float tCurrent){
 	float t1;
 	float deltaTime = 0.0;
 	float v;
+	float segmentCount = bzData[34] - 1.0;//最后一个点不需要记录，如9个点只有8条线段
+	float iFloat = 0.0;
 
-	for(int i = 0; i < 19; i ++){
-		y0 = bzData[i].y;
-		y1 = bzData[i + 1].y;
-		t0 = bzData[i].x;
-		t1 = bzData[i + 1].x;
+	for(int i = 0; i < 16; i ++)
+	{
+		iFloat = float(i);
+		if(iFloat - segmentCount > Tiny)
+			break;
+		y0 = bzData[i * 2 + 1];
+		t0 = bzData[i * 2 + 2] * tTotal;
+		y1 = bzData[i * 2 + 3];
+		t1 = bzData[i * 2 + 4] * tTotal;
+
 		deltaTime = t1 - t0;
+
 		if(deltaTime > Tiny)
 		{
-			if(tCurrent <= t1){
+			if(tCurrent <= t1)
+			{
 				v = (y1 - y0) / deltaTime;
 				deltaTime = tCurrent - t0;
 				res = y0 + v * deltaTime;
@@ -95,9 +84,4 @@ float calcBezierSize(float tCurrent){
 	return res;
 }
 
-
-float calcOneBezierSize(float bezierData[22], float tCurrent, float tTotal){
-	dcpBezier(bezierData, tTotal);
-	return calcBezierSize(tCurrent);
-}
 //##FilterEnd##

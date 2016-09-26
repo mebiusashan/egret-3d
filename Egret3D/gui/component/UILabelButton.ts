@@ -18,6 +18,7 @@
             super();
             this._textField = new gui.UITextField();
             this._textField.autoSize = UITextFieldAutoSize.CENTER;
+            this._textField.textColor = 0xff000000;
             this.addChild(this._textField);
             this.onRender();
             this._textHeight = -1;

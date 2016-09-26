@@ -23,9 +23,8 @@
             this._gap = 5;
             this._selectedIndex = -1;
             this._selectedItem = null;
-            this._background.addEventListener(MouseEvent3D.MOUSE_DOWN, this.onMouseDown, this);
-            this._background.addEventListener(MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
-            this._background.addEventListener(MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
+            this.addEventListener(MouseEvent3D.MOUSE_DOWN, this.onMouseDown, this);
+            
             this._startDrag = false;
             this._container.height = 0;
         }
@@ -33,12 +32,18 @@
 
         private onMouseDown(event: MouseEvent3D) {
             this._startDrag = true;
+            this.addEventListener(MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
+            this.addEventListener(MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
+            this.stage.addEventListener(MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
             console.log("mousedown");
 
         }
 
         private onMouseUp(event: MouseEvent3D) {
             this._startDrag = false;
+            this.removeEventListener(MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
+            this.removeEventListener(MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
+            this.stage.removeEventListener(MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
             console.log("mouseup");
             
         }
@@ -103,23 +108,13 @@
         public addItem(item: DisplayObject) {
             this._items.push(item);
             this.addChildAt(item, this._container.childs.length);
-            item.addEventListener(MouseEvent3D.MOUSE_DOWN,
-                (e) => {
-                    console.log("aaaaaa");
-                },
-                this);
-            item.addEventListener(MouseEvent3D.MOUSE_DOWN, this.onMouseDown, this);
-            item.addEventListener(MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
-            item.addEventListener(MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
+            
             this.updateView();
         }
 
         public removeItem(item: DisplayObject) {
             this.removeChild(item);
             this._items.splice(this._items.indexOf(item), 1);
-            item.removeEventListener(MouseEvent3D.MOUSE_DOWN, this.onMouseDown, this);
-            item.removeEventListener(MouseEvent3D.MOUSE_UP, this.onMouseUp, this);
-            item.removeEventListener(MouseEvent3D.MOUSE_MOVE, this.onMouseMove, this);
             this.updateView();
         }
 

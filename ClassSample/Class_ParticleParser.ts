@@ -28,7 +28,7 @@
             this._cameraCrl.distance = 100 * scale;
             this._cameraCrl.scaleSpeed(scale);
 
-            this._particleLoader = new EffectGroupLoader("resource/scene/fire_scene/MapConfig.json");
+            this._particleLoader = new EffectGroupLoader("resource/scene/Test/MapConfig.json");
             this._particleLoader.addEventListener(LoaderEvent3D.LOADER_COMPLETE, this.onParticleLoad, this);
             this._view3D.addChild3D(this._particleLoader.container);
 
@@ -56,13 +56,13 @@
         public update(e: Event3D) {
             this._cameraCrl.update();
             //this.obj.rotationY++;
-            if (this.angle > 180) {
-                this.angle = 0;
-                ParticleAnimation.Reset = true;
-            } else {
-                ParticleAnimation.Reset = false;
-            }
-            this.angle += 1;
+            //if (this.angle > 180) {
+            //    this.angle = 0;
+            //    ParticleAnimation.Reset = true;
+            //} else {
+            //    ParticleAnimation.Reset = false;
+            //}
+            //this.angle += 1;
 
         }
 

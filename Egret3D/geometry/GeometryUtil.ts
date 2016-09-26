@@ -47,5 +47,62 @@
             }
             return null;
         }
+
+        public static fromVertexFormatToLength(vf: VertexFormat): number {
+            var length: number = 0;
+            if (vf & VertexFormat.VF_POSITION) {
+                length += Geometry.positionSize;
+            }
+
+            if (vf & VertexFormat.VF_NORMAL) {
+                length += Geometry.normalSize;
+            }
+
+            if (vf & VertexFormat.VF_TANGENT) {
+                length += Geometry.tangentSize;
+            }
+
+            if (vf & VertexFormat.VF_COLOR) {
+                length += Geometry.colorSize;
+            }
+
+            if (vf & VertexFormat.VF_UV0) {
+                length += Geometry.uvSize;
+            }
+
+            if (vf & VertexFormat.VF_UV1) {
+                length += Geometry.uv2Size;
+            }
+
+            if (vf & VertexFormat.VF_SKIN) {
+                length += Geometry.skinSize;
+            }
+
+            if (vf & VertexFormat.VF_QUADPOS) {
+                length += QuadData.posSize;
+            }
+
+            if (vf & VertexFormat.VF_QUADOFFSET) {
+                length += QuadData.offsetSize;
+            }
+
+            if (vf & VertexFormat.VF_UVREC) {
+                length += QuadData.uvRectangleSize;
+            }
+
+            if (vf & VertexFormat.VF_ROTATION) {
+                length += QuadData.rotationSize;
+            }
+
+            if (vf & VertexFormat.VF_SCALE) {
+                length += QuadData.scaleSize;
+            }
+
+            if (vf & VertexFormat.VF_QUAD_COLOR) {
+                length += QuadData.colorSize;
+            }
+
+            return length;
+        }
     }
 }

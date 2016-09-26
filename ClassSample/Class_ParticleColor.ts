@@ -41,9 +41,6 @@
             var data: ParticleData = new ParticleData();
             data.geometry.planeW = data.geometry.planeH = 30;
 
-            //var follow: ParticleDataFollowTarget = new ParticleDataFollowTarget();
-            //data.followTarget = follow;
-
 
             var life: ParticleDataLife = data.life;
             life.max = 6;
@@ -73,12 +70,12 @@
             var xBezier: BezierData = new BezierData();
             xBezier.posPoints.push(new Point(0, 0));
             xBezier.posPoints.push(new Point(0.5, 20));
-            xBezier.posPoints.push(new Point(0.55, 20));
+            xBezier.posPoints.push(new Point(0.5, 20));
             xBezier.posPoints.push(new Point(1.0, 8));
            
             xBezier.ctrlPoints.push(new Point(0, 10));
             xBezier.ctrlPoints.push(new Point(0.55, 20));
-            xBezier.ctrlPoints.push(new Point(0.56, 20));
+            xBezier.ctrlPoints.push(new Point(0.55, 20));
             xBezier.ctrlPoints.push(new Point(1.0, 8));
 
             speed.velocityOver.xBezier1 = xBezier;
@@ -86,7 +83,7 @@
             var yBezier: BezierData = new BezierData();
             yBezier.posPoints.push(new Point(0, 0));
             yBezier.posPoints.push(new Point(0.7, 40));
-            yBezier.posPoints.push(new Point(0.75, 40));
+            yBezier.posPoints.push(new Point(0.7, 40));
             yBezier.posPoints.push(new Point(1.0, 16));
 
             yBezier.ctrlPoints.push(new Point(0, 10));
@@ -97,8 +94,8 @@
 
             var zBezier: BezierData = new BezierData();
             zBezier.posPoints.push(new Point(0, 0));
-            zBezier.posPoints.push(new Point(0, 0));
-            zBezier.ctrlPoints.push(new Point(1, 0));
+            zBezier.posPoints.push(new Point(1, 0));
+            zBezier.ctrlPoints.push(new Point(0, 0));
             zBezier.ctrlPoints.push(new Point(1, 0));
             speed.velocityOver.zBezier1 = zBezier;
 
@@ -122,16 +119,16 @@
             data.scaleBezier = sizeBezier;
 
             sizeBezier.data.posPoints.push(new Point(0, 0));
-            sizeBezier.data.posPoints.push(new Point(0.5, 2));
-            sizeBezier.data.posPoints.push(new Point(0.55, 2));
+            sizeBezier.data.posPoints.push(new Point(0.4, 2));
+            sizeBezier.data.posPoints.push(new Point(0.4, 2));
             sizeBezier.data.posPoints.push(new Point(1.0, 0.2));
 
             sizeBezier.data.ctrlPoints.push(new Point(0, 1));
-            sizeBezier.data.ctrlPoints.push(new Point(0.55, 2));
-            sizeBezier.data.ctrlPoints.push(new Point(0.56, 2));
+            sizeBezier.data.ctrlPoints.push(new Point(0.3, 2));
+            sizeBezier.data.ctrlPoints.push(new Point(0.6, 2));
             sizeBezier.data.ctrlPoints.push(new Point(1.0, 0.2));
 
-
+            data.validate();
             this.particle = new ParticleEmitter(data, mat);
 
             this.view1.addChild3D(new AxisMesh(200));
