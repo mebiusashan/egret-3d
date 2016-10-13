@@ -20,6 +20,9 @@ http://edn.egret.com/cn/docs/page/902
 Release Notes
 --------------------
 [Egret 3.1.5 Release Notes](/docs/cn/3.1.5_ReleaseNotes.md)
+
 [Egret 3.1.8 Release Notes](/docs/cn/3.1.8_ReleaseNotes.md)
+
 [Egret 3.2.0 Release Notes](/docs/cn/3.2.0_ReleaseNotes.md)
+
 [Egret 3.2.1 Release Notes](/docs/cn/3.2.1_ReleaseNotes.md)
