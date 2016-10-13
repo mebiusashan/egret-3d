@@ -18,6 +18,8 @@
 
         private _pass: number; 
 
+        public drawOver: Function;
+
         /**
         * @language zh_CN
         * constructor
@@ -65,7 +67,7 @@
 
                     if (material.passes[this._pass]) {
                         for (this._j = material.passes[this._pass].length - 1; this._j >=0 ; this._j--){
-                            material.passes[this._pass][this._j].draw(time, delay, context3D, this._renderItem.modelMatrix, camera, subGeometry, this._renderItem.animation);
+                            material.passes[this._pass][this._j].draw(time, delay, context3D, this._renderItem.modelMatrix, camera, subGeometry, this._renderItem);
                         }
                     } else if (PassUtil.PassAuto[this._pass]) {
                         //// 补充新的需要的渲染pass
@@ -75,10 +77,16 @@
 
                         for (this._j = material.passes[this._pass].length - 1; this._j >= 0; this._j--) {
                             material.passes[this._pass] = PassUtil.CreatPass(this._pass, material.materialData);
-                            material.passes[this._pass][this._j].draw(time, delay, context3D, this._renderItem.modelMatrix, camera, subGeometry, this._renderItem.animation);
+                            material.passes[this._pass][this._j].draw(time, delay, context3D, this._renderItem.modelMatrix, camera, subGeometry, this._renderItem);
                         }
                     }
+
+                    material = null;
                 }
+            }
+
+            if (this.drawOver) {
+                this.drawOver(collect, camera, time, delay, backViewPort);
             }
 
             if (this.renderTexture) {
@@ -88,6 +96,8 @@
                     context3D.setScissorRectangle(backViewPort.x, backViewPort.y, backViewPort.width, backViewPort.height);
                 }
             }
+
+            this._renderItem = null;
         }
     }
 } 

@@ -14,14 +14,14 @@
         private _debugHud: HUD = new HUD();
         private tex: ImageTexture;
         constructor() {
-            this.colorPassRender = new MultiRender(PassType.colorPass);
-            this.colorPassRender.setRenderToTexture(2048, 2048, FrameBufferFormat.UNSIGNED_BYTE_RGB);
+            //this.colorPassRender = new MultiRender(PassType.colorPass);
+            //this.colorPassRender.setRenderToTexture(1024, 1024, FrameBufferFormat.UNSIGNED_BYTE_RGB);
 
-            this.PositionPassRender = new MultiRender( PassType.depthPass_8 );
-            this.PositionPassRender.setRenderToTexture(2048, 2048, FrameBufferFormat.FLOAT_RGBA);
+            this.PositionPassRender = new MultiRender( PassType.Gbuffer );
+            this.PositionPassRender.setRenderToTexture(1024, 1024, FrameBufferFormat.FLOAT_RGBA);
 
-            this.NormalPassRender = new MultiRender(PassType.normalPass);
-            this.NormalPassRender.setRenderToTexture(2048, 2048, FrameBufferFormat.UNSIGNED_BYTE_RGB);
+            //this.NormalPassRender = new MultiRender(PassType.normalPass);
+            //this.NormalPassRender.setRenderToTexture(1024, 1024, FrameBufferFormat.UNSIGNED_BYTE_RGB);
 
             this._debugHud.fsShader = "hud_H_fs";
             this._debugHud.x = 512;
@@ -31,16 +31,16 @@
         }
 
         public drawTexture(time: number, delay: number, context3D: Context3DProxy, collect: CollectBase, camera: Camera3D, backViewPort: Rectangle, posList: any) {
-          this.colorPassRender.draw(time, delay, context3D, collect, camera, backViewPort);
-          this.NormalPassRender.draw(time, delay, context3D, collect, camera, backViewPort);
+          //this.colorPassRender.draw(time, delay, context3D, collect, camera, backViewPort);
+          //this.NormalPassRender.draw(time, delay, context3D, collect, camera, backViewPort);
           this.PositionPassRender.draw(time, delay, context3D, collect, camera, backViewPort);
       
-          posList["colorPass"] = this.colorPassRender.renderTexture;
-          posList["positionPass"] = this.PositionPassRender.renderTexture;
-          posList["normalPass"] = this.NormalPassRender.renderTexture;
+         // posList["colorPass"] = this.colorPassRender.renderTexture;
+         // posList["positionPass"] = this.PositionPassRender.renderTexture;
+         // posList["normalPass"] = this.NormalPassRender.renderTexture;
 
           this._debugHud.viewPort = camera.viewPort;
-          this._debugHud.diffuseTexture = this.colorPassRender.renderTexture;
+          this._debugHud.diffuseTexture = this.PositionPassRender.renderTexture;
           this._debugHud.draw(context3D);
         }
     }

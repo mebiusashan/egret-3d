@@ -151,8 +151,8 @@
 
         private calculateBoundBox(entityCollect: EntityCollect) {
 
-            this._boundBox.min.copyFrom(new Vector3D(99999999, 99999999, 99999999));
-            this._boundBox.max.copyFrom(new Vector3D(-99999999, -99999999, -99999999));
+            this._boundBox.min.copyFrom(new Vector3D(MathUtil.MAX_VALUE, MathUtil.MAX_VALUE, MathUtil.MAX_VALUE));
+            this._boundBox.max.copyFrom(new Vector3D(-MathUtil.MAX_VALUE, -MathUtil.MAX_VALUE, -MathUtil.MAX_VALUE));
 
             for (var i: number = 0; i < entityCollect.renderList.length; i++) {
                 var item: IRender = entityCollect.renderList[i];

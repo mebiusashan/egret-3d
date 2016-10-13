@@ -78,24 +78,24 @@
                 length += Geometry.skinSize;
             }
 
-            if (vf & VertexFormat.VF_QUADPOS) {
-                length += QuadData.posSize;
+            if (vf & VertexFormat.VF_QUAD_ORIGN) {
+                length += QuadData.originalSize;
             }
 
-            if (vf & VertexFormat.VF_QUADOFFSET) {
-                length += QuadData.offsetSize;
+            if (vf & VertexFormat.VF_QUAD_POS) {
+                length += QuadData.posOffest;
             }
 
-            if (vf & VertexFormat.VF_UVREC) {
+            if (vf & VertexFormat.VF_QUAD_UVREC) {
                 length += QuadData.uvRectangleSize;
             }
 
-            if (vf & VertexFormat.VF_ROTATION) {
+            if (vf & VertexFormat.VF_QUAD_ROTATION) {
                 length += QuadData.rotationSize;
             }
 
-            if (vf & VertexFormat.VF_SCALE) {
-                length += QuadData.scaleSize;
+            if (vf & VertexFormat.VF_QUAD_MASK) {
+                length += QuadData.maskSize;
             }
 
             if (vf & VertexFormat.VF_QUAD_COLOR) {

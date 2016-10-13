@@ -22,7 +22,6 @@
         */
         public mousePickList: Array<IRender>;
         public rootScene: Scene3D;
-        protected _nodes: Array<IRender>;
 
         protected _num: number = 0;
 
@@ -38,7 +37,6 @@
         constructor(){
             this.renderList = new Array<IRender>();
             this.mousePickList = new Array<IRender>();
-            this._nodes = new Array<IRender>();
         }
 
         public set root(rootScene: Scene3D) {
@@ -56,8 +54,8 @@
         */
         public update(camera: Camera3D) {
             camera.modelMatrix;
-            this.renderList = this._nodes;
             this.renderList.length = 0;
+            this.mousePickList.length = 0;
         }
                         
         /**

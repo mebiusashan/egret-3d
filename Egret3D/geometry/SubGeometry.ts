@@ -224,7 +224,7 @@
                 offsetBytes += Geometry.skinSize / 2 * Float32Array.BYTES_PER_ELEMENT;
             }
 
-            if (this.geometry.vertexFormat & VertexFormat.VF_QUADPOS) {
+            if (this.geometry.vertexFormat & VertexFormat.VF_QUAD_POS) {
                 if (passUsage.attribute_position) {
                     if (!passUsage.attribute_position.uniformIndex) {
                         passUsage.attribute_position.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_position.varName);
@@ -243,13 +243,13 @@
             }
 
 
-            if (this.geometry.vertexFormat & VertexFormat.VF_QUADOFFSET) {
+            if (this.geometry.vertexFormat & VertexFormat.VF_QUAD_ORIGN) {
                 if (passUsage.attribute_shapePosition) {
                     if (!passUsage.attribute_shapePosition.uniformIndex) {
                         passUsage.attribute_shapePosition.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_shapePosition.varName);
                     }
 
-                    passUsage.attribute_shapePosition.size = QuadData.offsetSize;
+                    passUsage.attribute_shapePosition.size = QuadData.originalSize;
                     passUsage.attribute_shapePosition.dataType = ContextConfig.FLOAT;
                     passUsage.attribute_shapePosition.normalized = false;
                     passUsage.attribute_shapePosition.stride = QuadData.vertexBytes;
@@ -258,10 +258,10 @@
                     passUsage["attributeList"].push(passUsage.attribute_shapePosition);
                     this.useVertexAttributeList[passUsage.attribute_shapePosition.uniformIndex] = passUsage.attribute_shapePosition.uniformIndex;
                 }
-                offsetBytes += QuadData.offsetSize * Float32Array.BYTES_PER_ELEMENT;
+                offsetBytes += QuadData.originalSize * Float32Array.BYTES_PER_ELEMENT;
             }
 
-            if (this.geometry.vertexFormat & VertexFormat.VF_UVREC) {
+            if (this.geometry.vertexFormat & VertexFormat.VF_QUAD_UVREC) {
                 if (passUsage.attribute_uvRec) {
                     if (!passUsage.attribute_uvRec.uniformIndex) {
                         passUsage.attribute_uvRec.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_uvRec.varName);
@@ -279,7 +279,7 @@
                 offsetBytes += QuadData.uvRectangleSize * Float32Array.BYTES_PER_ELEMENT;
             }
 
-            if (this.geometry.vertexFormat & VertexFormat.VF_ROTATION) {
+            if (this.geometry.vertexFormat & VertexFormat.VF_QUAD_ROTATION) {
                 if (passUsage.attribute_rotate) {
                     if (!passUsage.attribute_rotate.uniformIndex) {
                         passUsage.attribute_rotate.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_rotate.varName);
@@ -297,13 +297,13 @@
                 offsetBytes += QuadData.rotationSize * Float32Array.BYTES_PER_ELEMENT;
             }
 
-            if (this.geometry.vertexFormat & VertexFormat.VF_SCALE) {
+            if (this.geometry.vertexFormat & VertexFormat.VF_QUAD_MASK) {
                 if (passUsage.attribute_maskRectangle) {
                     if (!passUsage.attribute_maskRectangle.uniformIndex) {
                         passUsage.attribute_maskRectangle.uniformIndex = contextPorxy.getShaderAttribLocation(passUsage.program3D, passUsage.attribute_maskRectangle.varName);
                     }
 
-                    passUsage.attribute_maskRectangle.size = QuadData.scaleSize;
+                    passUsage.attribute_maskRectangle.size = QuadData.maskSize;
                     passUsage.attribute_maskRectangle.dataType = ContextConfig.FLOAT;
                     passUsage.attribute_maskRectangle.normalized = false;
                     passUsage.attribute_maskRectangle.stride = QuadData.vertexBytes;
@@ -312,7 +312,7 @@
                     passUsage["attributeList"].push(passUsage.attribute_maskRectangle);
                     this.useVertexAttributeList[passUsage.attribute_maskRectangle.uniformIndex] = passUsage.attribute_maskRectangle.uniformIndex;
                 }
-                offsetBytes += QuadData.scaleSize * Float32Array.BYTES_PER_ELEMENT;
+                offsetBytes += QuadData.maskSize * Float32Array.BYTES_PER_ELEMENT;
             }
 
             if (this.geometry.vertexFormat & VertexFormat.VF_QUAD_COLOR) {

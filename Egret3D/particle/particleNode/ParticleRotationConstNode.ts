@@ -7,7 +7,7 @@
     export class ParticleRotationConstNode extends AnimationNode {
 
         private _rotation: ConstRandomValueShape;
-        private attribute_Rotation: GLSL.VarRegister
+        private attribute_Rotation: GLSL.VarRegister;
         constructor() {
             super();
             //##FilterBegin## ##Particle##

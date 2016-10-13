@@ -64,11 +64,23 @@
             this._text.text = this.value.toString();
         }
 
+        public set snapInterval(value: number) {
+            this._snapInterval = value;
+        }
+
+        public get snapInterval(): number {
+            return this._snapInterval;
+        }
+
         public set value(value: number) {
             if (value % this._snapInterval !== 0) {
                 value = Math.round(value / this._snapInterval) * this._snapInterval;
             }
+            if (this._value === value) return;
             this._value = value;
+
+            var event: Event3D = new Event3D(Event3D.CHANGE);
+            this.dispatchEvent(event);
             this.updateBar();
         }
 

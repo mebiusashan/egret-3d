@@ -11,12 +11,12 @@
         constructor() {
             super();
 
-            var view1: View3D = new View3D(0, 0, window.innerWidth, window.innerHeight);
+            var view1: View3D = new View3D(0, 0, 1024, 800 );
             view1.camera3D.lookAt(new Vector3D(0, 1000, -1000), new Vector3D(0, 0, 0));
             view1.backColor = 0xffffffff;
+            //(<MultiRender>view1.render).pass = PassType.depthPass_8 ;
 
-            // view1.render = new MultiRender(PassType.matCapPass);
-            //view1.render.renderToTexture(256, 256, FrameBufferFormat.UNSIGNED_BYTE_RGB);
+            //view1.post = [new DeferredShadingProcessing(), new AmbientOcclusion()];
 
             var bgImg: HTMLImageElement = <HTMLImageElement>document.getElementById("bg");
             var tex: ImageTexture = new ImageTexture(bgImg);
@@ -33,20 +33,11 @@
             dirLight.diffuse = 0xffffff;
             this.lights.addLight(dirLight);
 
-            //var po: PointLight = new PointLight(0xffffff);
-            //po.y = 200;
-            //po.z = 200;
-            //this.lights.addLight(po);
-
-            //var spo: SpotLight = new SpotLight(0xffffff);
-            //spo.rotationX = 90;
-            //spo.y = 200;
-            //this.lights.addLight(spo);
-
             this.cameraCtl = new LookAtController(view1.camera3D, new Object3D());
             this.cameraCtl.distance = 1000;
             this.cameraCtl.rotationX = 60;
 
+            this.view1.addChild3D( new Mesh( new CubeGeometry() , null ) );
 
             this._egret3DCanvas.addEventListener(Event3D.ENTER_FRAME, this.update, this);
         }

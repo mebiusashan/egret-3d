@@ -25,7 +25,7 @@
             this._egret3DCanvas.addEventListener(Event3D.ENTER_FRAME, this.update, this);
             this.resourceManager = TextureResourceManager.getInstance();
 
-            this.resourceManager.loadTexture("resource/ui/fonts.json", "resource/ui/fonts.png");
+            this.resourceManager.loadTexture("resource/ui/fonts.json", "resource/ui/fonts.png", this.view1.getGUIStage());
             this.resourceManager.addEventListener(LoaderEvent3D.LOADER_COMPLETE, this.onLoadFonts, this);
 
         }
@@ -39,7 +39,6 @@
             skin.width = newTexture.width;
             skin.height = newTexture.height;
             skin.texture = newTexture;
-            skin.renderType = 1;
 
             this.view1.addGUI(skin);
 

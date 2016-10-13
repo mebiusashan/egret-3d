@@ -28,11 +28,12 @@
             this._cameraCrl.distance = 100 * scale;
             this._cameraCrl.scaleSpeed(scale);
 
+            //this._particleLoader = new EffectGroupLoader("resource/scene/waterwave/MapConfig.json");
             this._particleLoader = new EffectGroupLoader("resource/scene/Test/MapConfig.json");
             this._particleLoader.addEventListener(LoaderEvent3D.LOADER_COMPLETE, this.onParticleLoad, this);
             this._view3D.addChild3D(this._particleLoader.container);
 
-            //view1.addChild3D(new AxisMesh(10000));
+            view1.addChild3D(new AxisMesh(1000));
             Class_ParticleParser.view = this._view3D;
             //var loader: URLLoader = new URLLoader("resource/scene/test/Texture/foam_tiled3.png");
             //loader.addEventListener(LoaderEvent3D.LOADER_COMPLETE, this.onTex, this);

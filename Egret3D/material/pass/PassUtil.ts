@@ -1,9 +1,9 @@
 ﻿module egret3d {
 
-    export enum PassType { diffusePass, colorPass, normalPass, shadowPass, lightPass, matCapPass, depthPass_8, depthPass_32, CubePass, PickPass }
+    export enum PassType { diffusePass, colorPass, normalPass, shadowPass, lightPass, matCapPass, depthPass_8, depthPass_32, CubePass, Gbuffer , PickPass  }
 
     export class PassUtil{
-        public static PassAuto : boolean[] = [true,true,true,false,false,true,true,true];
+        public static PassAuto : boolean[] = [true,true,true,false,false,true,true,true,true,true];
         public static CreatPass(pass: PassType,materialData:MaterialData):MaterialPass[] {
             switch (pass) {
                 case PassType.colorPass:
@@ -25,6 +25,10 @@
                 case PassType.normalPass:
                     materialData.shaderPhaseTypes[PassType.normalPass] = [];
                     return [new NormalPass(materialData)];
+
+                case PassType.Gbuffer:
+                    materialData.shaderPhaseTypes[PassType.Gbuffer] = [];
+                    return [new GbufferPass(materialData)];
 
                 case PassType.PickPass:
                     materialData.shaderPhaseTypes[PassType.PickPass] = [];

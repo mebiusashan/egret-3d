@@ -159,6 +159,7 @@
             this._orthProjectMatrix.ortho(this._viewPort.width, this._viewPort.height, this._near, this._far);
             this.cameraType = cameraType;
             CameraManager.instance.addCamera(this);
+            this._viewMatrix.identity();
         }
 
         /**
@@ -435,10 +436,10 @@
          * @platform Web,Native
          */
         public lookAt(pos: Vector3D, target: Vector3D, up: Vector3D = Vector3D.Y_AXIS) {
-            this.position = pos;
+            this.globalPosition = pos;
             this._lookAtPosition.copyFrom(target);
             this._up.copyFrom(up);
-            this._viewMatrix.lookAt(this._pos, this._lookAtPosition, this._up);
+            this._viewMatrix.lookAt(pos, target, up);
             this._mat.copyFrom(this._viewMatrix);
             this._mat.invert();
 
@@ -447,7 +448,7 @@
             this._tempQuat.y = prs[1].y;
             this._tempQuat.z = prs[1].z;
             this._tempQuat.w = prs[1].w;
-            this.orientation = this._tempQuat;
+            this.globalOrientation = this._tempQuat;
         }
 
         protected onUpdateTransform() {
@@ -691,6 +692,22 @@
             MathUtil.CALCULATION_VECTOR3D.y = 1;
             MathUtil.CALCULATION_VECTOR3D.z = 1;
             this._modelMatrix3D.makeTransform(this._globalPos, MathUtil.CALCULATION_VECTOR3D, this._globalOrientation);
+        }
+
+
+        /**
+        * @language zh_CN
+        * 释放所有数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose() {
+            CameraManager.instance.removeCamera(this);
+            super.dispose();
+            if (this.frustum) {
+                this.frustum.dispose();
+            }
+            this.frustum = null;
         }
     }
 } 

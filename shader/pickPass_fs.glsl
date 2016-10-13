@@ -1,5 +1,7 @@
-﻿void main() {
-    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+﻿uniform vec4 uniform_ObjectId;
+
+void main() {
+    gl_FragColor = uniform_ObjectId;
 }
 
 

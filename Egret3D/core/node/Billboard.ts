@@ -46,8 +46,7 @@
         * @platform Web,Native
         */
         public update(time: number, delay: number, camera: Camera3D) {
-            //this._qut.fromEulerAngles(-90, 0, 0);
-            //this._qut.multiply(camera.globalOrientation, this._qut);
+            super.update(time, delay, camera);
             this.globalOrientation = camera.globalOrientation;
         }
 

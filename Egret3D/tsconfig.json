@@ -94,7 +94,9 @@
         "controller/ControllerBase.ts",
         "controller/LookAtController.ts",
         "controller/HoverController.ts",
+        "controller/PanController.ts",
 
+        "core/context/Reference.ts",
         "core/context/ContextConfig.ts",
         "core/context/Context3DProxy.ts",
         "core/context/FrameBuffer.ts",
@@ -113,7 +115,8 @@
         "core/node/BillBoard.ts",
         "core/node/Sky.ts",
         "core/node/Wireframe.ts",
-        "core/node/terrain/LODQuad.ts",
+        "core/node/WireframeLine.ts",
+        "core/node/terrain/LODQuadTree.ts",        
         "core/node/terrain/Terrain.ts",
         
         "gui/BitmapFont.ts",
@@ -172,6 +175,7 @@
 
         "loader/URLLoader.ts",
         "loader/AssetManager.ts",
+        "loader/TextureResourceManager.ts",
 
         "loader/parser/DDSParser.ts",
         "loader/parser/PVRParser.ts",
@@ -222,6 +226,7 @@
         "material/method/LineFogMethod.ts",
         "material/method/UVRollMethod.ts",
         "material/method/MulUVRollMethod.ts",
+        "material/method/MultiUVSpriteMethod.ts",
         "material/method/UVSpriteSheetMethod.ts",
         "material/method/LightMapMethod.ts",
         "material/method/PlantDistortedMethod.ts",
@@ -247,6 +252,7 @@
         "material/pass/ShadowPass.ts",
         "material/pass/NormalPass.ts",
         "material/pass/PositionPass.ts",
+        "material/pass/GbufferPass.ts",
         "material/pass/PickPass.ts",
         
         "material/pass/PassUtil.ts",
@@ -286,11 +292,13 @@
         "particle/particleNode/ParticleVelocityLimitOneBezierNode.ts",
         "particle/particleNode/ParticleVelocityLimitTwoBezierNode.ts",
         "particle/particleNode/ParticleRotationConstNode.ts",
+        "particle/particleNode/ParticleRotationXYZConstNode.ts",
         "particle/particleNode/ParticleRotationOneBezierNode.ts",
         "particle/particleNode/ParticleRotationTwoBezierNode.ts",
         "particle/particleNode/ParticleTextureSheetNode.ts",
         "particle/particleNode/ParticleUVRollNode.ts",
         "particle/particleNode/ParticleSubEmitterNode.ts",
+        "particle/particleNode/ParticleTrackPositionNode.ts",
         
         
         "particle/ParticleAnimationState.ts",
@@ -317,6 +325,7 @@
         "texture/RenderTexture.ts",
 
         "Util/ByteArray.ts",
+        "Util/BooleanArray.ts",
         "Util/Debug.ts",
         "Util/StringUtil.ts",
 

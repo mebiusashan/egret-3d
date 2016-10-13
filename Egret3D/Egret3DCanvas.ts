@@ -245,7 +245,7 @@
         public removeView3D(view3D: View3D) {
             var index: number = this._view3DS.indexOf(view3D);
             if (index != -1)
-                this._view3DS.splice(index);
+                this._view3DS.splice(index, 1);
         }
 
         /**
@@ -270,7 +270,7 @@
             Context3DProxy.gl.enableVertexAttribArray(6);
         }
 
-       
+        
         /**
         * @language zh_CN
         * @private
@@ -296,13 +296,17 @@
 
             CameraManager.instance.update(this._time, this._delay);
             for (var i: number = 0; i < this._view3DS.length; i++) {
+                if (Egret3DEngine.instance.debug)
+                    Egret3DState.help = new Date().getTime();
                 this._view3DS[i].update(this._time, this._delay);
+                if (Egret3DEngine.instance.debug)
+                    Egret3DState.showDataInfo("view3D-" + i.toString() + ":" + (new Date().getTime() - Egret3DState.help) + " ms");
             }
 
             if (Egret3DEngine.instance.debug) {
-                this._renderer = Math.floor((new Date().getTime() - this._time) );
+                //this._renderer = Math.floor((new Date().getTime() - this._time) );
                 Egret3DState.showTime(this._time, this._delay);
-                egret3d.Egret3DState.showDataInfo("renderer: " + this._renderer.toString() + " ms");
+                egret3d.Egret3DState.showDataInfo("renderer: " + (new Date().getTime() - this._time).toString() + " ms");
                 egret3d.Egret3DState.show();
             }
 

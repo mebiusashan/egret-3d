@@ -102,7 +102,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        private geometryDirty: boolean = false;
+        private _verticesDataDirty: boolean = false;
 
         /**
         * @language zh_CN
@@ -116,7 +116,7 @@
         public update(animTime: number, delay: number, geometry: Geometry) {
             //##FilterBegin## ##Particle##
             //保留原来的geometryDirty为true的属性
-            this.geometryDirty = this.geometryDirty;
+            this._verticesDataDirty = this._verticesDataDirty;
             //非循环的粒子生命周期达上限
             var particleData: ParticleData = this._animationState.emitter.data;
             var loop: boolean = particleData.life.loop;
@@ -198,7 +198,7 @@
                 }
             }
 
-            this.geometryDirty = changed;
+            this._verticesDataDirty = changed;
             //##FilterEnd##
         }
 
@@ -207,9 +207,9 @@
         */
         public activeState(time: number, animTime: number, delay: number, animDelay: number, usage: PassUsage, geometry: SubGeometry, context3DProxy: Context3DProxy) {
             //##FilterBegin## ##Particle##
-            if (this.geometryDirty) {
+            if (this._verticesDataDirty) {
                 geometry.geometry.upload(context3DProxy);
-                this.geometryDirty = false;
+                this._verticesDataDirty = false;
             }
             //##FilterEnd##
         }

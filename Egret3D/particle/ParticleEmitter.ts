@@ -19,6 +19,8 @@
         private _particleAnimation: ParticleAnimation;
         private _particleState: ParticleAnimationState;
         private _subEmitterNode: ParticleSubEmitterNode;
+        private _trackPositionNode: ParticleTrackPositionNode;
+
         private _isEmitterDirty: boolean = true;
 
         private _userNodes: AnimationNode[] = [];
@@ -54,6 +56,28 @@
 
             this.buildParticle();
             //##FilterEnd##
+        }
+
+        /**
+        * @language zh_CN
+        * 将粒子的出生位置设置为原结束为止，然后重新设置结束位置
+        * @param fromCoords 粒子出生位置列表
+        * @param endCoords 粒子目标位置列表
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public trackPosition(fromCoords: Vector3D[], endCoords: Vector3D[]): void {
+            if (this._trackPositionNode) {
+                this.animation.animTime = 0.0;
+                this._trackPositionNode.trackPosition(fromCoords, endCoords);
+            }
+        }
+
+        public get trackEndCoords(): Vector3D[] {
+            if (this._trackPositionNode) {
+                return this._trackPositionNode.endCoords;
+            }
+            return null;
         }
 
         /**
@@ -277,6 +301,10 @@
 
             //根据 动画功能节点初始化 着色器 并初始化粒子顶点结构
             var vf: number = VertexFormat.VF_POSITION | VertexFormat.VF_UV0 | VertexFormat.VF_COLOR;
+            //包含normal
+            if (this.data.geometry.hasNormalData) {
+                vf = vf | VertexFormat.VF_NORMAL;
+            }
             this.geometry.vertexFormat = vf;
 
             //根据动画节点，预计算顶点信息，长度，字节总量
@@ -413,18 +441,24 @@
             }
 
             if (this._data.rotationSpeed) {
-                if (this._data.rotationSpeed.type == ParticleValueType.Const || this._data.rotationSpeed.type == ParticleValueType.RandomConst) {
-                    var rotateConst: ParticleRotationConstNode = new ParticleRotationConstNode();
-                    rotateConst.initNode(this._data.rotationSpeed);
-                    nodes.push(rotateConst);
-                } else if (this._data.rotationSpeed.type == ParticleValueType.OneBezier) {
-                    var rotateOneBezier: ParticleRotationOneBezierNode = new ParticleRotationOneBezierNode();
-                    rotateOneBezier.initNode(this._data.rotationSpeed);
-                    nodes.push(rotateOneBezier);
-                } else if (this._data.rotationSpeed.type == ParticleValueType.TwoBezier) {
-                    var rotateTwoBezier: ParticleRotationTwoBezierNode = new ParticleRotationTwoBezierNode();
-                    rotateTwoBezier.initNode(this._data.rotationSpeed);
-                    nodes.push(rotateTwoBezier);
+                if (this._data.rotationSpeed.rot3Axis) {
+                    var rotateXYZConst: ParticleRotationXYZConstNode = new ParticleRotationXYZConstNode();
+                    rotateXYZConst.initNode(this._data.rotationSpeed);
+                    nodes.push(rotateXYZConst);
+                } else {
+                    if (this._data.rotationSpeed.type == ParticleValueType.Const || this._data.rotationSpeed.type == ParticleValueType.RandomConst) {
+                        var rotateConst: ParticleRotationConstNode = new ParticleRotationConstNode();
+                        rotateConst.initNode(this._data.rotationSpeed);
+                        nodes.push(rotateConst);
+                    } else if (this._data.rotationSpeed.type == ParticleValueType.OneBezier) {
+                        var rotateOneBezier: ParticleRotationOneBezierNode = new ParticleRotationOneBezierNode();
+                        rotateOneBezier.initNode(this._data.rotationSpeed);
+                        nodes.push(rotateOneBezier);
+                    } else if (this._data.rotationSpeed.type == ParticleValueType.TwoBezier) {
+                        var rotateTwoBezier: ParticleRotationTwoBezierNode = new ParticleRotationTwoBezierNode();
+                        rotateTwoBezier.initNode(this._data.rotationSpeed);
+                        nodes.push(rotateTwoBezier);
+                    }
                 }
 
             }
@@ -471,6 +505,13 @@
                 var textureSheet: ParticleTextureSheetNode = new ParticleTextureSheetNode();
                 textureSheet.initNode(null, this._data.textureSheet);
                 nodes.push(textureSheet);
+            }
+
+            //track
+            if (this._data.property.trackPosition) {
+                this._trackPositionNode = new ParticleTrackPositionNode();
+                this._trackPositionNode.initNode(null);
+                nodes.push(this._trackPositionNode);
             }
 
             //
@@ -599,7 +640,14 @@
             this._timeNode = null;
             this._positionNode = null;
 
+            if (this._geometryShape) {
+                this._geometryShape.dispose();
+            }
             this._geometryShape = null;
+
+            if (this._externalGeometry) {
+                this._externalGeometry.dispose();
+            }
             this._externalGeometry = null;
             this._particleAnimation = null;
 

@@ -25,7 +25,7 @@
 
         public mouseInState: boolean = false;
 
-        protected _renderType: number = 0;// 0 是正常，1是文字
+        protected _renderText: boolean = false;
         private _parent: DisplayObject;
         private _stage: QuadStage;
         private _childs: DisplayObject[] = [];
@@ -60,7 +60,7 @@
         protected _maskRectChange: boolean = true;
 
         protected _transformInvalid: boolean = true;
-        protected _renderTypeInvalid: boolean = true;
+        protected _renderTextInvalid: boolean = true;
         protected _maskRectInvalid: boolean = true;
         protected _colorInvalid: boolean = true;
         protected _textureInvalid: boolean = true;
@@ -148,10 +148,10 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public set renderType(value: number) {
-            if (value != this._renderType) {
-                this._renderTypeInvalid = true;
-                this._renderType = value;
+        public set renderText(value: boolean) {
+            if (value != this._renderText) {
+                this._renderTextInvalid = true;
+                this._renderText = value;
             }
         }
 

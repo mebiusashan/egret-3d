@@ -16,7 +16,7 @@
             super();
 
 
-            var view1: View3D = new View3D(0, 0, window.innerWidth, window.innerHeight);
+            var view1: View3D = new View3D(0, 0, this._egret3DCanvas.width, this._egret3DCanvas.height);
             //view1.camera3D.lookAt(new Vector3D(0, 100, -100), new Vector3D(0, 0, 0));
             view1.backColor = 0xffcccccc;
             this._egret3DCanvas.addView3D(view1);
@@ -40,9 +40,8 @@
 
         private cam: Camera3D;
 
-
         private init() {
-
+            
             this.plane = new Mesh(new PlaneGeometry(2000, 2000));
             //this.plane.lightGroup = this.lights;
 
@@ -56,9 +55,11 @@
             //this.cube.lightGroup = this.lights;
             // 渲染阴影
             this.cube.material.castShadow = true;
+            this.cube.material.acceptShadow = true;
             this.view1.addChild3D(this.cube);
             this.cube.y = 50;
             //this.cube.x = -1900;
+            this.ctl.lookAtObject = this.cube;
 
             // 打开渲染阴影的视锥体
             //this.view1.addChild3D(ShadowCast.instance.directLight);
@@ -69,6 +70,7 @@
                 this.view1.addChild3D(m);
                 m.x = 100 * i;
                 m.material.castShadow = true;
+                m.material.acceptShadow = true;
             }
 
             var texture: ITexture = ShadowCast.instance.shadowRender.renderTexture;
@@ -79,9 +81,12 @@
             quat.texture = texture;
             this.view1.addGUI(quat);
             this.ctl.lookAtObject = this.cube;
+
+
         }
 
         public update(e: Event3D) {
+
             this.ctl.update();
         }
     }

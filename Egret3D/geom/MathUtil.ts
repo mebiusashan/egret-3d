@@ -52,6 +52,21 @@
         public static CALCULATION_VECTOR3D: Vector3D = new Vector3D();
 
         /**
+        * @private
+        */
+        public static CALCULATION_VECTOR3D_0: Vector3D = new Vector3D();
+
+        /**
+        * @private
+        */
+        public static CALCULATION_VECTOR3D_1: Vector3D = new Vector3D();
+
+        /**
+        * @private
+        */
+        public static CALCULATION_VECTOR3D_2: Vector3D = new Vector3D();
+
+        /**
         * @language zh_CN
         * 四元数转矩阵
         * @param quarternion 源四元数

@@ -73,7 +73,7 @@
         * @private
         */
         private _helpMatrix: Matrix4_4 = new Matrix4_4(); 
-
+        private _helpVector: Vector3D = new Vector3D();
         /**
         * @private
         */
@@ -110,6 +110,23 @@
                 this.methodList.slice(index);
                 this._passChange = true;
             }
+        }
+
+        /**
+        * @language zh_CN
+        * 使用类型拿到 MethodBase  getMethod(UVSpriteSheetMethod)
+        * @param type 类型  比如:UVSpriteSheetMethod
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public getMethod(type: any): MethodBase {
+            for (var i: number = 0; i < this.methodList.length; ++i) {
+                if (this.methodList[i] instanceof type) {
+                    return this.methodList[i];
+                }
+            }
+
+            return null;
         }
 
         protected materialDataChange() {
@@ -412,6 +429,7 @@
             this.initUseMethod(animation, geometry);
             this._passUsage.vertexShader.shader = this._passUsage.vertexShader.getShader(this._passUsage);
             this._passUsage.fragmentShader.shader = this._passUsage.fragmentShader.getShader(this._passUsage);
+            //this._passUsage.program3D = context3DProxy.creatProgram(this._passUsage.vertexShader.shader, this._passUsage.fragmentShader.shader);
             this._passUsage.program3D = ShaderPool.getProgram(this._passUsage.vertexShader.shader.id, this._passUsage.fragmentShader.shader.id);
 
             for (var property in this._passUsage) {
@@ -447,7 +465,7 @@
         /**
         * @private
         */
-        public draw(time: number, delay: number, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D, subGeometry: SubGeometry, animation: IAnimation) {
+        public draw(time: number, delay: number, context3DProxy: Context3DProxy, modeltransform: Matrix4_4, camera3D: Camera3D, subGeometry: SubGeometry, render: IRender) {
             if (this._materialData.materialDataNeedChange) {
                 //this._materialData.materialDataNeedChange = false;
                 var tintValue: number = this._materialData.tintColor;
@@ -489,7 +507,7 @@
             }
             
             if (this._passChange) {
-                this.upload(time, delay, context3DProxy, modeltransform, camera3D, animation, subGeometry.geometry);
+                this.upload(time, delay, context3DProxy, modeltransform, camera3D, render.animation, subGeometry.geometry);
             }
 
             context3DProxy.setProgram(this._passUsage.program3D);
@@ -606,8 +624,8 @@
                 context3DProxy.uniformMatrix4fv(this._passUsage.uniform_orthProectMatrix.uniformIndex, false, camera3D.orthProjectionMatrix.rawData);
             }
 
-            if (animation) {
-                animation.activeState(time, delay, this._passUsage, subGeometry, context3DProxy, modeltransform, camera3D);
+            if (render.animation) {
+                render.animation.activeState(time, delay, this._passUsage, subGeometry, context3DProxy, modeltransform, camera3D);
             }
             if (this.methodList) {
                 for (var i: number = 0; i < this.methodList.length; i++) {
@@ -621,6 +639,11 @@
 
             if (this._passUsage.uniform_cameraMatrix) {
                 context3DProxy.uniformMatrix4fv(this._passUsage.uniform_cameraMatrix.uniformIndex, false, camera3D.modelMatrix.rawData);
+            }
+
+            if (this._passUsage["uniform_ObjectId"]) {
+                var objectId: Vector3D = Color.getColor(render.id, ContextConfig.ColorFormat_RGBA8888, this._helpVector);
+                context3DProxy.uniform4fv(this._passUsage["uniform_ObjectId"].uniformIndex, [objectId.x, objectId.y, objectId.z, objectId.w]);
             }
 
             context3DProxy.drawElement(this._materialData.drawMode, subGeometry.start, subGeometry.count);
@@ -641,7 +664,17 @@
             }
         }
 
-        public dispose() {
+        /**
+        * @language zh_CN
+        * 释放接口
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose(): void {
+            if (this._passUsage) {
+                this._passUsage.dispose();
+            }
+            this._passUsage = null;
         }
     }
 } 

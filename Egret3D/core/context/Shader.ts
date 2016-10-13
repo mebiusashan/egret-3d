@@ -76,5 +76,18 @@
         public get shader(): WebGLShader {
             return this._shader;
         }
+
+        /**
+        * @language zh_CN
+        * 释放接口
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose(): void {
+            if (this._shader) {
+                Context3DProxy.gl.deleteShader(this._shader);
+                this._shader = null;
+            }
+        }
     }
 } 

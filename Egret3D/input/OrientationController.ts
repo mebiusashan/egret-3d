@@ -153,7 +153,7 @@
             // and window orientation is undefined OR 0
             // if (!window.orientation && window.innerWidth > window.innerHeight)
             //   return 90;
-            return <number>window.orientation || 0;
+            return 270 ;
         }
 
         private degtorad = Math.PI / 180; // Degree-to-Radian conversion
@@ -214,7 +214,7 @@
         private fixinterpolate: Vector3D = new Vector3D();
         private fixAxis: Vector3D = new Vector3D();
         private caheFixAxis: Vector3D = new Vector3D();
-        private steps: number = 1 ;
+        private steps: number = 3.001;
         private interpolate: boolean = true;
         /**
         * @language zh_CN
@@ -235,17 +235,15 @@
                 this.caheFixAxis.y = this.fixOritation.y / Math.abs(this.fixOritation.y) ;
                 this.caheFixAxis.z = this.fixOritation.z / Math.abs(this.fixOritation.z) ; 
 
-                if (this.fixAxis.x == this.caheFixAxis.x && this.fixAxis.y == this.caheFixAxis.y && this.fixAxis.z == this.caheFixAxis.z ) {
-                    this.fix.x += this.fixinterpolate.x / (this.steps + 0.01);
-                    this.fix.y += this.fixinterpolate.y / (this.steps + 0.01);
-                    this.fix.z += this.fixinterpolate.z / (this.steps + 0.01);
-                } else {
+                if (Math.abs(this.fixinterpolate.x) > 150 || Math.abs(this.fixinterpolate.y) > 150 || Math.abs(this.fixinterpolate.z) > 150) {
                     this.fix.x = this.fixOritation.x;
                     this.fix.y = this.fixOritation.y;
                     this.fix.z = this.fixOritation.z;
-                    this.fixAxis.x = this.caheFixAxis.x;
-                    this.fixAxis.y = this.caheFixAxis.y;
-                    this.fixAxis.z = this.caheFixAxis.z;
+                }
+                else {
+                    this.fix.x += this.fixinterpolate.x / (this.steps);
+                    this.fix.y += this.fixinterpolate.y / (this.steps);
+                    this.fix.z += this.fixinterpolate.z / (this.steps);
                 }
 
                 view3D.camera3D.rotationX = -this.fix.x ;
@@ -286,6 +284,18 @@
             this.q.x = x ;
             this.q.y = y ;
             this.q.z = z;
+
+            //var orient = -this.getOrientation() * this.degtorad;// this.getOrientation()) * this.degtorad ; // O
+            //this.state = this.getOrientation();
+
+            //var zee: Vector3D = new Vector3D(0, 0, 1);
+            //var q0: Quaternion = new Quaternion();
+            //q0.fromAxisAngle(Vector3D.X_AXIS, 270 * this.degtorad);
+            //this.q.multiply(this.q, q0);                                      // camera looks out the back of the device, not the top
+
+            //zee.setTo(-1, 0, 0);
+            //q0.fromAxisAngle(zee, 90 * this.degtorad);
+            //this.q.multiply(this.q, q0);
 
         return this.q ;
     }

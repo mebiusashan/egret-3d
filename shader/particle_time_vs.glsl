@@ -12,6 +12,7 @@ attribute vec3 attribute_time ;
 float currentTime = 0.0;
 
 varying vec3 varying_particleData;
+
 struct ParticleData{
 	float bornTime;			//出生时间(加过rate，但是没有加delay)
 	float life;				//单次生命周期时间
@@ -19,6 +20,7 @@ struct ParticleData{
 };                   
 
 
+ParticleData curParticle ;
 
 float particle( ParticleData curParticle ){
 	//扣除延迟时间
@@ -27,6 +29,12 @@ float particle( ParticleData curParticle ){
 	currentTime = time - curParticle.bornTime;
 	if(currentTime <= 0.0){
 		return currentTime = 0.0;
+	}
+	//永久性的粒子
+	if(particleStateData.stayAtEnd > TrueOrFalse){
+		if(currentTime >= curParticle.life){
+			currentTime = curParticle.life * 0.99999;
+		}
 	}
 	if(particleStateData.loop < TrueOrFalse){
 		//还没到出生时间，发射器已经死亡
@@ -52,7 +60,7 @@ float particle( ParticleData curParticle ){
 
 void main(void) {
 	
-	ParticleData curParticle ;
+
 	curParticle.bornTime = attribute_time.x ; 
 	curParticle.life = attribute_time.y ; 
 	curParticle.index = attribute_time.z ; 

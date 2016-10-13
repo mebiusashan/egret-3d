@@ -54,7 +54,7 @@
             var edge1: Vector3D = v1.subtract(v0);
             var edge2: Vector3D = v2.subtract(v0);
 
-            var pvec: Vector3D = this.dir.crossProduct(edge2);
+            var pvec: Vector3D = this.dir.crossProduct(edge2, MathUtil.CALCULATION_VECTOR3D_0);
 
             var det: number = edge1.dotProduct(pvec);
 
@@ -81,7 +81,7 @@
             }
 
             // Prepare to test V parameter
-            var qvec: Vector3D = tvec.crossProduct(edge1);
+            var qvec: Vector3D = tvec.crossProduct(edge1, MathUtil.CALCULATION_VECTOR3D_1);
             // Calculate V parameter and test bounds
 
             var v: number = this.dir.dotProduct(qvec);
@@ -109,6 +109,43 @@
                 return false;
             }
 
+            return true;
+        }
+
+        public IntersectSphere(center: Vector3D, radius: number, ret: number[]): boolean{
+
+            var t0: number = 0.0;
+            var t1: number = 0.0;
+            var oc: Vector3D = center.subtract(this.origin, MathUtil.CALCULATION_VECTOR3D_0);
+
+            var  projoc:number = this.dir.dotProduct(oc);
+
+            if (projoc < 0)
+                return false;
+
+            var oc2: number = oc.dotProduct(oc);
+
+            var distance2 = oc2 - projoc * projoc;   //计算出的球心到射线的距离
+
+            var radiusSquare: number = radius * radius;
+            if (distance2 > radiusSquare)
+                return false;
+
+            var discriminant: number = radiusSquare - distance2;  //使用勾股定理，计算出另一条边的长度
+            if (discriminant < 0) {   //表明只有一个交点，射线与球相切
+                t0 = t1 = projoc;
+            }
+            else {
+                discriminant = Math.sqrt(discriminant);
+                t0 = projoc - discriminant;
+                t1 = projoc + discriminant;
+                if (t0 < 0) {
+                    t0 = t1;
+                }
+            }
+
+            ret.push(t0);
+            ret.push(t1);
             return true;
         }
                 

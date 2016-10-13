@@ -88,6 +88,9 @@
                     rot = rotationArray[i];
                 }
 
+                if (rot == 0.0) {
+                    continue;
+                }
 
                 this.rotationMat.identity();
                 if (renderMode == ParticleRenderModeType.VerticalBillboard || renderMode == ParticleRenderModeType.HorizontalBillboard) {

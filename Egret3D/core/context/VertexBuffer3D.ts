@@ -56,7 +56,8 @@
                 this.buffer = null;
             }
             if (this.arrayBuffer) {
-                this.arrayBuffer.length = 0;
+                delete this.arrayBuffer;
+                this.arrayBuffer = null;
             }
         }
     }

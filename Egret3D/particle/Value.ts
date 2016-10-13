@@ -807,6 +807,21 @@
             return values;
         }
     }
+
+    /**
+   * @private
+   * 外部指定的位置
+   */
+    export class ValueShapeExternal extends ValueShape {
+        public valueType: ValueType = ValueType.vec3;
+        public positionList: Vector3D[];
+
+        public calculate(num: number, ...parameters): any {
+            var values:Vector3D[] = this.positionList.slice();
+            return values;
+        }
+    }
+
                 
     /**
     * @private

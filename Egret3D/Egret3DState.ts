@@ -32,7 +32,7 @@
         private static use: boolean = false; 
 
         private static _width: number = 260;
-        private static _height: number = 300;
+        private static _height: number = 600;
 
         private static _info: HTMLDivElement;
         private static _time: HTMLDivElement;
@@ -42,6 +42,8 @@
         private static info: string;
 
         private static _canvas: HTMLCanvasElement;
+
+        public static help: number = 0;
 
         static initState() {
             //Egret3DState.use = true; 

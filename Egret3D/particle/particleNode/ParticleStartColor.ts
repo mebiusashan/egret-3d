@@ -15,7 +15,7 @@
         * @private
         */
         private _node: ParticleDataProperty;
-        private particleAnimationState: ParticleAnimationState;
+        private _animationState: ParticleAnimationState;
         constructor() {
             super();
             this.name = "ParticleStartColor";
@@ -48,20 +48,21 @@
         */
         public build(geometry: Geometry, count: number) {
             //##FilterBegin## ##Particle##
-            this.particleAnimationState = <ParticleAnimationState>this.state;
-            const vertexColorOffset: number = 3;//前面三个数据是xyz
+            this._animationState = <ParticleAnimationState>this.state;
+
+            var colorOffsetIndex: number = this._animationState.emitter.data.geometry.hasNormalData ? 6 : 3;
 
             var vertices: number = geometry.vertexCount / count;
             var index: number = 0;
 
-            var timeOffsetIndex: number = this.particleAnimationState.emitter.timeNode.offsetIndex;
+            var timeOffsetIndex: number = this._animationState.emitter.timeNode.offsetIndex;
             var particleIndex: number = 0;
 
             var clr1: Color = new Color();
             var clr2: Color = new Color();
 
             var progress: number = 0;
-            var duration: number = this.particleAnimationState.emitter.data.life.duration;
+            var duration: number = this._animationState.emitter.data.life.duration;
 
             for (var i: number = 0; i < count; ++i) {
                 particleIndex = i * vertices;
@@ -73,14 +74,14 @@
                 progress = progress - Math.floor(progress);                         //取小数部分
                 this.lerpBirthColor(clr1, clr2, progress);
 
-                clr1.a /= 256;
-                clr1.r /= 256;
-                clr1.g /= 256;
-                clr1.b /= 256;
+                clr1.a /= 0xff;
+                clr1.r /= 0xff;
+                clr1.g /= 0xff;
+                clr1.b /= 0xff;
 
                 for (var j: number = 0; j < vertices; ++j) {
                     index = i * vertices + j;
-                    index = index * geometry.vertexAttLength + vertexColorOffset;
+                    index = index * geometry.vertexAttLength + colorOffsetIndex;
 
                     geometry.vertexArray[index + 0] = clr1.r;
                     geometry.vertexArray[index + 1] = clr1.g;

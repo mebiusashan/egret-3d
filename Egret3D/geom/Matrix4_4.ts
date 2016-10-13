@@ -832,6 +832,7 @@
             dest.rawData = this.rawData.slice(0);
         }
 
+        private static prs: Vector3D[] = [new Vector3D(), new Vector3D(), new Vector3D()];
         /**
         * @language zh_CN
         * 分解当前矩阵
@@ -842,7 +843,7 @@
         */
         public decompose(orientationStyle: string = "eulerAngles", target: Vector3D[] = null): Vector3D[] {
             var q: Quaternion = MathUtil.CALCULATION_QUATERNION;
-            var vec: Vector3D[] = target ? target : [new Vector3D(), new Vector3D(), new Vector3D()];
+            var vec: Vector3D[] = target ? target : Matrix4_4.prs;
             this.copyRawDataTo(Matrix4_4.helpMatrix.rawData);
             var mr = Matrix4_4.helpMatrix.rawData;
 

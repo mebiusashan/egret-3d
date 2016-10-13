@@ -343,6 +343,24 @@
          * @language zh_CN
          */
         public dispose() {
+            if (this.program3D) {
+                this.program3D.dispose();
+            }
+            this.program3D = null;
+
+            if (this.vertexShader) {
+                if (this.vertexShader.shader) {
+                    this.vertexShader.shader.dispose();
+                }
+            }
+            this.vertexShader = null;
+
+            if (this.fragmentShader) {
+                if (this.fragmentShader.shader) {
+                    this.fragmentShader.shader.dispose();
+                }
+            }
+            this.fragmentShader = null;
         }
 
     }

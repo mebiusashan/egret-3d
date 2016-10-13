@@ -34,7 +34,6 @@
             super();
 
             this.type = "mesh";
-
             this.geometry = geometry;
             if (animation) {
                 this.animation = animation;

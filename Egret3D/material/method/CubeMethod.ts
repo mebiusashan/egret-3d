@@ -18,8 +18,6 @@
         */
         constructor() {
             super();
-
-
             this.vsShaderList[ShaderPhaseType.global_vertex] = this.fsShaderList[ShaderPhaseType.global_vertex] || [];
             this.vsShaderList[ShaderPhaseType.global_vertex].push("cube_vertex");
 

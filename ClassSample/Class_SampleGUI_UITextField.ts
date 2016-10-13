@@ -55,13 +55,15 @@
             btn.setStyle("down", downState);
             con.addChild(btn);
 
+            con.visible = false;
+
             var labelBtn: gui.UILabelButton = new gui.UILabelButton();
             labelBtn.y = 50;
             labelBtn.width = upState.width;
             labelBtn.height = upState.height;
             labelBtn.setStyle("up", upState);
             labelBtn.setStyle("down", downState);
-            labelBtn.label = "按钮";
+            labelBtn.label = "重置";
             this.view1.addGUI(labelBtn);
             labelBtn.addEventListener(MouseEvent3D.MOUSE_CLICK,
                 (e) => {
@@ -124,6 +126,12 @@
             slider.width = 100;
             slider.height = 20;
             slider.y = 250;
+            slider.addEventListener(Event3D.CHANGE,
+                (e) => {
+                    console.log(slider === e.target);
+                    console.log(slider.value);
+                },
+                this);
             this.view1.addGUI(slider);
 
             var list: gui.UIList = new gui.UIList();
@@ -140,6 +148,10 @@
                 list.addItem(tempQuad);
             }
             this.view1.addGUI(list);
+
+//            var input: gui.UITextField = new gui.UITextField(gui.UITextFieldType.INPUT);
+//            input
+//            this.view1.addGUI(input);
         }
 
         public update(e: Event3D) {

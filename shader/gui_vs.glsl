@@ -1,5 +1,5 @@
 attribute vec4 attribute_position; 
-attribute vec3 attribute_shapePosition; 
+attribute vec4 attribute_shapePosition; 
 attribute vec4 attribute_uvRec; 
 attribute vec4 attribute_rotate; 
 attribute vec4 attribute_maskRectangle; 
@@ -8,7 +8,8 @@ varying vec4 varying_uv;
 varying vec4 varying_color; 
 varying vec4 varying_pos; 
 varying vec4 varying_mask; 
-varying float varying_textureIndex; 
+varying float varying_boolList;
+
 vec4 outPosition; 
 uniform mat4 uniform_ModelMatrix; 
 uniform mat4 uniform_ViewMatrix; 
@@ -33,8 +34,37 @@ return mat4(
 0.0,							0.0,					0.0,					1 
 ); 
 }
+
+const int FLAG_VALLID_QUAD = 0;
+const int FLAG_IS_VISIBLE = 1;
+const int FLAG_HAS_MASK = 2;
+const int FLAG_HAS_TEXTURE = 3;
+const int FLAG_IS_TEXTFIELD = 4;
+
+
+bool booleanArray[5];
+
+void decodeBooleanArray(float data){
+	float headData;
+	for(int i = 0; i < 5; i ++){
+		data *= 0.5;
+		headData = data;
+		data = floor(data);
+		booleanArray[i] = (headData - data) > 0.2;
+	}
+}
+
 void main(void){
-	
+
+	gl_PointSize = uniform_materialSource[18];
+	varying_pos.zw = attribute_shapePosition.zw;
+	decodeBooleanArray(attribute_shapePosition.w);
+	if(booleanArray[FLAG_VALLID_QUAD] == false || booleanArray[FLAG_IS_VISIBLE] == false){
+		outPosition = vec4(0.0,0.0,0.0,1.0);
+		gl_Position = outPosition; 
+		return;
+	}
+
     float devicePixelRatio = 1.0;//uniform_materialSource[19];
     mat4 mvMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); 
     mat4 po = buildMat4Quat(attribute_rotate.xyzw); 
@@ -50,26 +80,16 @@ void main(void){
     outPosition = mvMatrix * vec4( pos - sceneWH , 1.0 ) ; 
     varying_color = attribute_quad_color ; 
     
-    if( attribute_position.z >= 100000.0 ){ 
-        varying_color.w = -1.0 ; 
-    } 
-    
-    varying_pos = outPosition = oth * outPosition ; 
-    varying_pos.w = attribute_position.w ; 
+    outPosition = oth * outPosition ; 
+	varying_pos.xy = outPosition.xy;
     vec4 maskk = attribute_maskRectangle;
     
     sceneWH = vec3(2.0/px*devicePixelRatio,2.0/py*devicePixelRatio,1.0) ;
     
-    varying_mask = vec4(maskk.xy/sceneWH.xy,(maskk.x+maskk.z)/sceneWH.x ,  (maskk.y+maskk.w)/(sceneWH.y)) ; 
+    varying_mask = vec4(maskk.xy/sceneWH.xy,(maskk.x+maskk.z)/sceneWH.x, (maskk.y+maskk.w)/(sceneWH.y)) ; 
     varying_uv = attribute_uvRec; 
-	varying_textureIndex = floor(attribute_shapePosition.z);
-	int texIndex = int(attribute_shapePosition.z);
 
-	if(texIndex == -2 || texIndex == -3){
-		outPosition = vec4(0.0,0.0,0.0,0.0); //NULL_QUAD,NULL_INVISIBLE
-	}else{
-		gl_Position = outPosition; 
-	}
-	gl_PointSize = uniform_materialSource[18];
+	int texIndex = int(attribute_shapePosition.z);
+	gl_Position = outPosition; 
     
 }

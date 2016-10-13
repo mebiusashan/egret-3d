@@ -1,5 +1,5 @@
 ﻿module egret3d {
-                                    
+
     /**
     * @class egret3d.IRender
     * @classdesc
@@ -11,7 +11,7 @@
     * @version Egret 3.0
     * @platform Web,Native
     */
-    export class IRender extends Object3D{
+    export class IRender extends Object3D {
 
 
         /**
@@ -31,7 +31,24 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public geometry: Geometry;
+        protected _geometry: Geometry;
+
+        public get geometry(): Geometry {
+            return this._geometry;
+        }
+
+        public set geometry(value: Geometry) {
+            if (this._geometry == value) {
+                return;
+            }
+            if (value) {
+                value.incRef();
+            }
+            if (this._geometry) {
+                this._geometry.dispose();
+            }
+            this._geometry = value;
+        }
 
         /**
         * @language zh_CN
@@ -42,13 +59,13 @@
         */
         public material: MaterialBase;
 
-         /**
-        * @language zh_CN
-        * 对象类型。</p>
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public type: string ="" ;
+        /**
+       * @language zh_CN
+       * 对象类型。</p>
+       * @version Egret 3.0
+       * @platform Web,Native
+       */
+        public type: string = "";
 
         /**
         * @language zh_CN
@@ -90,7 +107,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        protected _lightGroup: LightGroup; 
+        protected _lightGroup: LightGroup;
 
         /**
         * @language zh_CN
@@ -189,10 +206,15 @@
         */
         public dispose() {
             super.dispose();
-            if (this.geometry) {
-                this.geometry.dispose();
-                this.geometry = null;
+            if (this._bound) {
+                this._bound.dispose();
             }
+            this.geometry = null;
+
+            //for (var key in this.multiMaterial) {
+            //    this.multiMaterial[key].dispose();
+            //}
+            this.multiMaterial = {};
         }
     }
 }

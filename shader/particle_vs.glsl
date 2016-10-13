@@ -5,7 +5,7 @@ attribute vec4 attribute_color;
 attribute vec3 attribute_offsetPosition;
 
 uniform mat4 uniform_cameraMatrix;
-uniform float uniform_particleState[24];
+uniform float uniform_particleState[25];
 
 uniform mat4 uniform_ViewMatrix;
 
@@ -20,7 +20,7 @@ vec3 velocityBaseVec3 = vec3(0.0,0.0,0.0);
 vec3 velocityOverVec3 = vec3(0.0,0.0,0.0);
 vec3 velocityForceVec3 = vec3(0.0,0.0,0.0);
 vec2 velocityBezierWeightVec2 = vec2(1.0, 1.0);
-vec2 velocityLimitVec2 = vec2(0.0,0.0);//yΪ0��ʾ������
+vec2 velocityLimitVec2 = vec2(0.0,0.0);
 
 vec3 followTargetPosition = vec3(0.0,0.0,0.0);
 vec3 followTargetScale = vec3(1.0,1.0,1.0);
@@ -65,6 +65,7 @@ struct ParticleStateData{
 	float speedScale;
 	float lengthScale;
 	float renderMode;
+	float stayAtEnd;
 };
 
 mat4 buildRotMat4(vec3 rot)
@@ -131,6 +132,36 @@ mat4 buildMat4Quat(vec4 quat){
    );
 }
 
+float easeInOut(float t){
+	t = clamp(t, 0.0, 1.0);
+	float p0;
+	float p1;
+	float p2;
+	if(t <= 0.5){ 
+		p0 = 0.0; 
+		p1 = 0.0; 
+		p2 = 0.5; 
+	}else{ 
+		p0 = 0.5; 
+		p1 = 1.0; 
+		p2 = 1.0; 
+		t -= 0.5;
+	}
+	t *= 2.0;
+
+	p0 = mix(p0, p1, t);
+	p1 = mix(p1, p2, t);
+
+	p0 = mix(p0, p1, t);
+	return p0;
+
+}
+vec3 cubicPos;
+void calcCubicPos(float time, float totalTime, vec3 fromPos, vec3 endPos){
+	
+}
+void trackPosition(){
+}
 
 
 void main(void) {
@@ -160,6 +191,7 @@ void main(void) {
 	particleStateData.speedScale					= uniform_particleState[21];
 	particleStateData.lengthScale					= uniform_particleState[22];
 	particleStateData.renderMode					= uniform_particleState[23];
+	particleStateData.stayAtEnd						= uniform_particleState[24];
 
     //varying_mvPose = mvMatrix * vec4( e_position , 1.0 ) ; 
 	mat4 modeViewMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); 

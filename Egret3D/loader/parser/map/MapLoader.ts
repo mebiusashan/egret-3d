@@ -41,11 +41,6 @@
         */
         public autoPlayAnimation: boolean = false;
 
-        private _pathRoot: string = "";
-        private _path: string = "";
-        private _mapParser: MapConfigParser = null;
-
-
         /**
         * @private
         * @language zh_CN
@@ -56,21 +51,13 @@
             return this._mapParser;
         }
 
-        private _textures: any = {};
-
+        private _pathRoot: string = "";
+        private _path: string = "";
+        private _mapParser: MapConfigParser = null;
         private _taskCount: number = 0;
         private _event: LoaderEvent3D = new LoaderEvent3D();
 
         private _type: string = "";
-        /**
-        * @private
-        * @language zh_CN
-        * @version Egret 3.0
-        * @platform Web,Native
-        */
-        public huds: Array<HUD> = new Array<HUD>();
-
-        public skinClipDict: any = {};
 
         /**
         * @language zh_CN
@@ -96,6 +83,25 @@
         */
         public view3d: View3D;
 
+        private _taskDict: any = {};
+        private _textures: any = {};
+
+        /**
+        * @private
+        * @language zh_CN
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public skinClipDict: any = {};
+
+        /**
+        * @private
+        * @language zh_CN
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public huds: HUD[] = [];
+
         /**
         * @private
         * @language zh_CN
@@ -103,8 +109,6 @@
         * @platform Web,Native
         */
         public lightDict: any = {};
-
-        private _taskDict: any = {};
 
         /**
         * @language zh_CN
@@ -140,6 +144,7 @@
         * @platform Web,Native
         */
         public load(url: string) {
+            this.reset();
 
             var s_pos: number = url.lastIndexOf("/");
             s_pos++;
@@ -155,6 +160,36 @@
 
             this.addTask();
             var loader: URLLoader = AssetManager.instance.loadAsset(this._path, this.onConfigLoad, this);
+        }
+
+        /**
+        * @language zh_CN
+        * 释放所有数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose() {
+            super.dispose();
+            this.reset();
+        }
+
+        private reset() {
+            AssetManager.instance.dispose(this);
+
+            this.container.dispose();
+            this.taskTotal = 0;
+            this.taskCurrent = 0;
+            this._taskCount = 0;
+            this._taskDict = {};
+            this._textures = {};
+            this.skinClipDict = {};
+            this.huds = [];
+            this.lightDict = {};
+            this._mapParser = null;
+
+            this._event.target = null;
+            this._event.loader = null;
+            this._event.data = null;
         }
 
         private parseConfig(dataConfig: string, type: string) {
@@ -330,14 +365,17 @@
 
             this.parseConfig(loader.data, this._type);
             this.processTask(loader);
+
+            //loader.removeEventListener(LoaderEvent3D.LOADER_COMPLETE, this.onConfigLoad, this);
         }
 
         private onHeightImg(e: LoaderEvent3D) {
             var load: URLLoader = e.loader;
             var mapNodeData: MapNodeData = e.param;
             var geometry: any = mapNodeData.geometry;
-            var envHeightGeometry: ElevationGeometry = new ElevationGeometry(load.data, geometry.width, geometry.height, geometry.depth, geometry.segmentsW, geometry.segmentsH);
-            var mesh: Mesh = new Mesh(envHeightGeometry, new TextureMaterial(load.data));
+
+            var mesh: Terrain = new Terrain(load.data, geometry.width, geometry.height, geometry.depth, geometry.segmentsW, geometry.segmentsH, false, new TextureMaterial(load.data));
+
             this.processHeightMesh(mapNodeData, mesh);
             this.doLoadEpa(mapNodeData);
             this.processTask(load);
@@ -525,6 +563,8 @@
             this.processEpa(mapNodeData, clonePa);
        
             this.processTask(load);
+
+            //load.removeEventListener(LoaderEvent3D.LOADER_COMPLETE, this.onEpaLoad, this);
         }
         
         private addTask() {
@@ -582,8 +622,6 @@
                         tempEmitter.parent.removeChild(tempEmitter);
                     }
                 }
-
-
 
                 this._event.eventType = LoaderEvent3D.LOADER_COMPLETE;
                 this._event.target = this;

@@ -146,6 +146,10 @@
         * @platform Web,Native
         */
         public static DATAFORMAT_HDR: string = "hdr";
+
+        private progress: any;
+        private readystatechange: any;
+        private error: any;
         /**
          * @language zh_CN
          * 构造函数
@@ -239,9 +243,17 @@
             }
 
             this._xhr.open("GET", this.url, true);
-            this._xhr.addEventListener("progress", (e) => this.onProgress(e), false);
-            this._xhr.addEventListener("readystatechange", (e) => this.onReadyStateChange(e), false);
-            this._xhr.addEventListener("error", (e) => this.onError(e), false);
+
+            this.disposeXhrEventListener();
+
+            this.progress = (e) => this.onProgress(e);
+            this.readystatechange = (e) => this.onReadyStateChange(e);
+            this.error = (e) => this.onError(e);
+
+            this._xhr.addEventListener("progress", this.progress, false);
+            this._xhr.addEventListener("readystatechange", this.readystatechange, false);
+            this._xhr.addEventListener("error", this.error, false);
+
             if (this.dataformat == URLLoader.DATAFORMAT_BITMAP) {
                 this._xhr.responseType = "blob";
             } else if (this.dataformat != URLLoader.DATAFORMAT_TEXT) {
@@ -344,6 +356,8 @@
                     this.loadComplete();
                 }
             }
+
+           
         }
 
         private loadComplete(): void {
@@ -413,6 +427,8 @@
             this._event.loader = this;
             this.dispatchEvent(this._event);
             console.log("load error", event);
+
+            this.disposeXhrEventListener();
         }
 
         private getXHR(): any {
@@ -429,6 +445,19 @@
             this.data = new ImageTexture(img);
             this.checkTexture(this.data);
             this.doLoadComplete();
+
+            if (window['createObjectURL'] != undefined) { // basic
+                window['revokeObjectURL'](img.src);
+            }
+            else if (window['URL'] != undefined) { // mozilla(firefox)
+                window['URL'].revokeObjectURL(img.src);
+            }
+            else if (window['webkitURL'] != undefined) { // webkit or chrome
+                window['webkitURL'].revokeObjectURL(img.src);
+            }
+
+            //window.URL.revokeObjectURL(img.src);
+            img.onload = null;
         }
 
         protected checkTexture(texture: ITexture) {
@@ -445,6 +474,43 @@
             this._event.loader = this;
             this._event.data = this.data;
             this.dispatchEvent(this._event);
+
+            this.disposeXhrEventListener();
+        }
+
+        private disposeXhrEventListener() {
+            if (this.progress) {
+                this._xhr.removeEventListener("progress", this.progress, false);
+                this.progress = null;
+            }
+
+            if (this.readystatechange) {
+                this._xhr.removeEventListener("readystatechange", this.readystatechange, false);
+                this.readystatechange = null;
+            }
+
+            if (this.error) {
+                this._xhr.removeEventListener("error", this.error, false);
+                this.error = null;
+            }
+        }
+
+        /**
+        * @language zh_CN
+        * 释放所有数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose() {
+            super.dispose();
+            if (this.data && this.data.dispose) {
+                this.data.dispose();
+            }
+
+            this.data = null;
+            this._event = null;
+            this.disposeXhrEventListener();
+            this._xhr = null;
         }
     }
 }

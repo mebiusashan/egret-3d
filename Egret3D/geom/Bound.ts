@@ -197,5 +197,21 @@
         protected updateAABB() {
 
         }
+
+        /**
+        * @language zh_CN
+        * 释放所有数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose() {
+            if (this._bound) {
+                this._bound.dispose();
+            }
+
+            if (this.childBound) {
+                this.childBound.dispose();
+            }
+        } 
     }
 }

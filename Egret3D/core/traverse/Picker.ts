@@ -89,10 +89,17 @@
                         if (renderItem.geometry.vertexFormat & VertexFormat.VF_COLOR) {
                             uvoffset += Geometry.colorSize;
                         }
+                        var boundBox: BoundBox = <BoundBox>renderItem.bound;
+                        var ret: number[] = [];
 
-                        if (ray.IntersectMeshEx(renderItem, uvoffset, renderItem.pickResult)) {
-                            target.push(objects[i]);
+                        renderItem.modelMatrix.transformVector(boundBox.center, MathUtil.CALCULATION_VECTOR3D);
+
+                        if (ray.IntersectSphere(MathUtil.CALCULATION_VECTOR3D, boundBox.radius, ret)) {
+                            if (ray.IntersectMeshEx(renderItem, uvoffset, renderItem.pickResult)) {
+                                target.push(objects[i]);
+                            }
                         }
+
                         break;
                     case PickType.UVPick:
                         var uvoffset: number = 0;
@@ -112,8 +119,10 @@
                         if (renderItem.geometry.vertexFormat & VertexFormat.VF_COLOR) {
                             uvoffset += Geometry.colorSize;
                         }
-                        if (ray.IntersectMeshEx(renderItem, uvoffset, renderItem.pickResult)) {
-                            target.push(objects[i]);
+                        if (ray.IntersectSphere(MathUtil.CALCULATION_VECTOR3D, boundBox.radius, ret)) {
+                            if (ray.IntersectMeshEx(renderItem, uvoffset, renderItem.pickResult)) {
+                                target.push(objects[i]);
+                            }
                         }
                         break;
                 }

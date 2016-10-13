@@ -346,7 +346,9 @@
         * @platform Web,Native
         */
         public inBound(frustum: Frustum): boolean {
-            return frustum.inBox(this);
+            
+            this.transform.transformVector(this.center, MathUtil.CALCULATION_VECTOR3D);
+            return frustum.inSphere(MathUtil.CALCULATION_VECTOR3D, this.radius);
         }
 
         protected updateAABB() {

@@ -28,6 +28,7 @@
             super();
             this.type = "wireframe";
             this.geometry = new Geometry();
+
             this.material = new ColorMaterial(0xff0000);
             this.addSubMaterial(0, this.material);
 
@@ -52,6 +53,25 @@
                 for (var i: number = 0; i < this.geometry.vertexCount - 1; ++i) {
                     this.geometry.indexArray[i * 2 + 0] = i;
                     this.geometry.indexArray[i * 2 + 1] = i + 1;
+                }
+            }
+        }
+
+         /**
+        * @language zh_CN
+        * 设置画线顶点数据 规则是把传入的点两两相连
+        * @param src  画线顶点数据列表 
+        * @param vf 画线顶点数据格式 默认为 VertexFormat.VF_POSITION (x, y, z) 可以加上颜色 VertexFormat.VF_COLOR (r, g, b, a)
+        * 每个顶点数据格式必须统一
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public fromVertexsEx(src: any, vf: VertexFormat = VertexFormat.VF_POSITION) {
+            if (src) {
+                this.geometry.setVerticesForIndex(0, vf, src, src.length / GeometryUtil.fromVertexFormatToLength(vf));
+                this.geometry.indexCount = this.geometry.vertexCount;
+                for (var i: number = 0; i < this.geometry.vertexCount; ++i) {
+                    this.geometry.indexArray[i] = i;
                 }
             }
         }

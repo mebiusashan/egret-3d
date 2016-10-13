@@ -92,6 +92,7 @@
         HemiSphere,
         Cone,
         Mesh,
+        External,
     }
 
     /**
@@ -235,6 +236,10 @@
 
         public meshFile: string;
         public geometry: Geometry;
+
+        //最后停留在最大生命值的位置
+        public stayAtEnd: boolean;
+        public trackPosition: boolean;
 
         constructor() {
             super(ParticleDataNodeType.Property);
@@ -393,6 +398,9 @@
         public meshFile: string;
         public geometry: Geometry;
 
+        //外部指定的发射位置
+        public externalPositionList: Vector3D[];
+
         constructor() {
             super(ParticleDataNodeType.Shape);
         }
@@ -498,7 +506,7 @@
         //粒子模型
         public planeW: number = 10;
         public planeH: number = 10;
-
+        public hasNormalData: boolean = false;
         constructor() {
             super(ParticleDataNodeType.Geometry);
         }
@@ -753,6 +761,8 @@
 
         public bezier1: BezierData = new BezierData();
         public bezier2: BezierData = new BezierData();
+        public rot3Axis: boolean = false;
+
         constructor() {
             super(ParticleDataNodeType.RotationSpeed);
         }

@@ -94,7 +94,7 @@
           * @version Egret 3.0
           * @platform Web,Native
           */
-        VF_UVREC = 0x00000080,
+        VF_QUAD_UVREC = 0x00000080,
 
              /**
           * @private
@@ -103,7 +103,8 @@
           * @version Egret 3.0
           * @platform Web,Native
           */
-        VF_ROTATION = 0x00000100,
+        VF_QUAD_ROTATION = 0x00000100,
+
 
              /**
           * @private
@@ -112,16 +113,7 @@
           * @version Egret 3.0
           * @platform Web,Native
           */
-        VF_SIZE = 0x00000200,
-
-             /**
-          * @private
-          * @language zh_CN
-          * quad uv rectangle
-          * @version Egret 3.0
-          * @platform Web,Native
-          */
-        VF_SCALE = 0x00000400,
+        VF_QUAD_MASK = 0x00000400,
 
         /**
         * @private
@@ -130,7 +122,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        VF_QUADPOS = 0x00000800,
+        VF_QUAD_POS = 0x00000800,
 
         /**
         * @private
@@ -139,7 +131,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        VF_QUADOFFSET = 0x00001000,
+        VF_QUAD_ORIGN = 0x00001000,
 
         /**
          * @private
@@ -164,7 +156,7 @@
     * @version Egret 3.0
     * @platform Web,Native
     */
-    export class Geometry {
+    export class Geometry extends Reference {
 
        /**
         * @language zh_CN
@@ -228,6 +220,10 @@
         * @private
         */
         private _skeleton: Skeleton;
+
+        /**
+        * @private
+        */
         public skeletonGPUData: Float32Array;
 
         /**
@@ -330,7 +326,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public _vertexCount: number = 0;
+        private _vertexCount: number = 0;
 
         /**
         * @language zh_CN
@@ -338,11 +334,12 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        public _indexCount: number = 0;
+        private _indexCount: number = 0;
 
         private _totalIndexCount: number = 0;
 
         public set skeleton(skeleton: Skeleton) {
+
             if (!skeleton) {
                 return;
             }
@@ -459,6 +456,7 @@
         }
 
         constructor() {
+            super();
         }
 
         /**
@@ -518,28 +516,25 @@
                 this.vertexAttLength += Geometry.skinSize;
             }
 
-            if (this.vertexFormat & VertexFormat.VF_UVREC) {
+            if (this.vertexFormat & VertexFormat.VF_QUAD_UVREC) {
                 this.vertexAttLength += QuadData.uvRectangleSize;
             }
 
-            if (this.vertexFormat & VertexFormat.VF_ROTATION) {
+            if (this.vertexFormat & VertexFormat.VF_QUAD_ROTATION) {
                 this.vertexAttLength += QuadData.rotationSize;
             }
 
-            if (this.vertexFormat & VertexFormat.VF_SIZE) {
-                this.vertexAttLength += QuadData.offsetSize;
+
+            if (this.vertexFormat & VertexFormat.VF_QUAD_MASK) {
+                this.vertexAttLength += QuadData.maskSize;
             }
 
-            if (this.vertexFormat & VertexFormat.VF_SCALE) {
-                this.vertexAttLength += QuadData.scaleSize;
-            }
-
-            if (this.vertexFormat & VertexFormat.VF_QUADPOS) {
+            if (this.vertexFormat & VertexFormat.VF_QUAD_POS) {
                 this.vertexAttLength += QuadData.posSize;
             }
 
-            if (this.vertexFormat & VertexFormat.VF_QUADOFFSET) {
-                this.vertexAttLength += QuadData.offsetSize;
+            if (this.vertexFormat & VertexFormat.VF_QUAD_ORIGN) {
+                this.vertexAttLength += QuadData.originalSize;
             }
 
             if (this.vertexFormat & VertexFormat.VF_QUAD_COLOR) {
@@ -749,11 +744,7 @@
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                         this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
                     }
-                    else {
-                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
-                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 0;
-                        this.vertexArray[index * this.vertexAttLength + offset + 2] = 0;
-                    }
+
                     offset += Geometry.positionSize;
                 }
                 if (vf & VertexFormat.VF_POSITION) {
@@ -766,11 +757,7 @@
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                         this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
                     }
-                    else {
-                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
-                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 0;
-                        this.vertexArray[index * this.vertexAttLength + offset + 2] = 0;
-                    }
+
                     offset += Geometry.normalSize;
                 }
                 if (vf & VertexFormat.VF_NORMAL) {
@@ -783,11 +770,7 @@
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                         this.vertexArray[index * this.vertexAttLength + offset + 2] = src[srcOffset + 2];
                     }
-                    else {
-                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
-                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 0;
-                        this.vertexArray[index * this.vertexAttLength + offset + 2] = 0;
-                    }
+
                     offset += Geometry.tangentSize;
                 }
                 if (vf & VertexFormat.VF_TANGENT) {
@@ -818,10 +801,7 @@
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                     }
-                    else {
-                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
-                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 0;
-                    }
+
                     offset += Geometry.uvSize;
                 }
                 if (vf & VertexFormat.VF_UV0) {
@@ -833,10 +813,7 @@
                         this.vertexArray[index * this.vertexAttLength + offset + 0] = src[srcOffset + 0];
                         this.vertexArray[index * this.vertexAttLength + offset + 1] = src[srcOffset + 1];
                     }
-                    else {
-                        this.vertexArray[index * this.vertexAttLength + offset + 0] = 0;
-                        this.vertexArray[index * this.vertexAttLength + offset + 1] = 0;
-                    }
+
                     offset += Geometry.uv2Size;
                 }
                 if (vf & VertexFormat.VF_UV1) {
@@ -849,11 +826,7 @@
                             this.vertexArray[index * this.vertexAttLength + offset + j] = src[srcOffset + j];
                         }
                     }
-                    else {
-                        for (var j = 0; j < Geometry.skinSize; ++j) {
-                            this.vertexArray[index * this.vertexAttLength + offset + j] = 0;
-                        }
-                    }
+
                     offset += Geometry.skinSize;
                 }
                 if (vf & VertexFormat.VF_SKIN) {
@@ -918,14 +891,22 @@
         * @platform Web,Native
         */
         public dispose(): void {
-            if (this.sharedIndexBuffer) {
-                this.sharedIndexBuffer.dispose();
-                this.sharedIndexBuffer = null;
-            }
+            this.decRef();
+            if (this.isDispose) {
+                if (this.sharedIndexBuffer) {
+                    this.sharedIndexBuffer.dispose();
+                    this.sharedIndexBuffer = null;
+                }
 
-            if (this.sharedVertexBuffer) {
-                this.sharedVertexBuffer.dispose();
-                this.sharedVertexBuffer = null;
+                if (this.sharedVertexBuffer) {
+                    this.sharedVertexBuffer.dispose();
+                    this.sharedVertexBuffer = null;
+                }
+                this.vertexArray = null;
+                this.indexArray = null;
+                this.skeletonGPUData = null;
+                this.skeleton = null;
+                this.subGeometrys = [];
             }
         }
     }

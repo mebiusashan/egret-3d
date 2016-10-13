@@ -84,7 +84,7 @@ module egret3d {
 
                     this._totalTime = keyFrames[i].end.x;
 
-                    keyFrames[i].cacheCurveData();
+                    //keyFrames[i].cacheCurveData();
                 }
             }
 

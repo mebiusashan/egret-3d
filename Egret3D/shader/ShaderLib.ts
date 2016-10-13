@@ -201,6 +201,11 @@ module egret3d {
 			"} \n" +
 			"  \n",
 
+			"colorPassEnd_fs":
+			"void main() { \n" +
+			"gl_FragColor = vec4(diffuseColor.xyz,1.0); \n" +
+			"} \n",
+
 			"colorTransform_fs":
 			"uniform float uniform_colorTransformAlpha ; \n" +
 			"uniform mat4 uniform_colorTransformM44 ; \n" +
@@ -228,7 +233,7 @@ module egret3d {
 			"} \n",
 
 			"cube_fragment":
-			"uniform samplerCube diffuseTexture ; \n" +
+			"uniform samplerCube diffuseTexture3D ; \n" +
 			"varying vec3 varying_pos; \n" +
 			"vec4 diffuseColor ; \n" +
 			"void main() { \n" +
@@ -236,7 +241,7 @@ module egret3d {
 			"discard; \n" +
 			"} \n" +
 			"vec3 uvw = normalize(varying_pos.xyz); \n" +
-			"diffuseColor = vec4(textureCube(diffuseTexture, uvw.xyz)); \n" +
+			"diffuseColor = vec4(textureCube(diffuseTexture3D, uvw.xyz)); \n" +
 			"if( diffuseColor.w < materialSource.cutAlpha ){ \n" +
 			"discard; \n" +
 			"}else \n" +
@@ -783,11 +788,39 @@ module egret3d {
 			"gl_FragColor = color + texture2D(colorTexture,uv.xy); \n" +
 			"} \n",
 
+			"Gbuffer":
+			"varying vec4 varying_position ; \n" +
+			"vec4 EncodeFloatRGBA( float v ) { \n" +
+			"vec4 enc = vec4(1.0, 255.0, 65025.0, 16581375.0) * v; \n" +
+			"enc = enc-fract(enc); \n" +
+			"enc -= enc.yzww * vec4(1.0/255.0,1.0/255.0,1.0/255.0,0.0); \n" +
+			"return enc; \n" +
+			"} \n" +
+			"float DecodeFloatRGBA( vec4 rgba ) { \n" +
+			"return dot( rgba, vec4(1.0, 1.0/255.0, 1.0/65025.0, 1.0/16581375.0) ); \n" +
+			"} \n" +
+			"float packRPass( vec4 color ){ \n" +
+			"return DecodeFloatRGBA(color); \n" +
+			"} \n" +
+			"float packGPass( vec3 normal ){ \n" +
+			"return DecodeFloatRGBA(vec4(normal,1.0)); \n" +
+			"} \n" +
+			"float packBPass( vec3 specular , float gloss ){ \n" +
+			"return DecodeFloatRGBA(vec4(specular,gloss)); \n" +
+			"} \n" +
+			"float packAPass( float d ){ \n" +
+			"return d; \n" +
+			"} \n" +
+			"void main(){ \n" +
+			"vec4 gBuffer ; \n" +
+			"gl_FragColor = vec4(vec3(varying_position.z),1.0) ; \n" +
+			"} \n",
+
 			"gui_fs":
 			"varying vec4 varying_uv; \n" +
 			"varying vec4 varying_color; \n" +
 			"varying vec4 varying_pos; \n" +
-			"varying float varying_textureIndex; \n" +
+			"varying vec4 varying_mask; \n" +
 			"vec4 diffuseColor; \n" +
 			"uniform sampler2D uiTexture_0; \n" +
 			"uniform sampler2D uiTexture_1; \n" +
@@ -796,12 +829,41 @@ module egret3d {
 			"uniform sampler2D uiTexture_4; \n" +
 			"uniform sampler2D uiTexture_5; \n" +
 			"uniform sampler2D uiTexture_6; \n" +
-			"varying vec4 varying_mask; \n" +
-			"void main(){ \n" +
-			"if( varying_color.w == -1.0 ){ \n" +
+			"const int FLAG_VALLID_QUAD = 0; \n" +
+			"const int FLAG_IS_VISIBLE = 1; \n" +
+			"const int FLAG_HAS_MASK = 2; \n" +
+			"const int FLAG_HAS_TEXTURE = 3; \n" +
+			"const int FLAG_IS_TEXTFIELD = 4; \n" +
+			"bool booleanArray[5]; \n" +
+			"void decodeBooleanArray(float data){ \n" +
+			"float headData; \n" +
+			"data *= 0.5; \n" +
+			"headData = data; \n" +
+			"data = floor(data); \n" +
+			"booleanArray[0] = (headData - data) > 0.2; \n" +
+			"data *= 0.5; \n" +
+			"headData = data; \n" +
+			"data = floor(data); \n" +
+			"booleanArray[1] = (headData - data) > 0.2; \n" +
+			"data *= 0.5; \n" +
+			"headData = data; \n" +
+			"data = floor(data); \n" +
+			"booleanArray[2] = (headData - data) > 0.2; \n" +
+			"data *= 0.5; \n" +
+			"headData = data; \n" +
+			"data = floor(data); \n" +
+			"booleanArray[3] = (headData - data) > 0.2; \n" +
+			"data *= 0.5; \n" +
+			"headData = data; \n" +
+			"data = floor(data); \n" +
+			"booleanArray[4] = (headData - data) > 0.2; \n" +
+			"} \n" +
+			"void main(void){ \n" +
+			"decodeBooleanArray(varying_pos.w); \n" +
+			"if(booleanArray[FLAG_VALLID_QUAD] == false || booleanArray[FLAG_IS_VISIBLE] == false){ \n" +
 			"discard; \n" +
 			"} \n" +
-			"if(varying_mask.x>=0.0){ \n" +
+			"if(booleanArray[FLAG_HAS_MASK]){ \n" +
 			"vec4 mask = varying_mask; \n" +
 			"if( (2.0*mask.x-1.0) > varying_pos.x){ \n" +
 			"discard; \n" +
@@ -817,37 +879,33 @@ module egret3d {
 			"} \n" +
 			"} \n" +
 			"vec2 uv = varying_uv.xy ; \n" +
-			"int index = int(floor(varying_textureIndex)) ; \n" +
-			"if(index < 0){ \n" +
-			"if(index == -1){ \n" +
+			"int index = int(floor(varying_pos.z)); \n" +
+			"if(booleanArray[FLAG_HAS_TEXTURE] == false){ \n" +
 			"diffuseColor = vec4(1.0, 1.0, 1.0, 1.0); \n" +
-			"}else{ \n" +
-			"discard; \n" +
-			"} \n" +
 			"} \n" +
 			"else{ \n" +
 			"if(index==0){ \n" +
-			"diffuseColor.xyzw = texture2D(uiTexture_0, uv ).xyzw; \n" +
-			"}else if(index==1){ \n" +
-			"diffuseColor.xyzw = texture2D(uiTexture_1, uv ).xyzw; \n" +
+			"diffuseColor = texture2D(uiTexture_0, uv ); \n" +
+			"} \n" +
+			"else if(index==1){ \n" +
+			"diffuseColor = texture2D(uiTexture_1, uv ); \n" +
 			"} \n" +
 			"else if(index==2){ \n" +
-			"diffuseColor.xyzw = texture2D(uiTexture_2, uv ).xyzw; \n" +
+			"diffuseColor = texture2D(uiTexture_2, uv ); \n" +
 			"} \n" +
 			"else if(index==3){ \n" +
-			"diffuseColor.xyzw = texture2D(uiTexture_3, uv ).xyzw; \n" +
+			"diffuseColor = texture2D(uiTexture_3, uv ); \n" +
 			"} \n" +
 			"else if(index==4){ \n" +
-			"diffuseColor.xyzw = texture2D(uiTexture_4, uv ).xyzw; \n" +
+			"diffuseColor = texture2D(uiTexture_4, uv ); \n" +
 			"} \n" +
 			"else if(index==5){ \n" +
-			"diffuseColor.xyzw = texture2D(uiTexture_5, uv ).xyzw; \n" +
+			"diffuseColor = texture2D(uiTexture_5, uv ); \n" +
 			"} \n" +
 			"else if(index==6){ \n" +
-			"diffuseColor.xyzw = texture2D(uiTexture_6, uv ).xyzw; \n" +
+			"diffuseColor = texture2D(uiTexture_6, uv ); \n" +
 			"} \n" +
-			"} \n" +
-			"if(varying_pos.w==1.0){ \n" +
+			"if(booleanArray[FLAG_IS_TEXTFIELD]){ \n" +
 			"int clrChannel = int(uv.x); \n" +
 			"uv.x -= float(clrChannel); \n" +
 			"float fontAlpha = 1.0; \n" +
@@ -865,6 +923,7 @@ module egret3d {
 			"} \n" +
 			"diffuseColor = vec4(1.0, 1.0, 1.0, fontAlpha); \n" +
 			"} \n" +
+			"} \n" +
 			"if(diffuseColor.w < 0.01 || varying_color.w < 0.01){ \n" +
 			"discard; \n" +
 			"} \n" +
@@ -877,7 +936,7 @@ module egret3d {
 
 			"gui_vs":
 			"attribute vec4 attribute_position; \n" +
-			"attribute vec3 attribute_shapePosition; \n" +
+			"attribute vec4 attribute_shapePosition; \n" +
 			"attribute vec4 attribute_uvRec; \n" +
 			"attribute vec4 attribute_rotate; \n" +
 			"attribute vec4 attribute_maskRectangle; \n" +
@@ -886,7 +945,7 @@ module egret3d {
 			"varying vec4 varying_color; \n" +
 			"varying vec4 varying_pos; \n" +
 			"varying vec4 varying_mask; \n" +
-			"varying float varying_textureIndex; \n" +
+			"varying float varying_boolList; \n" +
 			"vec4 outPosition; \n" +
 			"uniform mat4 uniform_ModelMatrix; \n" +
 			"uniform mat4 uniform_ViewMatrix; \n" +
@@ -910,7 +969,30 @@ module egret3d {
 			"0.0,							0.0,					0.0,					1 \n" +
 			"); \n" +
 			"} \n" +
+			"const int FLAG_VALLID_QUAD = 0; \n" +
+			"const int FLAG_IS_VISIBLE = 1; \n" +
+			"const int FLAG_HAS_MASK = 2; \n" +
+			"const int FLAG_HAS_TEXTURE = 3; \n" +
+			"const int FLAG_IS_TEXTFIELD = 4; \n" +
+			"bool booleanArray[5]; \n" +
+			"void decodeBooleanArray(float data){ \n" +
+			"float headData; \n" +
+			"for(int i = 0; i < 5; i ++){ \n" +
+			"data *= 0.5; \n" +
+			"headData = data; \n" +
+			"data = floor(data); \n" +
+			"booleanArray[i] = (headData - data) > 0.2; \n" +
+			"} \n" +
+			"} \n" +
 			"void main(void){ \n" +
+			"gl_PointSize = uniform_materialSource[18]; \n" +
+			"varying_pos.zw = attribute_shapePosition.zw; \n" +
+			"decodeBooleanArray(attribute_shapePosition.w); \n" +
+			"if(booleanArray[FLAG_VALLID_QUAD] == false || booleanArray[FLAG_IS_VISIBLE] == false){ \n" +
+			"outPosition = vec4(0.0,0.0,0.0,1.0); \n" +
+			"gl_Position = outPosition; \n" +
+			"return; \n" +
+			"} \n" +
 			"float devicePixelRatio = 1.0; \n" +
 			"mat4 mvMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); \n" +
 			"mat4 po = buildMat4Quat(attribute_rotate.xyzw); \n" +
@@ -923,23 +1005,14 @@ module egret3d {
 			"vec3 sceneWH = vec3( 1.0/ oth[0].x, -1.0/oth[1].y , 0.0 )  ; \n" +
 			"outPosition = mvMatrix * vec4( pos - sceneWH , 1.0 ) ; \n" +
 			"varying_color = attribute_quad_color ; \n" +
-			"if( attribute_position.z >= 100000.0 ){ \n" +
-			"varying_color.w = -1.0 ; \n" +
-			"} \n" +
-			"varying_pos = outPosition = oth * outPosition ; \n" +
-			"varying_pos.w = attribute_position.w ; \n" +
+			"outPosition = oth * outPosition ; \n" +
+			"varying_pos.xy = outPosition.xy; \n" +
 			"vec4 maskk = attribute_maskRectangle; \n" +
 			"sceneWH = vec3(2.0/px*devicePixelRatio,2.0/py*devicePixelRatio,1.0) ; \n" +
-			"varying_mask = vec4(maskk.xy/sceneWH.xy,(maskk.x+maskk.z)/sceneWH.x ,  (maskk.y+maskk.w)/(sceneWH.y)) ; \n" +
+			"varying_mask = vec4(maskk.xy/sceneWH.xy,(maskk.x+maskk.z)/sceneWH.x, (maskk.y+maskk.w)/(sceneWH.y)) ; \n" +
 			"varying_uv = attribute_uvRec; \n" +
-			"varying_textureIndex = floor(attribute_shapePosition.z); \n" +
 			"int texIndex = int(attribute_shapePosition.z); \n" +
-			"if(texIndex == -2 || texIndex == -3){ \n" +
-			"outPosition = vec4(0.0,0.0,0.0,0.0); \n" +
-			"}else{ \n" +
 			"gl_Position = outPosition; \n" +
-			"} \n" +
-			"gl_PointSize = uniform_materialSource[18]; \n" +
 			"} \n",
 
 			"hud_cull_fs":
@@ -1135,6 +1208,21 @@ module egret3d {
 			"uv_0 = varying_uv0.xy * materialSource.uvRectangle.zw + materialSource.uvRectangle.xy ; \n" +
 			"} \n",
 
+			"MultiUVSprite_fs":
+			"uniform vec4 multiUV ; \n" +
+			"uniform sampler2D diffuseTexture; \n" +
+			"vec4 diffuseColor ; \n" +
+			"void main() { \n" +
+			"vec2 scale = vec2(1.0/multiUV.xy) ; \n" +
+			"float a = mod(multiUV.w , multiUV.x) ; \n" +
+			"float b = (multiUV.w / multiUV.x) - fract(multiUV.w / multiUV.x) ; \n" +
+			"vec2 rec = scale * vec2(a,b) + uv_0 * scale; \n" +
+			"diffuseColor = texture2D(diffuseTexture , rec ); \n" +
+			"if( diffuseColor.w < materialSource.cutAlpha ){ \n" +
+			"discard; \n" +
+			"} \n" +
+			"} \n",
+
 			"mulUvRoll_fs":
 			"uniform float mulUvRoll[4] ; \n" +
 			"uniform sampler2D diffuseTexture; \n" +
@@ -1174,6 +1262,11 @@ module egret3d {
 			"vec3 normalTex = texture2D(normalTexture,uv_0).xyz *2.0 - 1.0; \n" +
 			"normalTex.y *= -1.0; \n" +
 			"normal.xyz = tbn( normalTex.xyz , normal.xyz , varying_mvPose.xyz , uv_0 ) ; \n" +
+			"} \n",
+
+			"normalPassEnd_fs":
+			"void main() { \n" +
+			"gl_FragColor = vec4(normal,1.0); \n" +
 			"} \n",
 
 			"particle_bezier":
@@ -1311,91 +1404,6 @@ module egret3d {
 			"} \n" +
 			"} \n",
 
-			"particle_end":
-			"float particle( ParticleData curParticle ){ \n" +
-			"return 1.0 ; \n" +
-			"} \n" +
-			"mat4 buildModelMatrix(vec4 quat, vec3 scale, vec3 position) \n" +
-			"{ \n" +
-			"mat4 ret = mat4( \n" +
-			"vec4(scale.x, 0.0, 0.0, 0.0), \n" +
-			"vec4(0.0, scale.y, 0.0, 0.0), \n" +
-			"vec4(0.0, 0.0, scale.z, 0.0), \n" +
-			"vec4(0.0, 0.0, 0.0, 1.0) \n" +
-			"); \n" +
-			"ret = buildMat4Quat(quat) * ret; \n" +
-			"ret[3][0] = position.x; \n" +
-			"ret[3][1] = position.y; \n" +
-			"ret[3][2] = position.z; \n" +
-			"return ret; \n" +
-			"} \n" +
-			"vec3 calcParticleMove(vec3 distanceXYZ){ \n" +
-			"if(velocityLimitVec2.y > TrueOrFalse){ \n" +
-			"vec3 temp = distanceXYZ * distanceXYZ; \n" +
-			"float distanceCurrent = sqrt(temp.x + temp.y + temp.z); \n" +
-			"float distanceLimit = velocityLimitVec2.x; \n" +
-			"if(distanceLimit < 0.0001){ \n" +
-			"return vec3(0.0); \n" +
-			"} \n" +
-			"if(distanceCurrent > distanceLimit){ \n" +
-			"distanceXYZ *= distanceLimit / distanceCurrent; \n" +
-			"} \n" +
-			"} \n" +
-			"return distanceXYZ; \n" +
-			"} \n" +
-			"mat4 getRenderModeMatrix(mat4 cameraMatrix, mat4 modelMatrix){ \n" +
-			"return cameraMatrix; \n" +
-			"} \n" +
-			"void updateStretchedBillBoard(vec4 startPos, vec4 newPos){ \n" +
-			"} \n" +
-			"void main(void) { \n" +
-			"if(discard_particle > TrueOrFalse){ \n" +
-			"outPosition = vec4(0.0,0.0,0.0,0.0); \n" +
-			"}else{ \n" +
-			"vec3 position_emitter = attribute_offsetPosition; \n" +
-			"vec3 velocityLocalVec3 = velocityBaseVec3 * currentTime; \n" +
-			"vec3 velocityWorldVec3 = vec3(0.0,0.0,0.0); \n" +
-			"vec3 velocityMultiVec3 = vec3(0.0,0.0,0.0); \n" +
-			"if(particleStateData.velocityOverWorldSpace < TrueOrFalse){ \n" +
-			"velocityLocalVec3 += velocityOverVec3; \n" +
-			"}else{ \n" +
-			"velocityWorldVec3 += velocityOverVec3; \n" +
-			"} \n" +
-			"if(particleStateData.velocityForceWorldSpace < TrueOrFalse){ \n" +
-			"velocityLocalVec3 += velocityForceVec3; \n" +
-			"}else{ \n" +
-			"velocityWorldVec3 += velocityForceVec3; \n" +
-			"} \n" +
-			"if(particleStateData.worldSpace > TrueOrFalse){ \n" +
-			"}else{ \n" +
-			"followTargetPosition.x = particleStateData.positionX; \n" +
-			"followTargetPosition.y = particleStateData.positionY; \n" +
-			"followTargetPosition.z = particleStateData.positionZ; \n" +
-			"followTargetRotation.x = particleStateData.rotationX; \n" +
-			"followTargetRotation.y = particleStateData.rotationY; \n" +
-			"followTargetRotation.z = particleStateData.rotationZ; \n" +
-			"followTargetRotation.w = particleStateData.rotationW; \n" +
-			"} \n" +
-			"mat4 followRotQuat = buildMat4Quat(followTargetRotation); \n" +
-			"velocityLocalVec3 = (followRotQuat * vec4(velocityLocalVec3, 1.0)).xyz; \n" +
-			"mat4 modelMatrix = buildModelMatrix(followTargetRotation, followTargetScale, followTargetPosition); \n" +
-			"position_emitter = (modelMatrix * vec4(position_emitter, 1.0)).xyz; \n" +
-			"velocityMultiVec3 = velocityLocalVec3 + velocityWorldVec3; \n" +
-			"velocityMultiVec3 = calcParticleMove(velocityMultiVec3); \n" +
-			"velocityMultiVec3.y -= 4.9 * currentTime * currentTime * particleStateData.gravity; \n" +
-			"vec3 origPosition = position_emitter; \n" +
-			"position_emitter += velocityMultiVec3; \n" +
-			"updateStretchedBillBoard(vec4(origPosition, 1.0), vec4(position_emitter, 1.0)); \n" +
-			"mat4 billboardMatrix = getRenderModeMatrix(uniform_cameraMatrix, modelMatrix); \n" +
-			"outPosition = billboardMatrix * localPosition; \n" +
-			"outPosition.xyz += position_emitter.xyz; \n" +
-			"outPosition = uniform_ViewMatrix * outPosition; \n" +
-			"} \n" +
-			"varying_posZ = outPosition.z; \n" +
-			"gl_Position = uniform_ProjectionMatrix * outPosition ; \n" +
-			"} \n" +
-			"//##FilterEnd## \n",
-
 			"particle_end_fs":
 			"const float TrueOrFalse = 0.5; \n" +
 			"uniform float uniform_particleFsData[3]; \n" +
@@ -1529,22 +1537,6 @@ module egret3d {
 			"} \n" +
 			"//##FilterEnd## \n",
 
-			"particle_fs":
-			"uniform vec2 uniform_fadeOutParticleData; \n" +
-			"varying float varying_posZ; \n" +
-			"void fadeOutParticleByZ(){ \n" +
-			"if(varying_posZ > uniform_fadeOutParticleData.x){ \n" +
-			"discard; \n" +
-			"} \n" +
-			"float fadeAlpha = (uniform_fadeOutParticleData.x - varying_posZ) / uniform_fadeOutParticleData.x; \n" +
-			"fadeAlpha = clamp(fadeAlpha, 0.0, 1.0); \n" +
-			"fadeAlpha *= fadeAlpha; \n" +
-			"outColor.w *= fadeAlpha; \n" +
-			"if( diffuseColor.w < materialSource.cutAlpha ){ \n" +
-			"discard; \n" +
-			"} \n" +
-			"} \n",
-
 			"particle_rm_billboard":
 			"mat4 getRenderModeMatrix(mat4 cameraMatrix, mat4 modelMatrix) { \n" +
 			"mat4 matrix = mat4( \n" +
@@ -1639,6 +1631,17 @@ module egret3d {
 			"rot = currentTime * rot * (PI / 180.0); \n" +
 			"localPosition = buildRotMat4(vec3(0.0,0.0,rot)) * localPosition; \n" +
 			"} \n" +
+			"} \n",
+
+			"particle_rotationXYZConst":
+			"attribute vec3 attribute_rotSpeedXYZ ; \n" +
+			"attribute vec3 attribute_rotBirthXYZ ; \n" +
+			"mat4 mat4RotateXYZ; \n" +
+			"float particle(  ParticleData curParticle ){ \n" +
+			"vec3 rot = (attribute_rotBirthXYZ + particleStateData.time * attribute_rotSpeedXYZ); \n" +
+			"rot = mod(rot, 360.0) * (PI / 180.0); \n" +
+			"mat4RotateXYZ = buildRotMat4(rot); \n" +
+			"localPosition = mat4RotateXYZ * localPosition; \n" +
 			"} \n",
 
 			"particle_size_vs":
@@ -1745,11 +1748,17 @@ module egret3d {
 			"float life; \n" +
 			"float index; \n" +
 			"}; \n" +
+			"ParticleData curParticle ; \n" +
 			"float particle( ParticleData curParticle ){ \n" +
 			"float time = particleStateData.time - particleStateData.delay; \n" +
 			"currentTime = time - curParticle.bornTime; \n" +
 			"if(currentTime <= 0.0){ \n" +
 			"return currentTime = 0.0; \n" +
+			"} \n" +
+			"if(particleStateData.stayAtEnd > TrueOrFalse){ \n" +
+			"if(currentTime >= curParticle.life){ \n" +
+			"currentTime = curParticle.life * 0.99999; \n" +
+			"} \n" +
 			"} \n" +
 			"if(particleStateData.loop < TrueOrFalse){ \n" +
 			"if(curParticle.bornTime >= particleStateData.duration){ \n" +
@@ -1767,7 +1776,6 @@ module egret3d {
 			"return currentTime = 0.0; \n" +
 			"} \n" +
 			"void main(void) { \n" +
-			"ParticleData curParticle ; \n" +
 			"curParticle.bornTime = attribute_time.x ; \n" +
 			"curParticle.life = attribute_time.y ; \n" +
 			"curParticle.index = attribute_time.z ; \n" +
@@ -1779,6 +1787,59 @@ module egret3d {
 			"e_discard(); \n" +
 			"}else{ \n" +
 			"} \n" +
+			"} \n",
+
+			"particle_trackPosition":
+			"attribute vec3 attribute_trackPosition; \n" +
+			"void calcCubicPos(float time, float totalTime, vec3 fromPos, vec3 endPos){ \n" +
+			"vec3 distanceVec3 = endPos - fromPos; \n" +
+			"float distanceFloat = dot(distanceVec3, distanceVec3); \n" +
+			"distanceFloat = sqrt(distanceFloat); \n" +
+			"float t = time / totalTime; \n" +
+			"t = easeInOut(t); \n" +
+			"vec3 centerPos = distanceVec3 * 0.5 + fromPos; \n" +
+			"vec3 zeroPos = vec3(0.0, distanceFloat * 0.05, 0.0); \n" +
+			"zeroPos = mix(centerPos, zeroPos, 0.6); \n" +
+			"vec3 bezier1 = mix(fromPos, zeroPos, t); \n" +
+			"vec3 bezier2 = mix(zeroPos, endPos, t); \n" +
+			"vec3 bezier3 = mix(bezier1, bezier2, t); \n" +
+			"cubicPos = bezier3 - fromPos; \n" +
+			"t = clamp(time / totalTime, 0.0, 1.0); \n" +
+			"if(t > 0.8){ \n" +
+			"t = (1.0 - t) * 5.0; \n" +
+			"}else if(t > 0.2){ \n" +
+			"t = 1.0; \n" +
+			"}else{ \n" +
+			"t *= 5.0; \n" +
+			"} \n" +
+			"t = 0.5 * (1.0 - cos(t * PI)); \n" +
+			"vec4 nrmVec4 = mat4RotateXYZ * vec4(attribute_normal, 1.0); \n" +
+			"vec3 nrmPos = normalize(nrmVec4.xyz); \n" +
+			"nrmPos = nrmPos * t * distanceFloat * 0.04; \n" +
+			"t = clamp(time / totalTime, 0.0, 1.0); \n" +
+			"float heightOffset = 0.0; \n" +
+			"heightOffset = sin(t * 3.0 * PI) * distanceFloat * 0.2 * sqrt(t * (1.0 - t)); \n" +
+			"cubicPos += nrmPos; \n" +
+			"cubicPos.y += heightOffset; \n" +
+			"} \n" +
+			"void trackPosition(){ \n" +
+			"calcCubicPos(currentTime - 0.017, curParticle.life, attribute_offsetPosition, attribute_trackPosition); \n" +
+			"vec3 lastOffset = cubicPos; \n" +
+			"calcCubicPos(currentTime, curParticle.life, attribute_offsetPosition, attribute_trackPosition); \n" +
+			"vec3 curOffset = cubicPos; \n" +
+			"vec3 trackVec3 = curOffset - lastOffset; \n" +
+			"trackVec3 = normalize(trackVec3); \n" +
+			"float ratio = dot(localPosition.xyz, trackVec3); \n" +
+			"float t = clamp(currentTime / curParticle.life, 0.0, 1.0); \n" +
+			"t = 0.5 * (1.0 - cos(t * PI * 2.0)); \n" +
+			"t = sqrt(t); \n" +
+			"float speed = sqrt(dot(curOffset - lastOffset, curOffset - lastOffset)); \n" +
+			"trackVec3 *= speed * 2.0 * t; \n" +
+			"localPosition.xyz += ratio * trackVec3; \n" +
+			"localPosition.xyz += curOffset; \n" +
+			"} \n" +
+			"float particle( ParticleData curParticle ){ \n" +
+			"trackPosition(); \n" +
 			"} \n",
 
 			"particle_uv_roll_fs":
@@ -2026,7 +2087,7 @@ module egret3d {
 			"attribute vec4 attribute_color; \n" +
 			"attribute vec3 attribute_offsetPosition; \n" +
 			"uniform mat4 uniform_cameraMatrix; \n" +
-			"uniform float uniform_particleState[24]; \n" +
+			"uniform float uniform_particleState[25]; \n" +
 			"uniform mat4 uniform_ViewMatrix; \n" +
 			"const float PI = 3.1415926 ; \n" +
 			"float currentTime = 0.0; \n" +
@@ -2073,6 +2134,7 @@ module egret3d {
 			"float speedScale; \n" +
 			"float lengthScale; \n" +
 			"float renderMode; \n" +
+			"float stayAtEnd; \n" +
 			"}; \n" +
 			"mat4 buildRotMat4(vec3 rot) \n" +
 			"{ \n" +
@@ -2121,6 +2183,32 @@ module egret3d {
 			"0.0,							0.0,					0.0,					1 \n" +
 			"); \n" +
 			"} \n" +
+			"float easeInOut(float t){ \n" +
+			"t = clamp(t, 0.0, 1.0); \n" +
+			"float p0; \n" +
+			"float p1; \n" +
+			"float p2; \n" +
+			"if(t <= 0.5){ \n" +
+			"p0 = 0.0; \n" +
+			"p1 = 0.0; \n" +
+			"p2 = 0.5; \n" +
+			"}else{ \n" +
+			"p0 = 0.5; \n" +
+			"p1 = 1.0; \n" +
+			"p2 = 1.0; \n" +
+			"t -= 0.5; \n" +
+			"} \n" +
+			"t *= 2.0; \n" +
+			"p0 = mix(p0, p1, t); \n" +
+			"p1 = mix(p1, p2, t); \n" +
+			"p0 = mix(p0, p1, t); \n" +
+			"return p0; \n" +
+			"} \n" +
+			"vec3 cubicPos; \n" +
+			"void calcCubicPos(float time, float totalTime, vec3 fromPos, vec3 endPos){ \n" +
+			"} \n" +
+			"void trackPosition(){ \n" +
+			"} \n" +
 			"void main(void) { \n" +
 			"particleStateData.time							= uniform_particleState[0]; \n" +
 			"particleStateData.loop							= uniform_particleState[1]; \n" +
@@ -2146,13 +2234,15 @@ module egret3d {
 			"particleStateData.speedScale					= uniform_particleState[21]; \n" +
 			"particleStateData.lengthScale					= uniform_particleState[22]; \n" +
 			"particleStateData.renderMode					= uniform_particleState[23]; \n" +
+			"particleStateData.stayAtEnd						= uniform_particleState[24]; \n" +
 			"mat4 modeViewMatrix = mat4(uniform_ViewMatrix * uniform_ModelMatrix); \n" +
 			"outPosition = localPosition = vec4(e_position, 1.0); \n" +
 			"} \n",
 
 			"pickPass_fs":
+			"uniform vec4 uniform_ObjectId; \n" +
 			"void main() { \n" +
-			"gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n" +
+			"gl_FragColor = uniform_ObjectId; \n" +
 			"} \n",
 
 			"pickPass_skeleton_vs":
@@ -2260,6 +2350,19 @@ module egret3d {
 			"calculatePointLight(materialSource); \n" +
 			"} \n",
 
+			"positionEndPass_fs":
+			"varying vec4 varying_position ; \n" +
+			"void main(){ \n" +
+			"gl_FragColor = vec4(varying_position.xyz,1.0); \n" +
+			"} \n",
+
+			"positionEndPass_vs":
+			"varying vec4 varying_position ; \n" +
+			"void main(){ \n" +
+			"gl_Position = uniform_ProjectionMatrix * outPosition ; \n" +
+			"varying_position = gl_Position.xyzw; \n" +
+			"} \n",
+
 			"secondaryUV_vs":
 			"attribute vec2 attribute_uv1; \n" +
 			"varying vec2 varying_uv1 ; \n" +
@@ -2280,12 +2383,13 @@ module egret3d {
 			"vec3 shadowColor = vec3(1.0,1.0,1.0); \n" +
 			"float offset = uniform_ShadowColor.w; \n" +
 			"vec2 sample = varying_ShadowCoord.xy / varying_ShadowCoord.w * 0.5 + 0.5; \n" +
-			"sample = clamp(sample,0.0,1.0); \n" +
+			"if (sample.x >=0.0 && sample.x <= 1.0 && sample.y >=0.0 && sample.y <= 1.0) { \n" +
 			"vec4 sampleDepth = texture2D(shadowMapTexture, sample).xyzw; \n" +
 			"float depth = varying_ShadowCoord.z; \n" +
 			"if (sampleDepth.z != 0.0) { \n" +
 			"if( sampleDepth.z < depth - offset) { \n" +
 			"shadowColor = uniform_ShadowColor.xyz; \n" +
+			"} \n" +
 			"} \n" +
 			"} \n" +
 			"diffuseColor.xyz = diffuseColor.xyz * shadowColor; \n" +
@@ -2507,6 +2611,99 @@ module egret3d {
 			"uniform sampler2D specularTexture; \n" +
 			"void main(void){ \n" +
 			"specularColor.xyz *= texture2D( specularTexture , uv_0 ).xyz ; \n" +
+			"} \n",
+
+			"SSAO":
+			"#define DL 2.399963229728653 \n" +
+			"#define EULER 2.718281828459045 \n" +
+			"varying vec2 varying_uv0; \n" +
+			"float aoClamp =  0.5 ; \n" +
+			"float lumInfluence =  0.5 ; \n" +
+			"const vec2 size =  vec2(512.0,512.0); \n" +
+			"const int samples =  64; \n" +
+			"const float radius =  2.0; \n" +
+			"const bool useNoise =  false; \n" +
+			"const float noiseAmount =  0.00000003; \n" +
+			"const float diffArea =  0.4; \n" +
+			"const float gDisplace =  0.4; \n" +
+			"uniform sampler2D positionPass; \n" +
+			"uniform sampler2D normalPass; \n" +
+			"uniform sampler2D colorPass; \n" +
+			"vec2 rand( vec2 coord ) { \n" +
+			"vec2 noise; \n" +
+			"if ( useNoise ) { \n" +
+			"float nx = dot ( coord, vec2( 12.9898, 78.233 ) ); \n" +
+			"float ny = dot ( coord, vec2( 12.9898, 78.233 ) * 2.0 ); \n" +
+			"noise = clamp( fract ( 43758.5453 * sin( vec2( nx, ny ) ) ), 0.0, 1.0 ); \n" +
+			"} else { \n" +
+			"float ff = fract( 1.0 - coord.s * ( size.x / 2.0 ) ); \n" +
+			"float gg = fract( coord.t * ( size.y / 2.0 ) ); \n" +
+			"noise = vec2( 0.25, 0.75 ) * vec2( ff ) + vec2( 0.75, 0.25 ) * gg; \n" +
+			"} \n" +
+			"return ( noise * 2.0  - 1.0 ) * noiseAmount; \n" +
+			"} \n" +
+			"float readDepth(vec2 coord){ \n" +
+			"float cameraNear = 1.0 ; \n" +
+			"float cameraFar = 10000.0; \n" +
+			"float cameraFarPlusNear = cameraFar + cameraNear; \n" +
+			"float cameraFarMinusNear = cameraFar - cameraNear; \n" +
+			"float cameraCoef = 2.0 * cameraNear; \n" +
+			"return texture2D(positionPass,coord).z / (cameraFar-cameraNear); \n" +
+			"} \n" +
+			"float compareDepths( const in float depth1, const in float depth2, inout int far ) { \n" +
+			"float garea = 2.0; \n" +
+			"float diff = ( depth1 - depth2 ) * 100.0; \n" +
+			"if ( diff < gDisplace ) { \n" +
+			"garea = diffArea; \n" +
+			"} else { \n" +
+			"far = 1; \n" +
+			"} \n" +
+			"float dd = diff - gDisplace; \n" +
+			"float gauss = pow( EULER, -2.0 * dd * dd / ( garea * garea ) ); \n" +
+			"return gauss; \n" +
+			"} \n" +
+			"float calcAO( float depth, float dw, float dh ) { \n" +
+			"float dd = radius - depth * radius; \n" +
+			"vec2 vv = vec2( dw, dh ); \n" +
+			"vec2 vUv = varying_uv0 ; \n" +
+			"vec2 coord1 = vUv + dd * vv; \n" +
+			"vec2 coord2 = vUv - dd * vv; \n" +
+			"float temp1 = 0.0; \n" +
+			"float temp2 = 0.0; \n" +
+			"int far = 0; \n" +
+			"temp1 = compareDepths( depth, readDepth( coord1 ), far ); \n" +
+			"if ( far > 0 ) { \n" +
+			"temp2 = compareDepths( readDepth( coord2 ), depth, far ); \n" +
+			"temp1 += ( 1.0 - temp1 ) * temp2; \n" +
+			"} \n" +
+			"return temp1; \n" +
+			"} \n" +
+			"void main(){ \n" +
+			"vec2 noise = rand( varying_uv0 ); \n" +
+			"float depth = readDepth( varying_uv0 ); \n" +
+			"float tt = clamp( depth, aoClamp, 1.0 ); \n" +
+			"float w = ( 1.0 / size.x )  / tt + ( noise.x * ( 1.0 - noise.x ) ); \n" +
+			"float h = ( 1.0 / size.y ) / tt + ( noise.y * ( 1.0 - noise.y ) ); \n" +
+			"float ao = 0.0; \n" +
+			"float dz = 1.0 / float( samples ); \n" +
+			"float z = 1.0 - dz / 2.0; \n" +
+			"float l = 0.0; \n" +
+			"for ( int i = 0; i <= samples; i ++ ) { \n" +
+			"float r = sqrt( 1.0 - z ); \n" +
+			"float pw = cos( l ) * r; \n" +
+			"float ph = sin( l ) * r; \n" +
+			"ao += calcAO( depth, pw * w, ph * h ); \n" +
+			"z = z - dz; \n" +
+			"l = l + DL; \n" +
+			"} \n" +
+			"ao /= float( samples ); \n" +
+			"ao = 1.0 - ao; \n" +
+			"vec3 color = texture2D(colorPass,varying_uv0).xyz ; \n" +
+			"vec3 lumcoeff = vec3( 0.299, 0.587, 0.114 ); \n" +
+			"float lum = dot( color.rgb, lumcoeff ); \n" +
+			"vec3 luminance = vec3( lum ); \n" +
+			"vec3 final = vec3( color * mix( vec3( ao ), vec3( 1.0 ), luminance * lumInfluence ) ); \n" +
+			"gl_FragColor = vec4( final, 1.0 ); \n" +
 			"} \n",
 
 			"tangent_vs":

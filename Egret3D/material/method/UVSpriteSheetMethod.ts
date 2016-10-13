@@ -256,6 +256,28 @@
         }
 
         /**
+        * @language zh_CN
+        * 设置当前帧
+        * @param value 0 - frameNum
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public set currentFrame(value: number) {
+            this._currentFrame = value;
+        }
+
+        /**
+        * @language zh_CN
+        * 获取当前帧
+        * @param value currentFrame
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public get currentFrame(): number {
+            return this._currentFrame;
+        }
+
+        /**
         * @private
         * @language zh_CN
         * @param time

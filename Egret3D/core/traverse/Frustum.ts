@@ -406,7 +406,7 @@
                 var vexDataLength: number = box.vexData.length;
                 for (var j: number = 0; j < vexDataLength; j += 3) {
                     this._tempVector.setTo(box.vexData[j], box.vexData[j + 1], box.vexData[j + 2]);
-                    this._tempVector.copyFrom(box.transform.transformVector(this._tempVector));
+                    box.transform.transformVector(this._tempVector, this._tempVector);
                     dis = this._plane[i].distance(this._tempVector);
                     if (dis > 0) {
                         incount--;
@@ -419,6 +419,20 @@
             }
 
             return true;
+        }
+
+
+        /**
+        * @language zh_CN
+        * 释放所有数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose() {
+            if (this._frustum) {
+                this._frustum.dispose();
+            }
+            this._frustum = null;
         }
     }
 }

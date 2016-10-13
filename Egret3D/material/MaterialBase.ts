@@ -1112,5 +1112,20 @@
          */
         public renderLightingPass() {
         }
+
+
+        /**
+        * @language zh_CN
+        * 释放接口
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose(): void {
+            for (var key in this.passes) {
+                for (var i: number = 0; i < this.passes[key].length; ++i) {
+                    this.passes[key][i].dispose();
+                }
+            }
+        }
     }
 } 

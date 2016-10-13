@@ -64,6 +64,10 @@
             if (lastBornTime > this.loopTime) {
                 this.loopTime = lastBornTime;//不循环的粒子，这个数值没有意义。
             }
+
+            if (this.loopTime < this._data.life.duration) {
+                this.loopTime = this._data.life.duration;
+            }
             this.circleTime += this._data.life.delay;
 
         }

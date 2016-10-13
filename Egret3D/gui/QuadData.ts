@@ -4,48 +4,41 @@
     * @private
     */
     export class QuadData {
-        //pos.w 0:normal 1:text 
         public static singleQuadData: Array<number> = [
-          /*pos*/0.0, 0.0, 100000.0, 0.0,/*offset*/  0.0, 0.0, 0.0,  /*uv*/0.0, 0.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, 1.0, /*mask*/-1.0, 0.0, 1.0, 1.0, /*color*/0.0, 0.0, 1.0, 1.0,
-          /*pos*/0.0, 0.0, 100000.0, 0.0,/*offset*/  0.0, 0.0, 0.0,  /*uv*/1.0, 0.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, 1.0, /*mask*/-1.0, 0.0, 1.0, 1.0, /*color*/0.0, 0.0, 1.0, 1.0,
-          /*pos*/0.0, 0.0, 100000.0, 0.0,/*offset*/  0.0, 0.0, 0.0,  /*uv*/1.0, 1.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, 1.0, /*mask*/-1.0, 0.0, 1.0, 1.0, /*color*/0.0, 0.0, 1.0, 1.0,
-          /*pos*/0.0, 0.0, 100000.0, 0.0,/*offset*/  0.0, 0.0, 0.0,  /*uv*/0.0, 1.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, 1.0, /*mask*/-1.0, 0.0, 1.0, 1.0, /*color*/0.0, 0.0, 1.0, 1.0
+          /*pos*/0.0, 0.0, 100000.0, 0.0,/*original*/  0.0, 0.0, 0.0,0.0,  /*uv*/0.0, 0.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, 1.0, /*mask*/-1.0, 0.0, 1.0, 1.0, /*color*/0.0, 0.0, 1.0, 1.0,
+          /*pos*/0.0, 0.0, 100000.0, 0.0,/*original*/  0.0, 0.0, 0.0,0.0,  /*uv*/1.0, 0.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, 1.0, /*mask*/-1.0, 0.0, 1.0, 1.0, /*color*/0.0, 0.0, 1.0, 1.0,
+          /*pos*/0.0, 0.0, 100000.0, 0.0,/*original*/  0.0, 0.0, 0.0,0.0,  /*uv*/1.0, 1.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, 1.0, /*mask*/-1.0, 0.0, 1.0, 1.0, /*color*/0.0, 0.0, 1.0, 1.0,
+          /*pos*/0.0, 0.0, 100000.0, 0.0,/*original*/  0.0, 0.0, 0.0,0.0,  /*uv*/0.0, 1.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, 1.0, /*mask*/-1.0, 0.0, 1.0, 1.0, /*color*/0.0, 0.0, 1.0, 1.0
         ];
 
-        ///*pos*/0.0, 0.0, 100000.0,         /*uv*/0.0, 0.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, /*scale*/1.0, 1.0,
-        // /*pos*/100.0, 0.0, 100000.0,      /*uv*/1.0, 0.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, /*scale*/1.0, 1.0,
-        // /*pos*/100.0, -100.0, 100000.0,  /*uv*/1.0, 1.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, /*scale*/1.0, 1.0,
-        // /*pos*/0.0, -100.0, 100000.0,     /*uv*/0.0, 1.0, 1.0, 1.0, /*rotation*/0.0, 0.0, 0.0, /*scale*/1.0, 1.0
-
-        public static vertexLen = 23;
+        public static vertexLen = 24;
 
         public static posOffest = 0;
-        public static posSize = 4;
+        public static posSize = 4;              //(width, height, zIndex, ?)
 
-        public static offsetOffest = 4;
-        public static offsetSize = 3;
+        public static originalOffset = 4;
+        public static originalSize = 4;         //(x, y, texId, boolList)
 
-        public static uvRectangleOffest = 7;
-        public static uvRectangleSize = 4;
+        public static uvRectangleOffest = 8;
+        public static uvRectangleSize = 4;      //(U, V, scaleX, scaleY)
 
-        public static rotationOffest = 11;
-        public static rotationSize = 4;
+        public static rotationOffest = 12;
+        public static rotationSize = 4;         //(x, y, z, w)
 
-        public static scaleOffest = 15;
-        public static scaleSize = 4;
+        public static maskOffset = 16;
+        public static maskSize = 4;            //(maskX, maskY, maskWidth, maskHeight)
 
-        public static colorOffest = 19;
-        public static colorSize = 4;
+        public static colorOffest = 20;
+        public static colorSize = 4;            //(r, g, b, a)
 
         public static singleQuadIndex: Array<number> = [0, 2, 1, 0, 3, 2];
-        //public static singleQuadIndex: Array<number> = [0, 1, 2, 0, 2, 3];
-        public static vertexBytes: number = QuadData.vertexLen* 4;
+        public static vertexBytes: number = QuadData.vertexLen * 4;
         public static quadVertexLen: number = QuadData.vertexLen * 4;
 
 
         public static buildGeometry(geometry: Geometry, start: number, numberQuad: number) {
             var geometry: Geometry = geometry;
-            geometry.vertexFormat = VertexFormat.VF_QUADPOS | VertexFormat.VF_QUADOFFSET | VertexFormat.VF_UVREC | VertexFormat.VF_ROTATION | VertexFormat.VF_SCALE | VertexFormat.VF_QUAD_COLOR;
+            geometry.vertexFormat = VertexFormat.VF_QUAD_POS | VertexFormat.VF_QUAD_ORIGN | VertexFormat.VF_QUAD_UVREC | VertexFormat.VF_QUAD_ROTATION | VertexFormat.VF_QUAD_MASK | VertexFormat.VF_QUAD_COLOR;
             var subGeometry: SubGeometry = new SubGeometry();
             geometry.vertexCount = numberQuad * 4;
             geometry.indexCount = QuadData.singleQuadIndex.length * numberQuad;

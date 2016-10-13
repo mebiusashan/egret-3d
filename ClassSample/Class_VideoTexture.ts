@@ -25,8 +25,11 @@
             vi.source = "resource/video/Comp.mp4";
             vi.play();
 
-            var plane: Mesh = new Mesh(new PlaneGeometry(), new TextureMaterial(vi));
+            var plane: Mesh = new Mesh(new SphereGeometry(200, 40, 40), new TextureMaterial(vi));
             this.view1.addChild3D(plane);
+
+
+            this._egret3DCanvas.addEventListener(Event3D.ENTER_FRAME, this.update, this);
         }
       
         public update(e: Event3D) {

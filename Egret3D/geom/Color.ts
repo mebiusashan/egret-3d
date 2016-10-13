@@ -98,7 +98,20 @@
         public static blue(): Color {
             return new Color(0, 0, 255, 255);
         }
-                                        
+
+
+        public static getColor(color: number, colorFormat: ContextConfig = ContextConfig.ColorFormat_RGBA8888, target: Vector3D = null): Vector3D {
+            if (!target) {
+                target = new Vector3D();
+            }
+            target.setTo((color >> 16 & 0xff) / 255, (color >> 8 & 0xff) / 255, (color & 0xff) / 255, (color >> 24 & 0xff) / 255);
+            return target ;
+        }
+
+        public static RGBAToColor(r: number, g: number, b: number, a: number) {
+            return (a << 24) | (r << 16) | (g << 8) | b;
+        }
+
         /**
         * @language zh_CN
         * 创建一个Color对象

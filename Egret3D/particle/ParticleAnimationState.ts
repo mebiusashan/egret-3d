@@ -237,7 +237,7 @@
 
 
 
-        private _particleProperty: Float32Array = new Float32Array(24);
+        private _particleProperty: Float32Array = new Float32Array(25);
         private _particleFsData: Float32Array = new Float32Array(3);
         /**
         * @language zh_CN
@@ -290,6 +290,7 @@
             this._particleProperty[21] = data.property.speedScale;
             this._particleProperty[22] = data.property.lengthScale;
             this._particleProperty[23] = data.property.renderMode;
+            this._particleProperty[24] = data.property.stayAtEnd ? 1 : 0;
 
             context3DProxy.uniform1fv(usage["uniform_particleState"].uniformIndex, this._particleProperty);
 

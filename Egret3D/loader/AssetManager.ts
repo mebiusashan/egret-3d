@@ -26,31 +26,72 @@
 
 
         public loadAsset(url: string, callback: Function, thisObject: any, param: any = null): URLLoader {
-            var loader: URLLoader = this._loaderDict[url];
-            if (!loader) {
-                loader = new URLLoader(url);
-                this._loaderDict[url] = loader;
-                loader.addEventListener(LoaderEvent3D.LOADER_COMPLETE, callback, thisObject, param);
-            }
-            else {
-                if (loader.data) {
-                    this._loaderEvent.eventType = LoaderEvent3D.LOADER_COMPLETE;
-                    this._loaderEvent.loader = loader;
-                    this._loaderEvent.data = loader.data;
-                    this._loaderEvent.param = param;
-                    callback.call(thisObject, this._loaderEvent);
-                }
-                else {
-                    loader.addEventListener(LoaderEvent3D.LOADER_COMPLETE, callback, thisObject, param);
-                }
+            var asset: any = this._loaderDict[url];
+
+            if (!asset) {
+                asset = {};
+                this._loaderDict[url] = asset;
+                asset.loader = new URLLoader(url);
+                asset.objects = [];
             }
 
-            return this._loaderDict[url];
+            var loader: URLLoader = asset.loader;
+            if (loader.data) {
+                this._loaderEvent.eventType = LoaderEvent3D.LOADER_COMPLETE;
+                this._loaderEvent.target = loader;
+                this._loaderEvent.loader = loader;
+                this._loaderEvent.data = loader.data;
+                this._loaderEvent.param = param;
+
+                callback.call(thisObject, this._loaderEvent);
+
+                this._loaderEvent.target = null;
+                this._loaderEvent.loader = null;
+                this._loaderEvent.data = null;
+                this._loaderEvent.param = null;
+            }
+            else {
+                loader.addEventListener(LoaderEvent3D.LOADER_COMPLETE, callback, thisObject, param);
+            }
+
+            if (asset.objects.indexOf(thisObject) < 0) {
+                asset.objects.push(thisObject);
+            }
+            return loader;
         }
 
         public findAsset(url: string): URLLoader {
-            return this._loaderDict[url];
+            var asset: any = this._loaderDict[url];
+            if (asset) {
+                return asset.loader;
+            }
+            return null;
         }
 
+        public dispose(object: any) {
+
+            var keys: any[] = [];
+
+            for (var key in this._loaderDict) {
+                var data: any = this._loaderDict[key];
+                var index: number = data.objects.indexOf(object);
+                if (index >= 0) {
+                    data.objects.splice(index, 1);
+                }
+
+                if (data.objects.length <= 0) {
+                    keys.push(key);
+                }
+            }
+
+            for (var i: number = 0; i < keys.length; ++i) {
+                var data: any = this._loaderDict[keys[i]];
+                data.loader.dispose();
+                data.loader = null;
+                data.objects = null;
+                delete this._loaderDict[keys[i]];
+            }
+            keys = null;
+        }
     }
 }

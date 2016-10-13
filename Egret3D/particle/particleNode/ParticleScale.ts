@@ -74,6 +74,11 @@
                 } else {
                     scale = scaleArray[i];
                 }
+
+                if (scale == 1) {
+                    continue;
+                }
+
                 for (var j: number = 0; j < vertices; ++j) {
                     index = i * vertices + j;
                     index = index * geometry.vertexAttLength;

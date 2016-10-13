@@ -35,8 +35,11 @@
                     this.fsShaderHashMap.add(shaderID, shader);
                 }
             }
-
             return shader;
+            //if (shaderType == Shader.vertex) {
+            //    return this.context.creatVertexShader(source);
+            //}
+            //return this.context.creatFragmentShader(source);
         }
 
         public static getProgram(vs_shaderID: string, fs_shaderID: string): Program3D {

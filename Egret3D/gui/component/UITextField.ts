@@ -631,10 +631,6 @@
         public setSelection(beginIndex: number, endIndex: number): void {
         }
 
-        public onUpdate() {
-            this.x += 1;
-        }
-
         private createFontQuad(unicode: number, isAddChild:boolean = true): Quad {
 
             var fontQuad: Quad;
@@ -647,7 +643,7 @@
             }
             else {
                 fontQuad = new Quad();
-                fontQuad.renderType = 1.0;
+                fontQuad.renderText = true;
             }
 
             var fontTexture: Texture = BitmapFont.getTexture(unicode);

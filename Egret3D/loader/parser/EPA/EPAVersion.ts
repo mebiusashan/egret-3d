@@ -11,6 +11,8 @@ module egret3d {
             1: (bytes: ByteArray) => EPAVersion.parserVersion_1(bytes),
         };
 
+        public static VALUE_TYPE_UINT: number = 0x40000000;
+
         public static parserVersion_1(bytes: ByteArray): PropertyAnim {
 
             var propertyAnim: PropertyAnim = new PropertyAnim();
@@ -31,15 +33,30 @@ module egret3d {
                 for (var j = 0; j < curveCount; j++) {
 
                     var animCurve: AnimCurve = new AnimCurve();
+
                     animCurve.type = bytes.readUnsignedInt();
-                    animCurve.start.x = bytes.readFloat();
-                    animCurve.start.y = bytes.readFloat();
-                    animCurve.end.x = bytes.readFloat();
-                    animCurve.end.y = bytes.readFloat();
-                    animCurve.c1.x = bytes.readFloat();
-                    animCurve.c1.y = bytes.readFloat();
-                    animCurve.c2.x = bytes.readFloat();
-                    animCurve.c2.y = bytes.readFloat();
+
+                    if (animCurve.type & EPAVersion.VALUE_TYPE_UINT) {
+                        animCurve.start.x = bytes.readFloat();
+                        animCurve.start.y = bytes.readUnsignedInt();
+                        animCurve.end.x = bytes.readFloat();
+                        animCurve.end.y = bytes.readUnsignedInt();
+                        animCurve.c1.x = bytes.readFloat();
+                        animCurve.c1.y = bytes.readFloat();
+                        animCurve.c2.x = bytes.readFloat();
+                        animCurve.c2.y = bytes.readFloat();
+                    }
+                    else {
+                        animCurve.start.x = bytes.readFloat();
+                        animCurve.start.y = bytes.readFloat();
+                        animCurve.end.x = bytes.readFloat();
+                        animCurve.end.y = bytes.readFloat();
+                        animCurve.c1.x = bytes.readFloat();
+                        animCurve.c1.y = bytes.readFloat();
+                        animCurve.c2.x = bytes.readFloat();
+                        animCurve.c2.y = bytes.readFloat();
+                    }
+
                     keyFrames.push(animCurve);
                 }
 

@@ -152,30 +152,51 @@
 
         private onTouchMove(e: TouchEvent3D) {
             this.sendEvent(e, PickEvent3D.PICK_MOVE, this.initPickEvent3D);
+            this._pickEvent3d.target = null;
+            this._pickEvent3d.data = null;
+            this._pickEvent3d.pickResult = null;
         }
 
         private onTouchUp(e: TouchEvent3D) {
             this.sendEvent(e, PickEvent3D.PICK_UP, this.initPickEvent3D);
+            this._pickEvent3d.target = null;
+            this._pickEvent3d.data = null;
+            this._pickEvent3d.pickResult = null;
         }
 
         private onTouchDown(e: TouchEvent3D) {
             this.sendEvent(e, PickEvent3D.PICK_DOWN, this.initPickEvent3D);
+            this._pickEvent3d.target = null;
+            this._pickEvent3d.data = null;
+            this._pickEvent3d.pickResult = null;
         }
 
         private onMouseClick(e: MouseEvent3D) {
             this.sendEvent(e, PickEvent3D.PICK_CLICK, this.initPickEvent3D);
+            this._pickEvent3d.target = null;
+            this._pickEvent3d.data = null;
+            this._pickEvent3d.pickResult = null;
         }
 
         private onMouseDown(e: MouseEvent3D) {
             this.sendEvent(e, PickEvent3D.PICK_DOWN, this.initPickEvent3D);
+            this._pickEvent3d.target = null;
+            this._pickEvent3d.data = null;
+            this._pickEvent3d.pickResult = null;
         }
 
         private onMouseUp(e: MouseEvent3D) {
             this.sendEvent(e, PickEvent3D.PICK_UP, this.initPickEvent3D);
+            this._pickEvent3d.target = null;
+            this._pickEvent3d.data = null;
+            this._pickEvent3d.pickResult = null;
         }
 
         private onMouseMove(e: MouseEvent3D) {
             this.sendEvent(e, PickEvent3D.PICK_MOVE, this.initPickEvent3D);
+            this._pickEvent3d.target = null;
+            this._pickEvent3d.data = null;
+            this._pickEvent3d.pickResult = null;
         }
     }
 }   

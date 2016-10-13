@@ -1,4 +1,12 @@
 ﻿module egret3d {
+
+    /**
+    * @class egret3d.ElevationGeometry
+    * @classdesc
+    * 使用高度图创建Geometry
+    * @version Egret 3.0
+    * @platform Web,Native
+    */
     export class ElevationGeometry extends Geometry {
 
         private _width: number = 100;
@@ -19,14 +27,43 @@
         private _scaleV: number = 1; 
         private imageData: ImageData;
 
+
+        /**
+        * @language zh_CN
+        * 得到格子列数
+        * @returns number
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public get segmentsW(): number {
             return this._segmentsW;
         }
 
+        /**
+        * @language zh_CN
+        * 得到格子行数
+        * @returns number
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         public get segmentsH(): number {
             return this._segmentsH;
         }
 
+        /**
+        * @language zh_CN
+        * 构造函数
+        * @param heightmap 高度图
+        * @param width 地形宽度 默认1000
+        * @param height 地形主度 默认100
+        * @param depth 地形长度 默认1000
+        * @param segmentsW 格子列 默认30
+        * @param segmentsH 格子行 默认30
+        * @param maxElevation 高度最大值 默认255
+        * @param minElevation 高度最小值 默认0
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
         constructor(heightmap: ImageTexture, width: number = 1000, height: number = 100, depth: number = 1000, segmentsW: number = 30, segmentsH: number = 30, maxElevation: number = 255, minElevation: number = 0) {
             super();
             this._segmentsW = segmentsW;

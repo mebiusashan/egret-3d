@@ -103,5 +103,19 @@
         
         public uploadForcing(context3D: Context3DProxy) {
         }
+
+        /**
+        * @language zh_CN
+        * 释放接口
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose(): void {
+            super.dispose();
+            if (this._pixelArray) {
+                delete this._pixelArray;
+            }
+            this._pixelArray = null;
+        }
     }
 }

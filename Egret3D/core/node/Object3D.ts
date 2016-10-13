@@ -55,7 +55,7 @@
         * @version Egret 3.0
         * @platform Web,Native
         */
-        protected static s_id: number = 0;
+        public static s_id: number = 0;
 
         protected _modelMatrix3D: Matrix4_4 = new Matrix4_4();
         protected _transformChange: boolean = true;
@@ -77,6 +77,8 @@
         protected _active: boolean = false;
         protected _isRoot: boolean = true;
         protected _bound: Bound;
+
+        protected _displayList: DisplayObject[];
 
         /**
         * @language zh_CN
@@ -199,6 +201,12 @@
         * @platform Web,Native
         */
         public set bound(bound: Bound) {
+            if (this._bound == bound) {
+                return;
+            }
+            if (this._bound) {
+                this._bound.dispose();
+            }
             this._bound = bound;
         }
 
@@ -263,6 +271,7 @@
         constructor() {
             super();
             this.id = ++Object3D.s_id;
+            this._modelMatrix3D.identity();
         }
 
         /**
@@ -1031,8 +1040,10 @@
         * @platform Web,Native
         */
         public set globalRotation(rot: Vector3D) {
-            this._qut.fromEulerAngles(rot.x, rot.y, rot.z);
-            this.globalOrientation = this._qut;
+            
+            MathUtil.CALCULATION_QUATERNION.fromEulerAngles(rot.x, rot.y, rot.z);
+
+            this.globalOrientation = MathUtil.CALCULATION_QUATERNION;
         }
                                                         
         /**
@@ -1235,6 +1246,23 @@
 
             return this.childs[index];
         }
+
+        public addFollowUI( ui:DisplayObject ) {
+            this._displayList = this._displayList || [];
+
+            var index: number = this._displayList.indexOf(ui);
+            if (index == -1 )
+                this._displayList.push( ui );
+        }
+
+        public removeFollowUI(ui: DisplayObject) {
+            if (!this._displayList) {
+                return;
+            }
+            var index: number = this._displayList.indexOf(ui);
+            if (index == -1)
+                this._displayList.splice(index,1);
+        }
                         
         /**
         * @language zh_CN
@@ -1304,7 +1332,18 @@
             object3D.updateTransformChange(true);
             return object3D;
         }
-                                                
+
+        /**
+        * @language zh_CN
+        * 移除全部child子对象 
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public removeAllChild() {
+            while (this.childs.length > 0) {
+                this.removeChild(this.childs[0]);
+            }
+        }                                   
         /**
         * @language zh_CN
         * 设置子对象的下标
@@ -1468,7 +1507,37 @@
         * @platform Web,Native
         */
         public lookAt(pos: Vector3D, target: Vector3D, up: Vector3D = Vector3D.Y_AXIS) {
+            this.globalPosition = pos;
+            MathUtil.CALCULATION_MATRIX.lookAt(pos, target, up);
+            MathUtil.CALCULATION_MATRIX.invert();
+            var prs: Vector3D[] = MathUtil.CALCULATION_MATRIX.decompose(Orientation3D.QUATERNION);
+            MathUtil.CALCULATION_QUATERNION.x = prs[1].x;
+            MathUtil.CALCULATION_QUATERNION.y = prs[1].y;
+            MathUtil.CALCULATION_QUATERNION.z = prs[1].z;
+            MathUtil.CALCULATION_QUATERNION.w = prs[1].w;
+            this.globalOrientation = MathUtil.CALCULATION_QUATERNION;
+        }
 
+        /**
+        * @private
+        * @language zh_CN
+        * 看向目标
+        * @param target 目标对象
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public lookAtTarget(target: Object3D) {
+
+            target.modelMatrix.transformVector(Vector3D.Y_AXIS, this._vec);
+            MathUtil.CALCULATION_MATRIX.lookAt(this.globalPosition, target.globalPosition, this._vec);
+            MathUtil.CALCULATION_MATRIX.invert();
+            var prs: Vector3D[] = MathUtil.CALCULATION_MATRIX.decompose(Orientation3D.QUATERNION);
+            MathUtil.CALCULATION_QUATERNION.x = prs[1].x;
+            MathUtil.CALCULATION_QUATERNION.y = prs[1].y;
+            MathUtil.CALCULATION_QUATERNION.z = prs[1].z;
+            MathUtil.CALCULATION_QUATERNION.w = prs[1].w;
+
+            this.globalOrientation = MathUtil.CALCULATION_QUATERNION;
         }
 
         /**
@@ -1551,7 +1620,7 @@
             this.proAnimation = proAnimation;
             this.proAnimation.bindObject3D(this);
         }
-        
+
         /**
         * @language zh_CN
         * 当前对象数据更新
@@ -1566,6 +1635,14 @@
             if (this.proAnimation) {
                 this.proAnimation.update(delay);
             }
+            if (this._displayList) {
+                for (var i: number = 0; i < this._displayList.length; i++) {
+                    camera.object3DToScreenRay(this.globalPosition, Vector3D.HELP_0);
+                    this._displayList[i].globalX = Vector3D.HELP_0.x;
+                    this._displayList[i].globalY = Vector3D.HELP_0.y;
+                    this._displayList[i].globalZ = Vector3D.HELP_0.z;
+                }
+            }
         }
 
         /**
@@ -1576,14 +1653,11 @@
         * @platform Web,Native
         */
         public dispose() {
-            if (this.parent) {
-                this.parent.removeChild(this);
-            }
-
+            super.dispose();
             for (var i: number = 0; i < this.childs.length; i++) {
                 this.childs[i].dispose();
             }
-            this.childs.length = 0;
+            this.removeAllChild();
         }
 
         public get root(): Object3D {

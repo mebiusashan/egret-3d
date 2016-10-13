@@ -47,5 +47,18 @@
         constructor(pg3D: WebGLProgram) {
             this.program = pg3D;
         }
+
+        /**
+        * @language zh_CN
+        * 释放接口
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose(): void {
+            if (this.program) {
+                Context3DProxy.gl.deleteProgram(this.program);
+                this.program = null;
+            }
+        }
     }
 }

@@ -1,21 +1,6 @@
 ﻿module egret3d {
 
     /**
-    * @language zh_CN
-    * quad对象，枚举出一些异常情况
-    * @version Egret 3.0
-    * @platform Web,Native
-    */
-    export class QuadNullType {
-        //没有贴图的QUAD(默认白色)
-        public static NULL_WHITE: number = -1;
-        //空的QUAD
-        public static NULL_QUAD: number = -2;
-        //不可见
-        public static NULL_INVISIBLE: number = -3;
-    }
-
-    /**
     * @class egret3d.Quad
     * @classdesc
     * gui中基础的2d显示单元</p>
@@ -24,8 +9,17 @@
     * @platform Web,Native
     */
     export class Quad extends DisplayObject {
+
+        private static FLAG_VALLID_QUAD: number = 0;
+        private static FLAG_IS_VISIBLE: number = 1;
+        private static FLAG_HAS_MASK: number = 2;
+        private static FLAG_HAS_TEXTURE: number = 3;
+        private static FLAG_IS_TEXTFIELD: number = 4;
+
         protected _texture: Texture;
         protected _globalIndex: number = -1;//记录上一次在全局位置的下标
+        protected _boolArray: BooleanArray = new BooleanArray();
+
         private static IdentityVector: Vector3D = new Vector3D(1, 1, 1, 1);
         private static TempVector: Vector3D = new Vector3D();
         private static DefaultUVRect: Rectangle = new Rectangle(0, 0, 1, 1);
@@ -64,9 +58,19 @@
 
             if (this._globalIndex != globalIndex) {
                 this._globalIndex = globalIndex;
-                this._colorInvalid = this._transformInvalid = this._renderTypeInvalid = this._textureInvalid = this._visibleInvalid = this._maskRectInvalid = true;
+                this._colorInvalid = this._transformInvalid = this._renderTextInvalid = this._textureInvalid = this._visibleInvalid = this._maskRectInvalid = true;
+                this._boolArray.clear();
             }
 
+            if (this._visibleInvalid) {
+                this._visibleInvalid = false;
+                this._boolArray.setBoolean(Quad.FLAG_IS_VISIBLE, this.globalVisible);
+            }
+
+            //一个真实的quad，而不是geometry中没有用到的部分
+            this._boolArray.setBoolean(Quad.FLAG_VALLID_QUAD, true);
+
+            //
             var index: number = 0;
             var positionFrom: number;
             var positionOffset: number = geometry.vertexAttLength;
@@ -76,10 +80,10 @@
                 this._transformInvalid = false;
 
                 //________________(x,y)
-                positionFrom = zIndex * QuadData.quadVertexLen + QuadData.offsetOffest;
+                positionFrom = zIndex * QuadData.quadVertexLen + QuadData.originalOffset;
                 for (var i: number = 0; i < 4; i++) {
                     index = positionFrom + i * positionOffset;
-                    if (this._renderType == 1) {
+                    if (this._renderText) {
                         verticesData[index] = pos.x >> 0;
                         verticesData[index + 1] = -pos.y >> 0;
                     } else {
@@ -94,26 +98,21 @@
                 index = positionFrom + 0 * positionOffset;
                 verticesData[index] = 0;
                 verticesData[index + 1] = 0;
-                //verticesData[index + 2] = -zIndex;
 
                 //1
                 index = positionFrom + 1 * positionOffset;
                 verticesData[index] = this.width;
                 verticesData[index + 1] = 0;
-                //verticesData[index + 2] = -zIndex;
 
                 //2
                 index = positionFrom + 2 * positionOffset;
                 verticesData[index] = this.width;
                 verticesData[index + 1] = -this.height;
-                //verticesData[index + 2] = -zIndex;
 
                 //3
                 index = positionFrom + 3 * positionOffset;
                 verticesData[index] = 0;
                 verticesData[index + 1] = -this.height;
-                //verticesData[index + 2] = -zIndex;
-
 
 
                 //____________________(scale x y)
@@ -141,64 +140,51 @@
 
             }
 
-
-            if (this._renderTypeInvalid) {
-                this._renderTypeInvalid = false;
-                //____________________render Type
-                positionFrom = zIndex * QuadData.quadVertexLen + QuadData.posOffest;
-                for (var i: number = 0; i < 4; i++) {
-                    index = positionFrom + i * positionOffset;
-                    verticesData[index + 3] = this._renderType;
-                }
+            if (this._renderTextInvalid) {
+                this._renderTextInvalid = false;
+                this._boolArray.setBoolean(Quad.FLAG_IS_TEXTFIELD, this._renderText);
             }
 
 
 
-            if (this._textureInvalid || this._visibleInvalid) {
+            if (this._textureInvalid) {
                 this._textureInvalid = false;
-                this._visibleInvalid = false;
+                this._boolArray.setBoolean(Quad.FLAG_HAS_TEXTURE, this._texture != null);
                 //____________________gui index
-                var texId: number = QuadNullType.NULL_WHITE;
+                var texId: number = 0;
                 var uvRec: Rectangle;
+
                 if (this._texture) {
                     uvRec = this._texture.uvRectangle;
                     //use gui index
                     texId = this._texture.guiIndex;
-                } else {
-                    //hav no texture
-                    texId = QuadNullType.NULL_WHITE;
-                    uvRec = Quad.DefaultUVRect;
+
+                    positionFrom = zIndex * QuadData.quadVertexLen + QuadData.uvRectangleOffest;
+
+                    index = positionFrom + 0 * positionOffset;
+                    verticesData[index] = uvRec.x;
+                    verticesData[index + 1] = uvRec.y;
+
+                    index = positionFrom + 1 * positionOffset;
+                    verticesData[index] = uvRec.x + uvRec.width;
+                    verticesData[index + 1] = uvRec.y;
+
+                    index = positionFrom + 2 * positionOffset;
+                    verticesData[index] = uvRec.x + uvRec.width;
+                    verticesData[index + 1] = uvRec.y + uvRec.height;
+
+                    index = positionFrom + 3 * positionOffset;
+                    verticesData[index] = uvRec.x;
+                    verticesData[index + 1] = uvRec.y + uvRec.height;
+
+                    //____________________texId;
+                    positionFrom = zIndex * QuadData.quadVertexLen + QuadData.originalOffset;
+                    for (var i: number = 0; i < 4; i++) {
+                        index = positionFrom + i * positionOffset;
+                        verticesData[index + 2] = texId;
+                    }
                 }
 
-                if (this.visible == false) {
-                    texId = QuadNullType.NULL_INVISIBLE;
-                }
-
-                //rotation upload GPU , on GPU caculate;
-                positionFrom = zIndex * QuadData.quadVertexLen + QuadData.uvRectangleOffest;
-
-                index = positionFrom + 0 * positionOffset;
-                verticesData[index] = uvRec.x;
-                verticesData[index + 1] = uvRec.y;
-
-                index = positionFrom + 1 * positionOffset;
-                verticesData[index] = uvRec.x + uvRec.width;
-                verticesData[index + 1] = uvRec.y;
-
-                index = positionFrom + 2 * positionOffset;
-                verticesData[index] = uvRec.x + uvRec.width;
-                verticesData[index + 1] = uvRec.y + uvRec.height;
-
-                index = positionFrom + 3 * positionOffset;
-                verticesData[index] = uvRec.x;
-                verticesData[index + 1] = uvRec.y + uvRec.height;
-
-                //____________________texId;
-                positionFrom = zIndex * QuadData.quadVertexLen + QuadData.offsetOffest;
-                for (var i: number = 0; i < 4; i++) {
-                    index = positionFrom + i * positionOffset;
-                    verticesData[index + 2] = texId;
-                }
             }
 
 
@@ -206,26 +192,23 @@
                 this._maskRectInvalid = false;
                 //____________________mask x y width height
                 var maskRect: Rectangle = this.globalMask;
+                this._boolArray.setBoolean(Quad.FLAG_HAS_MASK, maskRect != null);
                 var maskX: number, maskY: number, maskW: number, maskH: number;
                 if (maskRect) {
-                    maskX = maskRect.x; //                0;
-                    maskY = maskRect.y; //                0;
-                    maskW = maskRect.width; //            50;
-                    maskH = maskRect.height; //           600;
-                } else {
-                    maskX = -1;
-                    maskY = -1;
-                    maskW = 0;
-                    maskH = 0;
+                    maskX = maskRect.x;
+                    maskY = maskRect.y;
+                    maskW = maskRect.width;
+                    maskH = maskRect.height;
+                    positionFrom = zIndex * QuadData.quadVertexLen + QuadData.maskOffset;
+                    for (var i: number = 0; i < 4; i++) {
+                        index = positionFrom + i * positionOffset;
+                        verticesData[index + 0] = maskX;
+                        verticesData[index + 1] = maskY;
+                        verticesData[index + 2] = maskW;
+                        verticesData[index + 3] = maskH;
+                    }
                 }
-                positionFrom = zIndex * QuadData.quadVertexLen + QuadData.scaleOffest;
-                for (var i: number = 0; i < 4; i++) {
-                    index = positionFrom + i * positionOffset;
-                    verticesData[index + 0] = maskX;
-                    verticesData[index + 1] = maskY;
-                    verticesData[index + 2] = maskW;
-                    verticesData[index + 3] = maskH;
-                }
+
             }
 
             if (this._colorInvalid) {
@@ -244,6 +227,16 @@
                 }
                 this._colorInvalid = false;
             }
+
+            //merge boolList
+            if (this._boolArray.dirty) {
+                var makeRes: number = this._boolArray.makeResult;
+                positionFrom = zIndex * QuadData.quadVertexLen + QuadData.originalOffset;
+                for (var i: number = 0; i < 4; i++) {
+                    index = positionFrom + i * positionOffset;
+                    verticesData[index + 3] = makeRes;
+                }
+            }
         }
 
         /**
@@ -261,10 +254,10 @@
                 var verticesData: Float32Array = geometry.sharedVertexBuffer.arrayBuffer;
                 //null 
                 var index: number;
-                var positionFrom: number = zIndex * QuadData.quadVertexLen + QuadData.offsetOffest;
+                var positionFrom: number = zIndex * QuadData.quadVertexLen + QuadData.originalOffset;
                 for (var i: number = 0; i < 4; i++) {
                     index = positionFrom + i * geometry.vertexAttLength;
-                    verticesData[index + 2] = QuadNullType.NULL_QUAD;
+                    verticesData[index + 2] = 0;
                 }
 
             }

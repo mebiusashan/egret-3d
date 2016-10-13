@@ -86,8 +86,12 @@
             Context3DProxy.gl.getExtension('OES_element_index_uint');
 
             Context3DProxy.gl.getExtension("OES_texture_float_linear");
-            Context3DProxy.gl.getExtension("OES_texture_float");
-            Context3DProxy.gl.getExtension("OES_texture_half_float");
+
+            extension = Context3DProxy.gl.getExtension("OES_texture_float");
+            //alert(extension);
+            extension = Context3DProxy.gl.getExtension("OES_texture_half_float");
+            //alert(extension);
+
             Context3DProxy.gl.getExtension("OES_texture_half_float_linear");
             Context3DProxy.gl.getExtension("OES_standard_derivatives");
             Context3DProxy.gl.getExtension("GL_OES_standard_derivatives");
@@ -500,7 +504,8 @@
             Context3DProxy.gl.scissor(0, 0, texture.width, texture.height);
 
             Context3DProxy.gl.bindFramebuffer(Context3DProxy.gl.FRAMEBUFFER, texture.frameBuffer);
-            Context3DProxy.gl.clearColor(0, 0, 0, 1);
+
+            Context3DProxy.gl.clearColor(0, 0, 0, 0);
             Context3DProxy.gl.clear(Context3DProxy.gl.COLOR_BUFFER_BIT | Context3DProxy.gl.DEPTH_BUFFER_BIT);
 
             Context3DProxy.gl.framebufferTexture2D(Context3DProxy.gl.FRAMEBUFFER, Context3DProxy.gl.COLOR_ATTACHMENT0, Context3DProxy.gl.TEXTURE_2D, texture.textureBuffer, 0);
@@ -518,6 +523,7 @@
             Context3DProxy.gl.bindTexture(Context3DProxy.gl.TEXTURE_2D, null);
             Context3DProxy.gl.bindFramebuffer(Context3DProxy.gl.FRAMEBUFFER, null);
             Context3DProxy.gl.bindRenderbuffer(Context3DProxy.gl.RENDERBUFFER, null);
+            
         }
 
         /**

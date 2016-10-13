@@ -465,12 +465,21 @@
         public update(time: number, delay: number) {
             this._camera.viewPort = this._viewPort;
             //------------------
+            if (Egret3DEngine.instance.debug) 
+                this.a = new Date().getTime();
             this.updateObject3D(this._scene.root, time, delay);
+            if (Egret3DEngine.instance.debug) 
+                egret3d.Egret3DState.showDataInfo("updateObject3D: " + (new Date().getTime() - this.a) + " ms");
+
 
             Egret3DCanvas.context3DProxy.viewPort(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
             Egret3DCanvas.context3DProxy.setScissorRectangle(this._viewPort.x, this._viewPort.y, this._viewPort.width, this._viewPort.height);
 
+            if (Egret3DEngine.instance.debug)
+                Egret3DState.help = new Date().getTime();
             this._entityCollect.update(this._camera);
+            if (Egret3DEngine.instance.debug)
+                Egret3DState.showDataInfo("entityCollect" + (new Date().getTime() - Egret3DState.help) + " ms");
 
             if (Egret3DEngine.instance.debug) {
 
@@ -513,7 +522,13 @@
                 //this._postHUD.viewPort = this._viewPort ;
                 //this._postHUD.draw(Egret3DCanvas.context3DProxy);
             } else {
+
+                if (Egret3DEngine.instance.debug)
+                    this.a = new Date().getTime();
                 this._render.draw(time, delay, Egret3DCanvas.context3DProxy, this._entityCollect, this._camera, this._viewPort);
+                if (Egret3DEngine.instance.debug)
+                    egret3d.Egret3DState.showDataInfo("draw: " + (new Date().getTime() - this.a) + " ms");
+
             }
 
             for (var i: number = 0; i < this._huds.length; ++i) {
@@ -521,7 +536,11 @@
             }
 
             if (this._quadStage) {
+                if (Egret3DEngine.instance.debug)
+                    this.a = new Date().getTime();
                 this._quadStage.update(time, delay, Egret3DCanvas.context3DProxy,this);
+                if (Egret3DEngine.instance.debug)
+                    egret3d.Egret3DState.showDataInfo("GUI: " + (new Date().getTime() - this.a) + " ms");
             }
         }
 

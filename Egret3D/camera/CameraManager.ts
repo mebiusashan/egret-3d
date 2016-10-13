@@ -27,6 +27,13 @@
             this.cameras.push(camera);
         }
 
+        public removeCamera(camera: Camera3D) {
+            var idx: number = this.cameras.indexOf(camera);
+            if (idx >= 0) {
+                this.cameras.splice(idx, 1);
+            }
+        }
+        
         /**
         * @language zh_CN
         * 更新所有的摄像机

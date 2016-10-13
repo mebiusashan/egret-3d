@@ -252,10 +252,12 @@
             if (this.texture2D) {
                 this.texture2D.dispose();
             }
+            this.texture2D = null;
 
             if (this.texture3D) {
                 this.texture3D.dispose();
             }
+            this.texture3D = null;
         }
     }
 }

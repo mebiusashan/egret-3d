@@ -5,7 +5,8 @@
         private _loadList: URLLoader[];
         private _loadMap: { [url: string]: URLLoader }
         private _textures: { [name: string]: Texture };
-        private _geometrys: {[name:string]:Geometry};
+        private _geometrys: { [name: string]: Geometry };
+        private _string: {[name:string]:string};
 
         private _loadCount: number = 0; 
         constructor() {
@@ -14,6 +15,7 @@
             this._textures = {}; 
             this._geometrys = {}; 
             this._loadList = []; 
+            this._string = {}; 
         }
 
         public addLoaderQuen(url: string) {
@@ -26,7 +28,7 @@
             this._loadList.push(load);
         }
 
-        public getTexture( url:string):Texture {
+        public getTexture(url: string): ITexture {
             return this._textures[url];
         }
 
@@ -34,11 +36,17 @@
             return this._geometrys[url];
         }
 
+        public getString(url: string): string {
+            return this._string[url];
+        }
+
         private loadComplete(e: LoaderEvent3D) {
             if (e.loader.data instanceof ITexture) {
-                this._textures[e.loader.url] = <Texture>e.loader.data;
+                this._textures[e.loader.url] = <ITexture>e.loader.data;
             } else if (e.loader.data instanceof Geometry) {
                 this._geometrys[e.loader.url] = <Geometry>e.loader.data;
+            } else if (<string>e.loader.data) {
+                this._string[e.loader.url] = e.loader.data;
             }
             this.checkAllComplete();
         }

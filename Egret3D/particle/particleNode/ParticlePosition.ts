@@ -16,7 +16,6 @@
         */
         private _positions: ValueShape;
         private _node: ParticleDataShape;
-
         private _animationState: ParticleAnimationState;
         private attribute_offsetPosition: GLSL.VarRegister;
         constructor() {
@@ -31,6 +30,8 @@
 
             //##FilterEnd##
         }
+
+      
 
 
         /**
@@ -96,6 +97,11 @@
                 meshShape.type = node.meshType;
                 this._positions = meshShape;
             }
+            else if (node.type == ParticleDataShapeType.External) {
+                var externalShape: ValueShapeExternal = new ValueShapeExternal();
+                externalShape.positionList = node.externalPositionList;
+                this._positions = externalShape;
+            }
             //##FilterEnd##
 
         }
@@ -124,7 +130,7 @@
         public build(geometry: Geometry, count: number) {
             //##FilterBegin## ##Particle##
             this._animationState = <ParticleAnimationState>this.state;
-            var posArray: Vector3D[] = this._positions.calculate(count);
+            var positionArray:Vector3D = this._positions.calculate(count);
             var directionArray: Vector3D[] = this._animationState.directionArray = [];
             var meshNormalArray: Vector3D[];
             if (this._node.type == ParticleDataShapeType.Mesh) {
@@ -137,7 +143,7 @@
             var recordPos: Vector3D = new Vector3D();//用于计算方向，缩放后的位置不能用于计算方向
             var coneShape: ConeValueShape = <ConeValueShape>this._positions;
             for (var i: number = 0; i < count; ++i) {
-                var pos: Vector3D = posArray[i];
+                var pos: Vector3D = positionArray[i];
                 recordPos.copyFrom(pos);
                 //缩放______________________________________________________
                 pos.multiply(data.property.scale, pos);
@@ -159,6 +165,8 @@
                         dir = coneShape.directions[i];
                     } else if (this._node.type == ParticleDataShapeType.Mesh) {
                         dir.copyFrom(meshNormalArray[i]);
+                    } else if (this._node.type == ParticleDataShapeType.Mesh) {
+                        dir.setTo(0, 0, 1, 1);
                     }
                 }
 
@@ -190,7 +198,9 @@
 
             this._animationState.directionArray.length = 0;
             this._animationState.directionArray = null;
+
             //##FilterEnd##
+
         }
 
 

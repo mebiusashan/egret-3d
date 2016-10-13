@@ -60,7 +60,7 @@
                     return;
                 }
             }
-
+           
             if (renderItem.material) {
                 if (renderItem.tag.name == "normalObject" && renderItem.material.materialData.alphaBlending) {
                     this.softRenderItems["alphaObject"].push(renderItem);
@@ -88,6 +88,8 @@
 
             }
 
+       
+
             if (renderItem.enablePick) {
                 this.mousePickList.push(renderItem);
             }
@@ -112,23 +114,17 @@
             
             this.clearLayerList();
 
-            this.renderList.length = 0;
-            this.mousePickList.length = 0;
-
             if (this.rootScene.quad) {
                 var box: BoundBox = camera.frustum.box;
-                //var now: number = new Date().getTime();
                 var quadList: Array<IQuadNode> = this.rootScene.quad.getNodesByAABB(box.min.x, box.min.y, box.max.x, box.max.y);
-                 
                 this.appendQuadList(quadList, camera);
-                //console.log("tree time: " + (new Date().getTime() - now));
-                //var time4: number = new Date().getTime();
-                //console.log("200/" + quadList.length + "/" + this.renderList.length, "time:" + (time2 - time1) + "/" + (time4 - time2) + "(" + (time3 - time2) + "," + (time4 - time3) + ")");
             }
             else {
-                //var now: number = new Date().getTime();
+                if (Egret3DEngine.instance.debug)
+                    Egret3DState.help = new Date().getTime();
                 this.applyRender(this.rootScene.root, camera);
-                //console.log("frustum time: " + (new Date().getTime() - now));
+                if (Egret3DEngine.instance.debug)
+                    Egret3DState.showDataInfo("entityCollect applyRender:" + (new Date().getTime() - Egret3DState.help) + " ms");
             }
 
             var listLen: number;

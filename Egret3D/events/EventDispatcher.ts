@@ -30,12 +30,32 @@
                     var listener: EventListener = list[i];
                     try {
                         event3D.param = listener.param;
+                        event3D.target = this;
+                        event3D.currentTarget = listener;
                         listener.handler.call(listener.thisObject, event3D);
                     } catch (error) {
                         if (window.console) {
                             console.error(error.stack);
                         }
                     }
+                }
+            }
+        }
+
+        /**
+        * @language zh_CN
+        * 释放所有数据
+        * @version Egret 3.0
+        * @platform Web,Native
+        */
+        public dispose() {
+            for (var key in this.listeners) {
+                var list: any = this.listeners[key];
+                while (list.length > 0) {
+                    var listener: EventListener = list[0];
+                    listener.handler = null;
+                    listener.thisObject = null;
+                    list.splice(0, 1);
                 }
             }
         }

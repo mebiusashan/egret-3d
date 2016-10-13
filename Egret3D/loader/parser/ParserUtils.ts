@@ -103,6 +103,8 @@
         protected onLoad(img: HTMLImageElement) {
             this.datas = new ImageTexture(img);
             this.doLoadComplete();
+            window.URL.revokeObjectURL(img.src);
+            img.onload = null;
         }
 
         protected doLoadComplete() {
