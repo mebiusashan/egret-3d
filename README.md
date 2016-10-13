@@ -17,61 +17,9 @@ http://edn.egret.com/cn/docs/page/902
 ----
 
 
-Egret3D 3.1.5
-#### 更新内容
-* 增加HDR图片格式的使用
-* 增加骨骼动画流式解析
-
-#### Bug列表
-* 修复MapLoader资源重复加载问题
-* 修复BoundBox检测相交bug
-* 修复骨骼动画对重复new矩阵对象的bug
-
-#### 优化列表
-* 优化水渲染效果
-
-Egret3D 3.1.8
-#### 更新内容
-* 增加粒子渲染特效
-* 增加实时阴影渲染
-* 增加GUI
-
-#### Bug列表
-* 修复aplha混乱
-* 修复骨骼动画反播时事件响应bug
-* 修复CylinderGeometry创建时索引错误，导致圆柱模型渲染异常
-* 修复默认棋盘格渲染异常（出现3角）
-* 修复UVSpriteSheetMethod 多个对象的start没有单独控制功能的bug
-
-#### 修改列表
-* 场景文件使用json进行加载
-* 修改MapLoader加载接口
-* 修改默认cutAlpha值为0
-
-#### 工具内容
-* 修改导出骨骼动画TPOSE 为动画第一帧
-* 粒子特效导出
-
-Egret3D 3.2.0
-#### 更新内容
-* 增加多模型共用SkeletonAnimation对象
-* 增加模型骨骼挂载物件,支持avatar
-* 增加资源释放接口
-
-#### Bug列表
-* 修复默认包围盒创建错误导致模型拣选出错的bug
-* 修复粒子创建个数可能为0的bug
-* 修复摄像机裁剪时会突然看不见的bug
-
-
-#### 工具内容
-* 增加角色导出（可增加挂载物件）
-
-Egret3D 3.2.1
-#### 更新内容
-* 增加地型LOD
-* 增加粒子追加聚合效果
-
-#### Bug列表
-* 修复帧动画不能停留在某一帧的bug
-* 修复阴影贴图在贴图边界会出现常阴影bug
+Release Notes
+--------------------
+[Egret 3.1.5 Release Notes](/docs/cn/3.1.5_ReleaseNotes.md)
+[Egret 3.1.8 Release Notes](/docs/cn/3.1.8_ReleaseNotes.md)
+[Egret 3.2.0 Release Notes](/docs/cn/3.2.0_ReleaseNotes.md)
+[Egret 3.2.1 Release Notes](/docs/cn/3.2.1_ReleaseNotes.md)
